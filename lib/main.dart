@@ -1,8 +1,11 @@
-import 'package:fate_app/presentation/pages/main_character_page.dart';
+import 'package:fate_app/domain/di/di_container.dart';
+import 'package:fate_app/presentation/pages/character_page/character_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {
-  runApp(const MyApp());
+  setupDI();
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -17,7 +20,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MainCharacterPage(),
+      home: const CharacterPage(),
     );
   }
 }

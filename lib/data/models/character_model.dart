@@ -1,4 +1,5 @@
 import 'package:dart_mappable/dart_mappable.dart';
+import 'package:fate_app/domain/mapper/models_mapper.dart';
 
 part 'character_model.mapper.dart';
 
@@ -16,4 +17,14 @@ class CharacterModel with CharacterModelMappable {
       required this.name,
       required this.description,
       required this.image});
+
+  CharacterEntity toEntity() {
+    return CharacterEntity(
+      remoteId: remoteId,
+      localeId: localeId,
+      name: name,
+      description: description,
+      image: image,
+    );
+  }
 }

@@ -1,11 +1,17 @@
-import 'package:fate_app/domain/entities/character_entity.dart';
+import 'package:fate_app/data/datasources/characters_datasource_interface.dart';
+import 'package:fate_app/domain/mapper/models_mapper.dart';
 import 'package:fate_app/domain/repositories/characters_repository.dart';
 
 class CharactersRepositoryImpl implements CharactersRepository {
+  final CharactersDataSourceInterface charactersLDS;
+
+  const CharactersRepositoryImpl(this.charactersLDS);
+
   @override
-  Future<List<CharacterEntity>> getAll() {
-    // TODO: implement getAllCharacters
-    throw UnimplementedError();
+  Future<List<CharacterEntity>> getAll() async {
+    final res = await charactersLDS.getAllCharacters();
+
+    return res.map((e) => e.toEntity()).toList();
   }
 
   @override

@@ -1,6 +1,4 @@
-import 'package:dart_mappable/dart_mappable.dart';
-
-part 'character_entity.mapper.dart';
+part of '../mapper/models_mapper.dart';
 
 @MappableClass()
 class CharacterEntity with CharacterEntityMappable {
