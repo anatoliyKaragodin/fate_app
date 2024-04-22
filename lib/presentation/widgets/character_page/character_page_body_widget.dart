@@ -1,18 +1,23 @@
-import 'package:fate_app/presentation/pages/character_page/character_page_view_model.dart';
+import 'package:fate_app/presentation/pages/characters_list_page/characters_list_page_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class MainCharacterBodyWidget extends ConsumerWidget {
   const MainCharacterBodyWidget({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final characters = ref.watch(characterPageViewProvider).characters;
+    final characters = ref.watch(CharactersListPageViewProvider).characters;
 
     return CustomScrollView(
       slivers: [
-        const SliverAppBar(
-          actions: [IconButton(onPressed: null, icon: Icon(Icons.add))],
+        SliverAppBar(
+          actions: [
+            IconButton(
+                onPressed: () => context.go('/characters/character'),
+                icon: Icon(Icons.add))
+          ],
           centerTitle: true,
           title: Text("FATE"),
         ),

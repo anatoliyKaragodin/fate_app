@@ -1,39 +1,78 @@
-import 'package:fate_app/domain/di/di_container.dart';
-import 'package:fate_app/domain/mapper/models_mapper.dart';
-import 'package:fate_app/domain/usecases/get_characters.dart';
-import 'package:fate_app/domain/usecases/save_new_character.dart';
-import 'package:fate_app/domain/usecases/update_character.dart';
+import 'package:fate_app/domain/mapper/entities_mapper.dart';
+import 'package:fate_app/presentation/mapper/state_mapper.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:developer' as dev;
+import 'package:fate_app/domain/usecases/save_new_character.dart';
+import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 
-final characterPageViewProvider =
+final characterPageViewModelProvider =
     StateNotifierProvider<CharacterPageViewModel, CharacterPageState>(
-        (ref) => CharacterPageViewModel(getIt.get<GetCharacters>(),
-            getIt.get<SaveNewCharacter>(), getIt.get<UpdateCharacter>()));
+        (ref) => CharacterPageViewModel());
 
 class CharacterPageViewModel extends StateNotifier<CharacterPageState> {
-  final GetCharacters _getCharacters;
   final SaveNewCharacter _saveNewCharacter;
-  final UpdateCharacter _updateCharacter;
 
-  CharacterPageViewModel(
-      this._getCharacters, this._saveNewCharacter, this._updateCharacter)
-      : super(const CharacterPageState(characters: [], isEditing: false)) {
-    fetchCharacters();
+  CharacterPageViewModel()
+      : _saveNewCharacter = GetIt.instance.get<SaveNewCharacter>(),
+        super(CharacterPageState(
+            character: const CharacterEntity(
+                name: '',
+                description: '',
+                remoteId: '',
+                localeId: 0,
+                image: ''),
+            nameController: TextEditingController(),
+            descriptionController: TextEditingController(),
+            conceptController: TextEditingController(),
+            problemController: TextEditingController(),
+            aspectsControllers: [
+              TextEditingController(),
+              TextEditingController(),
+              TextEditingController()
+            ],
+            skills: [
+              null,
+              null,
+              null,
+              null,
+              null,
+              null
+            ],
+            stuntsControllers: [
+              TextEditingController(),
+            ]));
+
+  void changeName() {
+    final name = state.nameController.text;
+    state = state.copyWith(character: state.character.copyWith(name: name));
+    dev.log('Name changed to $name');
   }
 
-  Future<void> fetchCharacters() async {
-    // state = await _getCharacters.get();
+  void saveCharacter() {
+    final character = state.character;
+    _saveNewCharacter.save(character);
+    dev.log('Character saved: $character');
   }
 
-  Future<void> addCharacter(CharacterEntity character) async {
-    await _saveNewCharacter.save(character);
-    // state = [...state, character];
+  void goBack(BuildContext context) {
+    context.go('/characters');
   }
 
-  Future<void> updateCharacter(CharacterEntity character) async {
-    await _updateCharacter.update(character);
-    // state = state
-    //     .map((c) => c.localeId == character.localeId ? character : c)
-    //     .toList();
+  void saveAspect(int index) {}
+
+  void saveStunt(int index) {}
+
+  void saveSkill(int index, String? value) {
+    if (value == null) return;
+
+    List<int?> skills = List.from(state.skills);
+
+    dev.log(skills.toString());
+
+    skills[index] = int.tryParse(value);
+
+    state = state.copyWith(skills: skills);
   }
 }

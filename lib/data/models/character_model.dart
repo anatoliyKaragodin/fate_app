@@ -1,11 +1,9 @@
-import 'package:dart_mappable/dart_mappable.dart';
-import 'package:fate_app/domain/mapper/models_mapper.dart';
 
-part 'character_model.mapper.dart';
+part of '../mapper/models_mapper.dart';
 
 @MappableClass(caseStyle: CaseStyle.snakeCase)
 class CharacterModel with CharacterModelMappable {
-  final int remoteId;
+  final String remoteId;
   final int localeId;
   final String name;
   final String description;

@@ -1,8 +1,8 @@
-part of '../mapper/models_mapper.dart';
+part of '../mapper/entities_mapper.dart';
 
 @MappableClass()
 class CharacterEntity with CharacterEntityMappable {
-  final int remoteId;
+  final String remoteId;
   final int localeId;
   final String name;
   final String description;
@@ -14,4 +14,14 @@ class CharacterEntity with CharacterEntityMappable {
       required this.name,
       required this.description,
       required this.image});
+
+  CharacterModel toModel() {
+    return CharacterModel(
+      remoteId: remoteId,
+      localeId: localeId,
+      name: name,
+      description: description,
+      image: image,
+    );
+  }
 }

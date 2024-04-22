@@ -4,7 +4,7 @@
 // ignore_for_file: unused_element, unnecessary_cast, override_on_non_overriding_member
 // ignore_for_file: strict_raw_type, inference_failure_on_untyped_parameter
 
-part of 'character_model.dart';
+part of 'models_mapper.dart';
 
 class CharacterModelMapper extends ClassMapperBase<CharacterModel> {
   CharacterModelMapper._();
@@ -20,8 +20,8 @@ class CharacterModelMapper extends ClassMapperBase<CharacterModel> {
   @override
   final String id = 'CharacterModel';
 
-  static int _$remoteId(CharacterModel v) => v.remoteId;
-  static const Field<CharacterModel, int> _f$remoteId =
+  static String _$remoteId(CharacterModel v) => v.remoteId;
+  static const Field<CharacterModel, String> _f$remoteId =
       Field('remoteId', _$remoteId, key: 'remote_id');
   static int _$localeId(CharacterModel v) => v.localeId;
   static const Field<CharacterModel, int> _f$localeId =
@@ -106,7 +106,7 @@ extension CharacterModelValueCopy<$R, $Out>
 abstract class CharacterModelCopyWith<$R, $In extends CharacterModel, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
   $R call(
-      {int? remoteId,
+      {String? remoteId,
       int? localeId,
       String? name,
       String? description,
@@ -125,7 +125,7 @@ class _CharacterModelCopyWithImpl<$R, $Out>
       CharacterModelMapper.ensureInitialized();
   @override
   $R call(
-          {int? remoteId,
+          {String? remoteId,
           int? localeId,
           String? name,
           String? description,

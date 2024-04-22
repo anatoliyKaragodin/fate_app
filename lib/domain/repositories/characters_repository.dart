@@ -1,5 +1,5 @@
 
-import 'package:fate_app/domain/mapper/models_mapper.dart';
+import 'package:fate_app/domain/mapper/entities_mapper.dart';
 
 abstract class CharactersRepository {
   Future<List<CharacterEntity>> getAll();

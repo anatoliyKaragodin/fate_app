@@ -1,5 +1,5 @@
 import 'package:fate_app/data/datasources/characters_datasource_interface.dart';
-import 'package:fate_app/data/models/character_model.dart';
+import 'package:fate_app/data/mapper/models_mapper.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -9,17 +9,20 @@ class CharactersLocalDataSourceSQLiteImpl
 
   Future<Database> get database async {
     if (_database != null) return _database!;
-    // Инициализация базы данных
+
     _database = await initDB();
+
     return _database!;
   }
 
   initDB() async {
     return await openDatabase(
       join(await getDatabasesPath(), 'characters_database.db'),
+
+      
       onCreate: (db, version) {
         return db.execute(
-          "CREATE TABLE characters(id INTEGER PRIMARY KEY, name TEXT, description TEXT, image TEXT)",
+          "CREATE TABLE characters(id INTEGER PRIMARY KEY, name TEXT, description TEXT, image TEXT, remote_id TEXT, locale_id NUMBER)",
         );
       },
       version: 1,

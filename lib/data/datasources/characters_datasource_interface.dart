@@ -1,4 +1,4 @@
-import 'package:fate_app/data/models/character_model.dart';
+import 'package:fate_app/data/mapper/models_mapper.dart';
 
 abstract class CharactersDataSourceInterface {
   Future<List<CharacterModel>> getAllCharacters();

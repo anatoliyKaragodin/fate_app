@@ -1,5 +1,5 @@
 import 'package:fate_app/data/datasources/characters_datasource_interface.dart';
-import 'package:fate_app/domain/mapper/models_mapper.dart';
+import 'package:fate_app/domain/mapper/entities_mapper.dart';
 import 'package:fate_app/domain/repositories/characters_repository.dart';
 
 class CharactersRepositoryImpl implements CharactersRepository {
@@ -15,9 +15,8 @@ class CharactersRepositoryImpl implements CharactersRepository {
   }
 
   @override
-  Future<void> saveNew(CharacterEntity character) {
-    // TODO: implement saveNewCharacter
-    throw UnimplementedError();
+  Future<void> saveNew(CharacterEntity character) async {
+    await charactersLDS.insertCharacter(character.toModel());
   }
 
   @override
