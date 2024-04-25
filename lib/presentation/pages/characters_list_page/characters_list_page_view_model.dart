@@ -5,6 +5,7 @@ import 'package:fate_app/domain/usecases/save_new_character.dart';
 import 'package:fate_app/domain/usecases/update_character.dart';
 import 'package:fate_app/presentation/mapper/state_mapper.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:developer' as dev;
 
 final CharactersListPageViewProvider =
     StateNotifierProvider<CharactersListPageViewModel, CharactersListPageState>(
@@ -25,6 +26,9 @@ class CharactersListPageViewModel
 
   Future<void> fetchCharacters() async {
     final characters = await _getCharacters.get();
+
+    dev.log('load characters: $characters');
+
     state = state.copyWith(characters: characters);
   }
 

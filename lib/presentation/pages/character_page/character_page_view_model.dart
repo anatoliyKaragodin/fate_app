@@ -20,9 +20,11 @@ class CharacterPageViewModel extends StateNotifier<CharacterPageState> {
             character: const CharacterEntity(
                 name: '',
                 description: '',
-                remoteId: '',
-                localeId: 0,
-                image: ''),
+                skills: [-1, -1, -1, -1, -1, -1],
+                concept: '',
+                problem: '',
+                aspects: [],
+                stunts: []),
             nameController: TextEditingController(),
             descriptionController: TextEditingController(),
             conceptController: TextEditingController(),
@@ -33,25 +35,26 @@ class CharacterPageViewModel extends StateNotifier<CharacterPageState> {
               TextEditingController()
             ],
             skills: [
-              null,
-              null,
-              null,
-              null,
-              null,
-              null
+              -1,
+              -1,
+              -1,
+              -1,
+              -1,
+              -1
             ],
             stuntsControllers: [
               TextEditingController(),
+              TextEditingController(),
+              TextEditingController(),
             ]));
-
-  void changeName() {
-    final name = state.nameController.text;
-    state = state.copyWith(character: state.character.copyWith(name: name));
-    dev.log('Name changed to $name');
-  }
 
   void saveCharacter() {
     final character = state.character;
+
+    if (!_checkCharacterComplete(character)) {
+      return;
+    }
+
     _saveNewCharacter.save(character);
     dev.log('Character saved: $character');
   }
@@ -60,19 +63,70 @@ class CharacterPageViewModel extends StateNotifier<CharacterPageState> {
     context.go('/characters');
   }
 
-  void saveAspect(int index) {}
+  void saveAspect(int index) {
+    final aspect = state.aspectsControllers[index].text;
+    List<String> newAspects = List.from(state.character.aspects);
+    newAspects[index] = aspect;
+    CharacterEntity newCharacter =
+        state.character.copyWith(aspects: newAspects);
+    state = state.copyWith(character: newCharacter);
+  }
 
   void saveStunt(int index) {}
 
   void saveSkill(int index, String? value) {
     if (value == null) return;
 
-    List<int?> skills = List.from(state.skills);
+    List<int> skills = List.from(state.skills);
 
-    dev.log(skills.toString());
+    skills[index] = int.tryParse(value) ?? -1;
 
-    skills[index] = int.tryParse(value);
+    dev.log('save skills: $skills');
 
-    state = state.copyWith(skills: skills);
+    final character = state.character.copyWith(skills: skills);
+
+    state = state.copyWith(skills: skills, character: character);
+  }
+
+  void saveName() {
+    final name = state.nameController.text;
+
+    state = state.copyWith(character: state.character.copyWith(name: name));
+    dev.log('Name changed to $name');
+  }
+
+  void saveDescription() {
+    final description = state.descriptionController.text;
+
+    state = state.copyWith(
+        character: state.character.copyWith(description: description));
+  }
+
+  void saveConcept() {
+    final concept = state.conceptController.text;
+
+    state =
+        state.copyWith(character: state.character.copyWith(concept: concept));
+  }
+
+  void saveProblem() {
+    final problem = state.problemController.text;
+
+    state =
+        state.copyWith(character: state.character.copyWith(problem: problem));
+  }
+
+  bool _checkCharacterComplete(CharacterEntity character) {
+    dev.log('check character: $character');
+
+    if (character.name.isEmpty) {
+      return false;
+    }
+
+    if (character.skills.contains(-1)) {
+      return false;
+    }
+
+    return true;
   }
 }

@@ -1,4 +1,5 @@
 import 'package:fate_app/presentation/pages/characters_list_page/characters_list_page_view_model.dart';
+import 'package:fate_app/presentation/widgets/common/app_character_small_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -25,10 +26,7 @@ class MainCharacterBodyWidget extends ConsumerWidget {
           delegate: SliverChildBuilderDelegate(
             (BuildContext context, int index) {
               final character = characters[index];
-              return ListTile(
-                title: Text(character.name),
-                subtitle: Text(character.description),
-              );
+              return AppCharacterSmallContainer(character: character);
             },
             childCount: characters.length,
           ),

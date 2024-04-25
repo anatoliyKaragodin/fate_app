@@ -1,4 +1,5 @@
 import 'package:fate_app/data/datasources/characters_datasource_interface.dart';
+import 'package:fate_app/data/mapper/models_mapper.dart';
 import 'package:fate_app/domain/mapper/entities_mapper.dart';
 import 'package:fate_app/domain/repositories/characters_repository.dart';
 
@@ -16,7 +17,7 @@ class CharactersRepositoryImpl implements CharactersRepository {
 
   @override
   Future<void> saveNew(CharacterEntity character) async {
-    await charactersLDS.insertCharacter(character.toModel());
+    await charactersLDS.insertCharacter(CharacterModel.fromEntity(character));
   }
 
   @override

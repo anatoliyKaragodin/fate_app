@@ -1,10 +1,13 @@
 import 'package:fate_app/domain/mapper/entities_mapper.dart';
 import 'package:fate_app/presentation/pages/character_page/character_page_view_model.dart';
+import 'package:fate_app/presentation/utils/app_adaptive_size.dart';
 import 'package:fate_app/presentation/widgets/common/app_button_widget.dart';
 import 'package:fate_app/presentation/widgets/common/app_dropdown_menu.dart';
 import 'package:fate_app/presentation/widgets/common/app_text_field_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class CharacterPage extends ConsumerWidget {
@@ -16,8 +19,10 @@ class CharacterPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final wm = ref.watch(characterPageViewModelProvider);
 
-    void changeName() {
-      ref.read(characterPageViewModelProvider.notifier).changeName();
+    final size = AppAdaptiveSize(context);
+
+    void saveName() {
+      ref.read(characterPageViewModelProvider.notifier).saveName();
     }
 
     void saveCharacter() {
@@ -28,11 +33,17 @@ class CharacterPage extends ConsumerWidget {
       ref.read(characterPageViewModelProvider.notifier).goBack(context);
     }
 
-    void saveDescription() {}
+    void saveDescription() {
+      ref.read(characterPageViewModelProvider.notifier).saveDescription();
+    }
 
-    void saveConcept() {}
+    void saveConcept() {
+      ref.read(characterPageViewModelProvider.notifier).saveConcept();
+    }
 
-    void saveProblem() {}
+    void saveProblem() {
+      ref.read(characterPageViewModelProvider.notifier).saveProblem();
+    }
 
     List<VoidCallback> saveAspectList = List.generate(
         wm.aspectsControllers.length,
@@ -71,7 +82,7 @@ class CharacterPage extends ConsumerWidget {
             child: AppTextFieldWidget(
               controller: wm.nameController,
               hintText: 'Имя',
-              onEditingComplete: changeName,
+              onEditingComplete: saveName,
             ),
           ),
           SliverToBoxAdapter(
@@ -88,6 +99,7 @@ class CharacterPage extends ConsumerWidget {
               onEditingComplete: saveProblem,
             ),
           ),
+          SliverToBoxAdapter(child: Gap(size.heightInPixels(20))),
           SliverToBoxAdapter(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -96,7 +108,9 @@ class CharacterPage extends ConsumerWidget {
                   (index) => AppDropdownMenu(
                         label: 'Скилл $index',
                         menuItems: ['', '0', '1', '2', '3'],
-                        selectedItem: wm.skills[index]?.toString() ?? '',
+                        selectedItem: wm.skills[index] == -1
+                            ? ''
+                            : wm.skills[index].toString(),
                         onItemSelected: (String? value) {
                           saveSkillList[index](value);
                         },
@@ -132,12 +146,14 @@ class CharacterPage extends ConsumerWidget {
               onEditingComplete: saveDescription,
             ),
           ),
+          SliverToBoxAdapter(child: Gap(size.heightInPixels(20))),
           SliverToBoxAdapter(
             child: AppButtonWidget(
               text: 'Сохранить',
               onPressed: saveCharacter,
             ),
           ),
+          SliverToBoxAdapter(child: Gap(size.heightInPixels(20))),
         ],
       ),
     ));

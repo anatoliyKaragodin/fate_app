@@ -1,3 +1,4 @@
+import 'package:fate_app/presentation/utils/app_adaptive_size.dart';
 import 'package:flutter/material.dart';
 
 class AppButtonWidget extends StatelessWidget {
@@ -8,6 +9,19 @@ class AppButtonWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(onPressed: onPressed, child: Text(text));
+    final size = AppAdaptiveSize(context);
+
+    return UnconstrainedBox(
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          minimumSize: const Size(0, 0),
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(size.heightInPixels(8)),
+          child: Text(text),
+        ),
+      ),
+    );
   }
 }

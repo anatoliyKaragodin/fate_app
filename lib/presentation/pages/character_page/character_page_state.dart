@@ -10,7 +10,7 @@ class CharacterPageState with CharacterPageStateMappable {
   final TextEditingController problemController;
   final List<TextEditingController> aspectsControllers;
 
-  final List<int?> skills;
+  final List<int> skills;
 
   final List<TextEditingController> stuntsControllers;
 

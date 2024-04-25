@@ -1,5 +1,5 @@
 import 'package:fate_app/data/datasources/characters_datasource_interface.dart';
-import 'package:fate_app/data/datasources/characters_local_datasource_impl.dart';
+import 'package:fate_app/data/datasources/local/sqlite/characters_LDS_sqlite_impl.dart';
 import 'package:fate_app/domain/repositories/characters_repository.dart';
 import 'package:fate_app/domain/usecases/save_new_character.dart';
 import 'package:get_it/get_it.dart';
@@ -12,7 +12,7 @@ final getIt = GetIt.instance;
 void setupDI() {
   // Регистрация источника данных
   getIt.registerSingleton<CharactersDataSourceInterface>(
-      CharactersLocalDataSourceSQLiteImpl());
+      CharactersLDSSQLiteImpl());
 
   final charactersLocalDataSource = getIt.get<CharactersDataSourceInterface>();
 
