@@ -1,6 +1,5 @@
 import 'package:fate_app/presentation/utils/app_adaptive_size.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 
 class AppDropdownMenu extends StatelessWidget {
   final String label;

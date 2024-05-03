@@ -17,57 +17,9 @@ class CharacterPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final wm = ref.watch(characterPageViewModelProvider);
+    final wmProvider = ref.watch(characterPageViewModelProvider);
 
     final size = AppAdaptiveSize(context);
-
-    void saveName() {
-      ref.read(characterPageViewModelProvider.notifier).saveName();
-    }
-
-    void saveCharacter() {
-      ref.read(characterPageViewModelProvider.notifier).saveCharacter();
-    }
-
-    void goBack() {
-      ref.read(characterPageViewModelProvider.notifier).goBack(context);
-    }
-
-    void saveDescription() {
-      ref.read(characterPageViewModelProvider.notifier).saveDescription();
-    }
-
-    void saveConcept() {
-      ref.read(characterPageViewModelProvider.notifier).saveConcept();
-    }
-
-    void saveProblem() {
-      ref.read(characterPageViewModelProvider.notifier).saveProblem();
-    }
-
-    List<VoidCallback> saveAspectList = List.generate(
-        wm.aspectsControllers.length,
-        (index) => () {
-              ref
-                  .read(characterPageViewModelProvider.notifier)
-                  .saveAspect(index);
-            });
-
-    List<VoidCallback> saveStuntList = List.generate(
-        wm.stuntsControllers.length,
-        (index) => () {
-              ref
-                  .read(characterPageViewModelProvider.notifier)
-                  .saveStunt(index);
-            });
-
-    List<Function(String?)> saveSkillList = List.generate(
-        wm.skills.length,
-        (index) => (String? value) {
-              ref
-                  .read(characterPageViewModelProvider.notifier)
-                  .saveSkill(index, value);
-            });
 
     return Scaffold(
         body: SafeArea(
@@ -75,28 +27,30 @@ class CharacterPage extends ConsumerWidget {
         slivers: [
           SliverAppBar(
             leading: BackButton(
-              onPressed: goBack,
+              onPressed: () => ref
+                  .read(characterPageViewModelProvider.notifier)
+                  .goBack(context),
             ),
           ),
           SliverToBoxAdapter(
             child: AppTextFieldWidget(
-              controller: wm.nameController,
               hintText: 'Имя',
-              onEditingComplete: saveName,
+              onEditing:
+                  ref.read(characterPageViewModelProvider.notifier).saveName,
             ),
           ),
           SliverToBoxAdapter(
             child: AppTextFieldWidget(
-              controller: wm.conceptController,
               hintText: 'Концепт',
-              onEditingComplete: saveConcept,
+              onEditing:
+                  ref.read(characterPageViewModelProvider.notifier).saveConcept,
             ),
           ),
           SliverToBoxAdapter(
             child: AppTextFieldWidget(
-              controller: wm.problemController,
               hintText: 'Проблема',
-              onEditingComplete: saveProblem,
+              onEditing:
+                  ref.read(characterPageViewModelProvider.notifier).saveProblem,
             ),
           ),
           SliverToBoxAdapter(child: Gap(size.heightInPixels(20))),
@@ -104,15 +58,17 @@ class CharacterPage extends ConsumerWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: List.generate(
-                  wm.skills.length,
+                  wmProvider.skills.length,
                   (index) => AppDropdownMenu(
                         label: 'Скилл $index',
                         menuItems: ['', '0', '1', '2', '3'],
-                        selectedItem: wm.skills[index] == -1
+                        selectedItem: wmProvider.skills[index] == -1
                             ? ''
-                            : wm.skills[index].toString(),
+                            : wmProvider.skills[index].toString(),
                         onItemSelected: (String? value) {
-                          saveSkillList[index](value);
+                          ref
+                              .read(characterPageViewModelProvider.notifier)
+                              .saveSkill(index, value);
                         },
                       )),
             ),
@@ -120,37 +76,42 @@ class CharacterPage extends ConsumerWidget {
           SliverToBoxAdapter(
               child: Column(
             children: List.generate(
-              wm.aspectsControllers.length,
+              3,
               (index) => AppTextFieldWidget(
-                controller: wm.aspectsControllers[index],
                 hintText: 'Аспект',
-                onEditingComplete: saveAspectList[index],
+                onEditing: (value) => ref
+                    .read(characterPageViewModelProvider.notifier)
+                    .saveAspect(index, value),
               ),
             ),
           )),
           SliverToBoxAdapter(
               child: Column(
             children: List.generate(
-              wm.stuntsControllers.length,
+              3,
               (index) => AppTextFieldWidget(
-                controller: wm.stuntsControllers[index],
                 hintText: 'Трюк',
-                onEditingComplete: saveStuntList[index],
+                onEditing: (value) => ref
+                    .read(characterPageViewModelProvider.notifier)
+                    .saveStunt(index, value),
               ),
             ),
           )),
           SliverToBoxAdapter(
             child: AppTextFieldWidget(
-              controller: wm.descriptionController,
               hintText: 'Описание',
-              onEditingComplete: saveDescription,
+              onEditing: ref
+                  .read(characterPageViewModelProvider.notifier)
+                  .saveDescription,
             ),
           ),
           SliverToBoxAdapter(child: Gap(size.heightInPixels(20))),
           SliverToBoxAdapter(
             child: AppButtonWidget(
               text: 'Сохранить',
-              onPressed: saveCharacter,
+              onPressed: () => ref
+                  .read(characterPageViewModelProvider.notifier)
+                  .saveCharacter(),
             ),
           ),
           SliverToBoxAdapter(child: Gap(size.heightInPixels(20))),

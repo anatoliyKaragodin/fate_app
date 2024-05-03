@@ -24,59 +24,19 @@ class CharacterPageStateMapper extends ClassMapperBase<CharacterPageState> {
   static CharacterEntity _$character(CharacterPageState v) => v.character;
   static const Field<CharacterPageState, CharacterEntity> _f$character =
       Field('character', _$character);
-  static TextEditingController _$nameController(CharacterPageState v) =>
-      v.nameController;
-  static const Field<CharacterPageState, TextEditingController>
-      _f$nameController = Field('nameController', _$nameController);
-  static TextEditingController _$descriptionController(CharacterPageState v) =>
-      v.descriptionController;
-  static const Field<CharacterPageState, TextEditingController>
-      _f$descriptionController =
-      Field('descriptionController', _$descriptionController);
-  static TextEditingController _$conceptController(CharacterPageState v) =>
-      v.conceptController;
-  static const Field<CharacterPageState, TextEditingController>
-      _f$conceptController = Field('conceptController', _$conceptController);
-  static TextEditingController _$problemController(CharacterPageState v) =>
-      v.problemController;
-  static const Field<CharacterPageState, TextEditingController>
-      _f$problemController = Field('problemController', _$problemController);
-  static List<TextEditingController> _$aspectsControllers(
-          CharacterPageState v) =>
-      v.aspectsControllers;
-  static const Field<CharacterPageState, List<TextEditingController>>
-      _f$aspectsControllers = Field('aspectsControllers', _$aspectsControllers);
-  static List<int?> _$skills(CharacterPageState v) => v.skills;
-  static const Field<CharacterPageState, List<int?>> _f$skills =
+  static List<int> _$skills(CharacterPageState v) => v.skills;
+  static const Field<CharacterPageState, List<int>> _f$skills =
       Field('skills', _$skills);
-  static List<TextEditingController> _$stuntsControllers(
-          CharacterPageState v) =>
-      v.stuntsControllers;
-  static const Field<CharacterPageState, List<TextEditingController>>
-      _f$stuntsControllers = Field('stuntsControllers', _$stuntsControllers);
 
   @override
   final MappableFields<CharacterPageState> fields = const {
     #character: _f$character,
-    #nameController: _f$nameController,
-    #descriptionController: _f$descriptionController,
-    #conceptController: _f$conceptController,
-    #problemController: _f$problemController,
-    #aspectsControllers: _f$aspectsControllers,
     #skills: _f$skills,
-    #stuntsControllers: _f$stuntsControllers,
   };
 
   static CharacterPageState _instantiate(DecodingData data) {
     return CharacterPageState(
-        character: data.dec(_f$character),
-        nameController: data.dec(_f$nameController),
-        descriptionController: data.dec(_f$descriptionController),
-        conceptController: data.dec(_f$conceptController),
-        problemController: data.dec(_f$problemController),
-        aspectsControllers: data.dec(_f$aspectsControllers),
-        skills: data.dec(_f$skills),
-        stuntsControllers: data.dec(_f$stuntsControllers));
+        character: data.dec(_f$character), skills: data.dec(_f$skills));
   }
 
   @override
@@ -135,22 +95,8 @@ extension CharacterPageStateValueCopy<$R, $Out>
 abstract class CharacterPageStateCopyWith<$R, $In extends CharacterPageState,
     $Out> implements ClassCopyWith<$R, $In, $Out> {
   CharacterEntityCopyWith<$R, CharacterEntity, CharacterEntity> get character;
-  ListCopyWith<$R, TextEditingController,
-          ObjectCopyWith<$R, TextEditingController, TextEditingController>>
-      get aspectsControllers;
-  ListCopyWith<$R, int?, ObjectCopyWith<$R, int?, int?>?> get skills;
-  ListCopyWith<$R, TextEditingController,
-          ObjectCopyWith<$R, TextEditingController, TextEditingController>>
-      get stuntsControllers;
-  $R call(
-      {CharacterEntity? character,
-      TextEditingController? nameController,
-      TextEditingController? descriptionController,
-      TextEditingController? conceptController,
-      TextEditingController? problemController,
-      List<TextEditingController>? aspectsControllers,
-      List<int?>? skills,
-      List<TextEditingController>? stuntsControllers});
+  ListCopyWith<$R, int, ObjectCopyWith<$R, int, int>> get skills;
+  $R call({CharacterEntity? character, List<int>? skills});
   CharacterPageStateCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
       Then<$Out2, $R2> t);
 }
@@ -167,59 +113,19 @@ class _CharacterPageStateCopyWithImpl<$R, $Out>
   CharacterEntityCopyWith<$R, CharacterEntity, CharacterEntity> get character =>
       $value.character.copyWith.$chain((v) => call(character: v));
   @override
-  ListCopyWith<$R, TextEditingController,
-          ObjectCopyWith<$R, TextEditingController, TextEditingController>>
-      get aspectsControllers => ListCopyWith(
-          $value.aspectsControllers,
-          (v, t) => ObjectCopyWith(v, $identity, t),
-          (v) => call(aspectsControllers: v));
-  @override
-  ListCopyWith<$R, int?, ObjectCopyWith<$R, int?, int?>?> get skills =>
+  ListCopyWith<$R, int, ObjectCopyWith<$R, int, int>> get skills =>
       ListCopyWith($value.skills, (v, t) => ObjectCopyWith(v, $identity, t),
           (v) => call(skills: v));
   @override
-  ListCopyWith<$R, TextEditingController,
-          ObjectCopyWith<$R, TextEditingController, TextEditingController>>
-      get stuntsControllers => ListCopyWith(
-          $value.stuntsControllers,
-          (v, t) => ObjectCopyWith(v, $identity, t),
-          (v) => call(stuntsControllers: v));
-  @override
-  $R call(
-          {CharacterEntity? character,
-          TextEditingController? nameController,
-          TextEditingController? descriptionController,
-          TextEditingController? conceptController,
-          TextEditingController? problemController,
-          List<TextEditingController>? aspectsControllers,
-          List<int?>? skills,
-          List<TextEditingController>? stuntsControllers}) =>
+  $R call({CharacterEntity? character, List<int>? skills}) =>
       $apply(FieldCopyWithData({
         if (character != null) #character: character,
-        if (nameController != null) #nameController: nameController,
-        if (descriptionController != null)
-          #descriptionController: descriptionController,
-        if (conceptController != null) #conceptController: conceptController,
-        if (problemController != null) #problemController: problemController,
-        if (aspectsControllers != null) #aspectsControllers: aspectsControllers,
-        if (skills != null) #skills: skills,
-        if (stuntsControllers != null) #stuntsControllers: stuntsControllers
+        if (skills != null) #skills: skills
       }));
   @override
   CharacterPageState $make(CopyWithData data) => CharacterPageState(
       character: data.get(#character, or: $value.character),
-      nameController: data.get(#nameController, or: $value.nameController),
-      descriptionController:
-          data.get(#descriptionController, or: $value.descriptionController),
-      conceptController:
-          data.get(#conceptController, or: $value.conceptController),
-      problemController:
-          data.get(#problemController, or: $value.problemController),
-      aspectsControllers:
-          data.get(#aspectsControllers, or: $value.aspectsControllers),
-      skills: data.get(#skills, or: $value.skills),
-      stuntsControllers:
-          data.get(#stuntsControllers, or: $value.stuntsControllers));
+      skills: data.get(#skills, or: $value.skills));
 
   @override
   CharacterPageStateCopyWith<$R2, CharacterPageState, $Out2> $chain<$R2, $Out2>(

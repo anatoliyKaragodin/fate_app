@@ -16,37 +16,17 @@ class CharacterPageViewModel extends StateNotifier<CharacterPageState> {
 
   CharacterPageViewModel()
       : _saveNewCharacter = GetIt.instance.get<SaveNewCharacter>(),
-        super(CharacterPageState(
-            character: const CharacterEntity(
-                name: '',
-                description: '',
-                skills: [-1, -1, -1, -1, -1, -1],
-                concept: '',
-                problem: '',
-                aspects: [],
-                stunts: []),
-            nameController: TextEditingController(),
-            descriptionController: TextEditingController(),
-            conceptController: TextEditingController(),
-            problemController: TextEditingController(),
-            aspectsControllers: [
-              TextEditingController(),
-              TextEditingController(),
-              TextEditingController()
-            ],
-            skills: [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            stuntsControllers: [
-              TextEditingController(),
-              TextEditingController(),
-              TextEditingController(),
-            ]));
+        super(const CharacterPageState(
+          character: CharacterEntity(
+              name: '',
+              description: '',
+              skills: [-1, -1, -1, -1, -1, -1],
+              concept: '',
+              problem: '',
+              aspects: [],
+              stunts: []),
+          skills: [-1, -1, -1, -1, -1, -1],
+        ));
 
   void saveCharacter() {
     final character = state.character;
@@ -63,16 +43,24 @@ class CharacterPageViewModel extends StateNotifier<CharacterPageState> {
     context.go('/characters');
   }
 
-  void saveAspect(int index) {
-    final aspect = state.aspectsControllers[index].text;
+  void saveAspect(int index, String value) {
     List<String> newAspects = List.from(state.character.aspects);
-    newAspects[index] = aspect;
+    newAspects[index] = value;
     CharacterEntity newCharacter =
         state.character.copyWith(aspects: newAspects);
+
     state = state.copyWith(character: newCharacter);
   }
 
-  void saveStunt(int index) {}
+  void saveStunt(int index, String? value) {
+    if (value == null) return;
+
+    List<String> newStunts = List.from(state.character.stunts);
+    newStunts[index] = value;
+    CharacterEntity newCharacter = state.character.copyWith(stunts: newStunts);
+
+    state = state.copyWith(character: newCharacter);
+  }
 
   void saveSkill(int index, String? value) {
     if (value == null) return;
@@ -88,32 +76,22 @@ class CharacterPageViewModel extends StateNotifier<CharacterPageState> {
     state = state.copyWith(skills: skills, character: character);
   }
 
-  void saveName() {
-    final name = state.nameController.text;
-
-    state = state.copyWith(character: state.character.copyWith(name: name));
-    dev.log('Name changed to $name');
+  void saveName(String value) {
+    state = state.copyWith(character: state.character.copyWith(name: value));
+    dev.log('Name changed to $value');
   }
 
-  void saveDescription() {
-    final description = state.descriptionController.text;
-
-    state = state.copyWith(
-        character: state.character.copyWith(description: description));
-  }
-
-  void saveConcept() {
-    final concept = state.conceptController.text;
-
+  void saveDescription(String value) {
     state =
-        state.copyWith(character: state.character.copyWith(concept: concept));
+        state.copyWith(character: state.character.copyWith(description: value));
   }
 
-  void saveProblem() {
-    final problem = state.problemController.text;
+  void saveConcept(String value) {
+    state = state.copyWith(character: state.character.copyWith(concept: value));
+  }
 
-    state =
-        state.copyWith(character: state.character.copyWith(problem: problem));
+  void saveProblem(String value) {
+    state = state.copyWith(character: state.character.copyWith(problem: value));
   }
 
   bool _checkCharacterComplete(CharacterEntity character) {
