@@ -1,0 +1,69 @@
+import 'package:fate_app/features/characters/presentation/utils/app_size.dart';
+import 'package:flutter/material.dart';
+
+import '../../../domain/mapper/entities_mapper.dart';
+
+/// AppDropdownMenu - это виджет, который представляет собой выпадающее меню
+/// для выбора элемента из списка.
+class AppDropdownMenu<T> extends StatelessWidget {
+  /// Метка, отображаемая рядом с выпадающим меню.
+
+  final String label;
+
+  /// Список элементов, доступных для выбора.
+
+  final List<T?> menuItems;
+
+  /// Текущий выбранный элемент.
+
+  final T? selectedItem;
+
+  /// Функция, вызываемая при выборе нового элемента.
+
+  final Function(T?) onItemSelected;
+
+  /// Ширина выпадающего меню (по умолчанию - null).
+
+  final double? width;
+
+  const AppDropdownMenu(
+      {super.key,
+      required this.label,
+      required this.menuItems,
+      required this.selectedItem,
+      required this.onItemSelected,
+      this.width});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: width,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label,
+              overflow: TextOverflow.clip,
+              maxLines: 1,
+              style: TextStyle(
+                  fontSize: 14.width(context), fontWeight: FontWeight.bold)),
+          DropdownButton<T?>(
+            value: selectedItem,
+            onChanged: (T? newValue) {
+              onItemSelected(newValue);
+            },
+            items: menuItems.map<DropdownMenuItem<T?>>((T? value) {
+              return DropdownMenuItem<T?>(
+                value: value,
+                child: Text(
+                  value is StuntType
+                      ? (value as StuntType).toLabel()
+                      : (value != null ? value.toString() : 'нет'),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+}
