@@ -1,4 +1,4 @@
-import 'package:fate_app/features/characters/presentation/utils/app_size.dart';
+import 'package:fate_app/core/utils/app_size.dart';
 import 'package:flutter/material.dart';
 
 import '../../../domain/mapper/entities_mapper.dart';

@@ -78,6 +78,8 @@ class CharacterPageViewModel extends StateNotifier<CharacterPageState> {
     }
 
     ref.read(charactersListPageViewProvider.notifier).fetchCharacters();
+
+    goBack(context);
   }
 
   Future<void> exportPDF(BuildContext context, WidgetRef ref) async {
@@ -89,10 +91,10 @@ class CharacterPageViewModel extends StateNotifier<CharacterPageState> {
 
     ref.read(charactersListPageViewProvider.notifier).fetchCharacters();
 
-    goBack(context, ref);
+    goBack(context);
   }
 
-  void goBack(BuildContext context, WidgetRef ref) {
+  void goBack(BuildContext context) {
     // ref.read(charactersListPageViewProvider.notifier).fetchCharacters();
 
     RouterHelper.router.go(RouterHelper.allCharactersPath);
@@ -233,7 +235,8 @@ class CharacterPageViewModel extends StateNotifier<CharacterPageState> {
       return false;
     }
 
-    if (character.skills.contains(null)) {
+    if (character.skills.any((skill) => skill.value == null)) {
+      dev.log('подход равен null');
       _showBottomSheet(context, 'Выберите скиллы');
 
       return false;

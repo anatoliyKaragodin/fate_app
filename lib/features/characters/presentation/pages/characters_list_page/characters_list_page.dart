@@ -1,5 +1,5 @@
 import 'package:fate_app/features/characters/presentation/pages/characters_list_page/characters_list_page_view_model.dart';
-import 'package:fate_app/features/characters/presentation/utils/app_size.dart';
+import 'package:fate_app/core/utils/app_size.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

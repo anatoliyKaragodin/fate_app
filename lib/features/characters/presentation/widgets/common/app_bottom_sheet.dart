@@ -1,4 +1,4 @@
-import 'package:fate_app/features/characters/presentation/utils/app_size.dart';
+import 'package:fate_app/core/utils/app_size.dart';
 import 'package:flutter/material.dart';
 
 /// AppBottomSheet - это виджет, который отображает текст в виде нижнего листа (bottom sheet).

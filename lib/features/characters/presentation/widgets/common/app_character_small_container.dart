@@ -1,6 +1,6 @@
 import 'package:fate_app/features/characters/domain/mapper/entities_mapper.dart';
 
-import 'package:fate_app/features/characters/presentation/utils/app_size.dart';
+import 'package:fate_app/core/utils/app_size.dart';
 import 'package:fate_app/features/characters/presentation/widgets/common/app_character_avatar_widget.dart';
 
 import 'package:flutter/material.dart';

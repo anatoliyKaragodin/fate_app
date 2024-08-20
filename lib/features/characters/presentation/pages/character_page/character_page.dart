@@ -1,7 +1,7 @@
 import 'package:fate_app/features/characters/domain/mapper/entities_mapper.dart';
 import 'package:fate_app/features/characters/presentation/mapper/state_mapper.dart';
 import 'package:fate_app/features/characters/presentation/pages/character_page/character_page_view_model.dart';
-import 'package:fate_app/features/characters/presentation/utils/app_size.dart';
+import 'package:fate_app/core/utils/app_size.dart';
 import 'package:fate_app/features/characters/presentation/widgets/common/app_button_widget.dart';
 import 'package:fate_app/features/characters/presentation/widgets/common/app_dropdown_menu.dart';
 import 'package:fate_app/features/characters/presentation/widgets/common/app_text_field_widget.dart';
@@ -26,7 +26,7 @@ class CharacterPage extends ConsumerWidget {
             image: wmProvider.character.image,
             onTapBack: () => ref
                 .read(characterPageViewModelProvider.notifier)
-                .goBack(context, ref),
+                .goBack(context),
           ),
           SliverToBoxAdapter(
               child: AppButtonWidget(
@@ -82,7 +82,7 @@ class CharacterPage extends ConsumerWidget {
               child: _Stunts(
             stuntControllers: wmProvider.stuntControllers,
             stunts: wmProvider.character.stunts,
-            onTapHelp: () => () => ref
+            onTapHelp: () => ref
                 .read(characterPageViewModelProvider.notifier)
                 .showHelp(context, CharHelpType.stunt),
             onSelectStuntType: (int index, StuntType? value) {
@@ -119,9 +119,7 @@ class CharacterPage extends ConsumerWidget {
                     ref
                         .read(characterPageViewModelProvider.notifier)
                         .saveCharacter(context, ref);
-                    ref
-                        .read(characterPageViewModelProvider.notifier)
-                        .goBack(context, ref);
+                    
                   },
                 ),
               ],
