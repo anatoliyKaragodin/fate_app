@@ -90,4 +90,23 @@ class CharacterModel with CharacterModelMappable {
           .toList(),
     );
   }
+
+  factory CharacterModel.empty(int index) {
+    final skills = List.generate(
+        6, (i) => SkillModel(type: SkillType.values[i], value: i));
+    final aspects = List.generate(3, (i) => 'aspect$i');
+    final stunts = List.generate(
+        3,
+        (i) => StuntModel(
+            type: StuntType.values[i], description: 'stunt description$i'));
+
+    return CharacterModel(
+        name: 'name$index',
+        description: '$index',
+        skills: skills,
+        concept: 'concept$index',
+        problem: 'problem$index',
+        aspects: aspects,
+        stunts: stunts);
+  }
 }
