@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:fate_app/core/error/failure.dart';
-import 'package:fate_app/features/file_managment/data/datasources/file_DS_intrerface.dart';
+import 'package:fate_app/features/file_managment/data/datasources/file_LDS_intrerface.dart';
 import 'package:fate_app/features/file_managment/domain/repositories/file_repository.dart';
 import 'package:fate_app/features/file_managment/domain/usecases/save_pdf.dart';
 import 'package:file_picker/file_picker.dart';

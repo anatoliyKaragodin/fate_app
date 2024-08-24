@@ -4,51 +4,51 @@ import 'package:fate_app/features/characters/data/datasources/characters_LDS_int
 import 'package:fate_app/features/characters/data/datasources/local/sqlite/LDS_constants.dart';
 import 'package:fate_app/features/characters/data/mapper/models_mapper.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
 
 import 'dart:developer' as dev;
 
 class CharactersLDSImpl implements CharactersLDSInterface {
-  Database? _database;
+  final Database _db;
 
-  Future<Database> get database async {
-    if (_database != null) return _database!;
+  CharactersLDSImpl(this._db);
 
-    _database = await initDB();
+  // Future<Database> get database async {
+  //   if (_database != null) return _database!;
 
-    return _database!;
-  }
+  //   _database = await initDB();
 
-  initDB() async {
-    return await openDatabase(
-      join(await getDatabasesPath(), LDSconstants.dbCharacters),
-      onCreate: (db, version) {
-        return db.execute('''CREATE TABLE ${LDSconstants.tableCharacters}
-          (
-          id INTEGER PRIMARY KEY, 
-          ${LDSconstants.columnName} TEXT, 
-          ${LDSconstants.columnDescription} TEXT, 
-          ${LDSconstants.columnImage} TEXT, 
-          ${LDSconstants.columnConcept} TEXT, 
-          ${LDSconstants.columnStunts} TEXT, 
-          ${LDSconstants.columnAspects} TEXT, 
-          ${LDSconstants.columnProblems} TEXT, 
-          ${LDSconstants.columnRemoteId} TEXT, 
-          ${LDSconstants.columnLocalId} INTEGER, 
-          ${LDSconstants.columnSkills} TEXT
-          )''');
-      },
-      version: 1,
-    );
-  }
+  //   return _database!;
+  // }
+
+  // initDB() async {
+  //   return await openDatabase(
+  //     join(await getDatabasesPath(), LDSconstants.dbCharacters),
+  //     onCreate: (db, version) {
+  //       return db.execute('''CREATE TABLE ${LDSconstants.tableCharacters}
+  //         (
+  //         id INTEGER PRIMARY KEY, 
+  //         ${LDSconstants.columnName} TEXT, 
+  //         ${LDSconstants.columnDescription} TEXT, 
+  //         ${LDSconstants.columnImage} TEXT, 
+  //         ${LDSconstants.columnConcept} TEXT, 
+  //         ${LDSconstants.columnStunts} TEXT, 
+  //         ${LDSconstants.columnAspects} TEXT, 
+  //         ${LDSconstants.columnProblems} TEXT, 
+  //         ${LDSconstants.columnRemoteId} TEXT, 
+  //         ${LDSconstants.columnLocalId} INTEGER, 
+  //         ${LDSconstants.columnSkills} TEXT
+  //         )''');
+  //     },
+  //     version: 1,
+  //   );
+  // }
 
   @override
   Future<List<CharacterModel>> getAll() async {
-    final db = await database;
 
     try {
       final List<Map<String, dynamic>> maps =
-          await db.query(LDSconstants.tableCharacters);
+          await _db.query(LDSconstants.tableCharacters);
 
       // dev.log(maps.toString());
 
@@ -63,9 +63,8 @@ class CharactersLDSImpl implements CharactersLDSInterface {
 
   @override
   Future<void> insert(CharacterModel character) async {
-    final db = await database;
 
-    final res = await db.insert(
+    final res = await _db.insert(
       LDSconstants.tableCharacters,
       character.toSQLite(),
       conflictAlgorithm: ConflictAlgorithm.replace,
@@ -78,9 +77,8 @@ class CharactersLDSImpl implements CharactersLDSInterface {
 
   @override
   Future<void> update(CharacterModel character) async {
-    final db = await database;
 
-    final res = await db.update(
+    final res = await _db.update(
       LDSconstants.tableCharacters,
       character.toSQLite(),
       where: "id = ?",
@@ -94,9 +92,8 @@ class CharactersLDSImpl implements CharactersLDSInterface {
 
   @override
   Future<void> delete(int id) async {
-    final db = await database;
 
-    final res = await db.delete(
+    final res = await _db.delete(
       LDSconstants.tableCharacters,
       where: "id = ?",
       whereArgs: [id],
