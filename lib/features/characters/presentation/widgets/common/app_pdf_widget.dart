@@ -51,8 +51,8 @@ class AppPdfWidget extends StatelessWidget {
                           verticalRadius: 8,
                           child: Image(
                             MemoryImage(
-                                File(character.image!).readAsBytesSync(),
-                                dpi: 72),
+                              File(character.image!).readAsBytesSync(),
+                            ),
                           ))),
                 SizedBox(width: 8),
                 SizedBox(

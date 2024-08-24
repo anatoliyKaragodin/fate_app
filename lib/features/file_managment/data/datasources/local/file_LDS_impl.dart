@@ -1,5 +1,5 @@
 import 'package:fate_app/core/error/exeption.dart'; // Убедитесь, что у вас есть этот импорт
-import 'package:fate_app/features/file_managment/data/datasources/file_DS_intrerface.dart';
+import 'package:fate_app/features/file_managment/data/datasources/file_LDS_intrerface.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';

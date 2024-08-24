@@ -12,7 +12,7 @@ class App extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
             seedColor: Colors.indigo,
-            brightness:  MediaQuery.of(context).platformBrightness),
+            brightness: MediaQuery.of(context).platformBrightness),
         useMaterial3: true,
       ),
       routerConfig: RouterHelper.router,

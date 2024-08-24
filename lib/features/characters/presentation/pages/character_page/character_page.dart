@@ -1,5 +1,4 @@
 import 'package:fate_app/features/characters/domain/mapper/entities_mapper.dart';
-import 'package:fate_app/features/characters/presentation/mapper/state_mapper.dart';
 import 'package:fate_app/features/characters/presentation/pages/character_page/character_page_view_model.dart';
 import 'package:fate_app/core/utils/app_size.dart';
 import 'package:fate_app/features/characters/presentation/widgets/common/app_button_widget.dart';
@@ -174,7 +173,7 @@ class _Stunts extends StatelessWidget {
 
 class _Aspects extends StatelessWidget {
   const _Aspects(
-      {super.key, required this.onTapHelp, required this.aspectControllers});
+      {required this.onTapHelp, required this.aspectControllers});
 
   final VoidCallback onTapHelp;
   final List<TextEditingController> aspectControllers;
@@ -257,7 +256,7 @@ class _SkillColumn extends StatelessWidget {
 
 class _Skills extends ConsumerWidget {
   const _Skills(
-      {super.key, required this.skillAvailableList, required this.skills});
+      {required this.skillAvailableList, required this.skills});
 
   final List<SkillEntity> skills;
   final List<int?> skillAvailableList;
