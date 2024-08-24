@@ -19,7 +19,7 @@ extension SkillTypeExtension on SkillType {
       case SkillType.clever:
         return 'Умный';
       case SkillType.flashy:
-        return 'Эфектный';
+        return 'Эффектный';
       case SkillType.forceful:
         return 'Сильный';
       case SkillType.quick:
