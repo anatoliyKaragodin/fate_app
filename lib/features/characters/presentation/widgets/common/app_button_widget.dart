@@ -1,4 +1,6 @@
-import 'package:fate_app/core/utils/app_size.dart';
+import 'package:fate_app/core/utils/theme/app_boder_radius.dart';
+import 'package:fate_app/core/utils/theme/app_padding.dart';
+import 'package:fate_app/core/utils/theme/app_text_styles.dart';
 
 import 'package:flutter/material.dart';
 
@@ -16,13 +18,17 @@ class AppButtonWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return UnconstrainedBox(
       child: ElevatedButton(
+        
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
           minimumSize: const Size(0, 0),
+          shape: RoundedRectangleBorder(
+            borderRadius: appBorderRadius.medium(context)
+          )
         ),
         child: Padding(
-          padding: EdgeInsets.all(8.height(context)),
-          child: Text(text),
+          padding: EdgeInsets.all(appPadding.mediumW(context)),
+          child: Text(text, style: appTextStyles.button1(context),),
         ),
       ),
     );

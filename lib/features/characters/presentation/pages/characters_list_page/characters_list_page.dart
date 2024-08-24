@@ -1,8 +1,10 @@
+import 'package:fate_app/core/utils/theme/app_padding.dart';
 import 'package:fate_app/features/characters/presentation/pages/characters_list_page/characters_list_page_view_model.dart';
 import 'package:fate_app/core/utils/app_size.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../../core/utils/theme/app_text_styles.dart';
 import '../../widgets/common/app_character_small_container.dart';
 
 class CharactersListPage extends ConsumerWidget {
@@ -30,14 +32,21 @@ class CharactersListPage extends ConsumerWidget {
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
                 final character = characters[index];
-                return AppCharacterSmallContainer(
-                  character: character,
-                  onTap: () => ref
-                      .read(charactersListPageViewProvider.notifier)
-                      .editCharacter(ref, characters[index]),
-                  onTapDelete: () => ref
-                      .read(charactersListPageViewProvider.notifier)
-                      .onTapDeleteCharacter(context, character),
+
+                return Padding(
+                  padding: EdgeInsets.all(appPadding.bigW(context)),
+                  child: AppCharacterSmallContainer(
+                    character: character,
+                    onTap: () => ref
+                        .read(charactersListPageViewProvider.notifier)
+                        .goCharacterPage(context, character),
+                    onTapDelete: () => ref
+                        .read(charactersListPageViewProvider.notifier)
+                        .onTapDeleteCharacter(context, character),
+                    onTapEdit: () => ref
+                        .read(charactersListPageViewProvider.notifier)
+                        .editCharacter(ref, character),
+                  ),
                 );
               },
               childCount: characters.length,
@@ -61,14 +70,13 @@ class _AppBar extends StatelessWidget {
       expandedHeight: 100.height(context),
       flexibleSpace: FlexibleSpaceBar(
         centerTitle: true,
-        title: const Text("FAE"),
+        title: Text("FAE", style: appTextStyles.title1(context)),
         expandedTitleScale: 1.1,
-        background: Container(
-          color:
-              Theme.of(context).colorScheme.primaryContainer.withOpacity(0.7),
-          child: const Center(
+        background: SizedBox(
+          child: Center(
             child: Text(
               "Убежище персонажей для",
+              style: appTextStyles.title2(context),
             ),
           ),
         ),

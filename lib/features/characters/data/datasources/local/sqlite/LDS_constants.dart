@@ -1,3 +1,4 @@
+// ignore: file_names
 class LDSconstants {
   // базы
   static const dbCharacters = 'characters_database.db';

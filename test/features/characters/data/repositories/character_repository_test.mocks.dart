@@ -5,7 +5,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i3;
 
-import 'package:fate_app/features/characters/data/datasources/characters_LDS_interface.dart'
+import 'package:fate_app/features/characters/data/datasources/characters_lds.dart'
     as _i2;
 import 'package:fate_app/features/characters/data/mapper/models_mapper.dart'
     as _i4;
@@ -24,11 +24,10 @@ import 'package:mockito/mockito.dart' as _i1;
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
-/// A class which mocks [CharactersLDSInterface].
+/// A class which mocks [CharactersLDS].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockCharactersLDSInterface extends _i1.Mock
-    implements _i2.CharactersLDSInterface {
+class MockCharactersLDS extends _i1.Mock implements _i2.CharactersLDS {
   @override
   _i3.Future<List<_i4.CharacterModel>> getAll() => (super.noSuchMethod(
         Invocation.method(

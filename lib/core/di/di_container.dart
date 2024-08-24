@@ -1,10 +1,10 @@
 import 'package:fate_app/core/database/database_manager.dart';
-import 'package:fate_app/features/characters/data/datasources/characters_LDS_interface.dart';
-import 'package:fate_app/features/characters/data/datasources/local/sqlite/characters_LDS_impl.dart';
+import 'package:fate_app/features/characters/data/datasources/characters_lds.dart';
+import 'package:fate_app/features/characters/data/datasources/local/sqlite/characters_lds_impl.dart';
 import 'package:fate_app/features/characters/domain/repositories/characters_repository.dart';
 import 'package:fate_app/features/characters/domain/usecases/delete_character.dart';
-import 'package:fate_app/features/file_managment/data/datasources/file_LDS_intrerface.dart';
-import 'package:fate_app/features/file_managment/data/datasources/local/file_LDS_impl.dart';
+import 'package:fate_app/features/file_managment/data/datasources/file_lds_intrerface.dart';
+import 'package:fate_app/features/file_managment/data/datasources/local/file_lds_impl.dart';
 import 'package:fate_app/features/file_managment/data/repositories/file_repository_impl.dart';
 import 'package:fate_app/features/file_managment/domain/repositories/file_repository.dart';
 import 'package:fate_app/features/file_managment/domain/usecases/delete_file.dart';
@@ -26,17 +26,18 @@ Future<void> setupDI() async {
   getIt.registerLazySingleton(() => db);
 
   // Регистрация источника данных
-  getIt.registerLazySingleton<CharactersLDSInterface>(
+  getIt.registerLazySingleton<CharactersLDS>(
       () => CharactersLDSImpl(getIt()));
-  getIt.registerLazySingleton<FileLDSInterface>(() => FileLdsImpl());
+  getIt.registerLazySingleton<FileLDS>(() => FileLdsImpl());
 
   // final charactersLocalDataSource = getIt.get<CharactersLDSInterface>();
   // final fileLDS = getIt.get<FileLDSInterface>();
 
   // Регистрация репозитория
-  getIt.registerLazySingleton<CharactersRepository>(()=>
-      CharactersRepositoryImpl(getIt()));
-  getIt.registerLazySingleton<FileRepository>(()=>FileRepositoryImpl(getIt()));
+  getIt.registerLazySingleton<CharactersRepository>(
+      () => CharactersRepositoryImpl(getIt()));
+  getIt
+      .registerLazySingleton<FileRepository>(() => FileRepositoryImpl(getIt()));
 
   // final charactersRepository = getIt.get<CharactersRepository>();
   // final fileRepository = getIt.get<FileRepository>();

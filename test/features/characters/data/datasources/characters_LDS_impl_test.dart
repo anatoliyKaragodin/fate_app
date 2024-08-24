@@ -1,6 +1,6 @@
 import 'package:fate_app/core/database/database_manager.dart';
 import 'package:fate_app/features/characters/data/datasources/local/sqlite/LDS_constants.dart';
-import 'package:fate_app/features/characters/data/datasources/local/sqlite/characters_LDS_impl.dart';
+import 'package:fate_app/features/characters/data/datasources/local/sqlite/characters_lds_impl.dart';
 import 'package:fate_app/features/characters/data/mapper/models_mapper.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';

@@ -1,6 +1,6 @@
 import 'package:fate_app/features/characters/data/mapper/models_mapper.dart';
 
-abstract class CharactersLDSInterface {
+abstract class CharactersLDS {
   Future<List<CharacterModel>> getAll();
 
   Future<void> insert(CharacterModel character);

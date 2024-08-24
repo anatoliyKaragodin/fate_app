@@ -4,9 +4,9 @@ import 'package:fate_app/features/characters/domain/usecases/delete_character.da
 import 'package:fate_app/features/characters/domain/usecases/get_characters.dart';
 import 'package:fate_app/features/characters/presentation/mapper/state_mapper.dart';
 import 'package:fate_app/features/characters/presentation/pages/character_page/character_page_view_model.dart';
+import 'package:fate_app/features/characters/presentation/widgets/common/app_warning_dialog_widget.dart';
 import 'package:fate_app/features/file_managment/domain/usecases/delete_file.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:developer' as dev;
 
@@ -63,30 +63,26 @@ class CharactersListPageViewModel
     _showWarning(context, character);
   }
 
+  void goCharacterPage(BuildContext context, CharacterEntity character) {}
+
 // Приватные методы
   void _showWarning(BuildContext context, CharacterEntity character) {
     showCupertinoModalPopup(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: const Text('Предупреждение!'),
-          content: Text(
-              'Вы уверены, что хотите предать ${character.name.toUpperCase()} забвению?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                _deleteCharacter(character);
-                Navigator.of(context).pop();
-              },
-              child: const Text('Да'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Нет, я не могу так поступить с ним'),
-            ),
-          ],
+        return AppWarningDialogWidget(
+          button1Text: 'Да',
+          button2Text: 'Нет',
+          onTapButton1: () {
+            _deleteCharacter(character);
+            Navigator.of(context).pop();
+          },
+          onTapButton2: () {
+            Navigator.of(context).pop();
+          },
+          text:
+              'Вы уверены, что хотите предать ${character.name.toUpperCase()} забвению?',
+          title: 'Внимание!',
         );
       },
     );
