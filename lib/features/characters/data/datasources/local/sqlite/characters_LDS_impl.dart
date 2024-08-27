@@ -17,7 +17,7 @@ class CharactersLDSImpl implements CharactersLDS {
       final List<Map<String, dynamic>> maps =
           await _db.query(LDSconstants.tableCharacters);
 
-      // dev.log(maps.toString());
+      dev.log(maps.toString());
 
       return List.generate(maps.length, (i) {
         return CharacterModel.fromSQLite(maps[i]);

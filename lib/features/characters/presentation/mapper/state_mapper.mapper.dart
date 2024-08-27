@@ -6,57 +6,60 @@
 
 part of 'state_mapper.dart';
 
-class CharacterPageStateMapper extends ClassMapperBase<CharacterPageState> {
-  CharacterPageStateMapper._();
+class CharacterEditPageStateMapper
+    extends ClassMapperBase<CharacterEditPageState> {
+  CharacterEditPageStateMapper._();
 
-  static CharacterPageStateMapper? _instance;
-  static CharacterPageStateMapper ensureInitialized() {
+  static CharacterEditPageStateMapper? _instance;
+  static CharacterEditPageStateMapper ensureInitialized() {
     if (_instance == null) {
-      MapperContainer.globals.use(_instance = CharacterPageStateMapper._());
+      MapperContainer.globals.use(_instance = CharacterEditPageStateMapper._());
       CharacterEntityMapper.ensureInitialized();
     }
     return _instance!;
   }
 
   @override
-  final String id = 'CharacterPageState';
+  final String id = 'CharacterEditPageState';
 
-  static CharacterEntity _$character(CharacterPageState v) => v.character;
-  static const Field<CharacterPageState, CharacterEntity> _f$character =
+  static CharacterEntity _$character(CharacterEditPageState v) => v.character;
+  static const Field<CharacterEditPageState, CharacterEntity> _f$character =
       Field('character', _$character);
-  static List<int?> _$skillAvailableList(CharacterPageState v) =>
+  static List<int?> _$skillAvailableList(CharacterEditPageState v) =>
       v.skillAvailableList;
-  static const Field<CharacterPageState, List<int?>> _f$skillAvailableList =
+  static const Field<CharacterEditPageState, List<int?>> _f$skillAvailableList =
       Field('skillAvailableList', _$skillAvailableList);
   static List<TextEditingController> _$aspectControllers(
-          CharacterPageState v) =>
+          CharacterEditPageState v) =>
       v.aspectControllers;
-  static const Field<CharacterPageState, List<TextEditingController>>
+  static const Field<CharacterEditPageState, List<TextEditingController>>
       _f$aspectControllers = Field('aspectControllers', _$aspectControllers);
-  static TextEditingController _$conceptController(CharacterPageState v) =>
+  static TextEditingController _$conceptController(CharacterEditPageState v) =>
       v.conceptController;
-  static const Field<CharacterPageState, TextEditingController>
+  static const Field<CharacterEditPageState, TextEditingController>
       _f$conceptController = Field('conceptController', _$conceptController);
-  static TextEditingController _$descriptionController(CharacterPageState v) =>
+  static TextEditingController _$descriptionController(
+          CharacterEditPageState v) =>
       v.descriptionController;
-  static const Field<CharacterPageState, TextEditingController>
+  static const Field<CharacterEditPageState, TextEditingController>
       _f$descriptionController =
       Field('descriptionController', _$descriptionController);
-  static TextEditingController _$nameController(CharacterPageState v) =>
+  static TextEditingController _$nameController(CharacterEditPageState v) =>
       v.nameController;
-  static const Field<CharacterPageState, TextEditingController>
+  static const Field<CharacterEditPageState, TextEditingController>
       _f$nameController = Field('nameController', _$nameController);
-  static TextEditingController _$problemController(CharacterPageState v) =>
+  static TextEditingController _$problemController(CharacterEditPageState v) =>
       v.problemController;
-  static const Field<CharacterPageState, TextEditingController>
+  static const Field<CharacterEditPageState, TextEditingController>
       _f$problemController = Field('problemController', _$problemController);
-  static List<TextEditingController> _$stuntControllers(CharacterPageState v) =>
+  static List<TextEditingController> _$stuntControllers(
+          CharacterEditPageState v) =>
       v.stuntControllers;
-  static const Field<CharacterPageState, List<TextEditingController>>
+  static const Field<CharacterEditPageState, List<TextEditingController>>
       _f$stuntControllers = Field('stuntControllers', _$stuntControllers);
 
   @override
-  final MappableFields<CharacterPageState> fields = const {
+  final MappableFields<CharacterEditPageState> fields = const {
     #character: _f$character,
     #skillAvailableList: _f$skillAvailableList,
     #aspectControllers: _f$aspectControllers,
@@ -67,8 +70,8 @@ class CharacterPageStateMapper extends ClassMapperBase<CharacterPageState> {
     #stuntControllers: _f$stuntControllers,
   };
 
-  static CharacterPageState _instantiate(DecodingData data) {
-    return CharacterPageState(
+  static CharacterEditPageState _instantiate(DecodingData data) {
+    return CharacterEditPageState(
         character: data.dec(_f$character),
         skillAvailableList: data.dec(_f$skillAvailableList),
         aspectControllers: data.dec(_f$aspectControllers),
@@ -82,57 +85,59 @@ class CharacterPageStateMapper extends ClassMapperBase<CharacterPageState> {
   @override
   final Function instantiate = _instantiate;
 
-  static CharacterPageState fromMap(Map<String, dynamic> map) {
-    return ensureInitialized().decodeMap<CharacterPageState>(map);
+  static CharacterEditPageState fromMap(Map<String, dynamic> map) {
+    return ensureInitialized().decodeMap<CharacterEditPageState>(map);
   }
 
-  static CharacterPageState fromJson(String json) {
-    return ensureInitialized().decodeJson<CharacterPageState>(json);
+  static CharacterEditPageState fromJson(String json) {
+    return ensureInitialized().decodeJson<CharacterEditPageState>(json);
   }
 }
 
-mixin CharacterPageStateMappable {
+mixin CharacterEditPageStateMappable {
   String toJson() {
-    return CharacterPageStateMapper.ensureInitialized()
-        .encodeJson<CharacterPageState>(this as CharacterPageState);
+    return CharacterEditPageStateMapper.ensureInitialized()
+        .encodeJson<CharacterEditPageState>(this as CharacterEditPageState);
   }
 
   Map<String, dynamic> toMap() {
-    return CharacterPageStateMapper.ensureInitialized()
-        .encodeMap<CharacterPageState>(this as CharacterPageState);
+    return CharacterEditPageStateMapper.ensureInitialized()
+        .encodeMap<CharacterEditPageState>(this as CharacterEditPageState);
   }
 
-  CharacterPageStateCopyWith<CharacterPageState, CharacterPageState,
-          CharacterPageState>
-      get copyWith => _CharacterPageStateCopyWithImpl(
-          this as CharacterPageState, $identity, $identity);
+  CharacterEditPageStateCopyWith<CharacterEditPageState, CharacterEditPageState,
+          CharacterEditPageState>
+      get copyWith => _CharacterEditPageStateCopyWithImpl(
+          this as CharacterEditPageState, $identity, $identity);
   @override
   String toString() {
-    return CharacterPageStateMapper.ensureInitialized()
-        .stringifyValue(this as CharacterPageState);
+    return CharacterEditPageStateMapper.ensureInitialized()
+        .stringifyValue(this as CharacterEditPageState);
   }
 
   @override
   bool operator ==(Object other) {
-    return CharacterPageStateMapper.ensureInitialized()
-        .equalsValue(this as CharacterPageState, other);
+    return CharacterEditPageStateMapper.ensureInitialized()
+        .equalsValue(this as CharacterEditPageState, other);
   }
 
   @override
   int get hashCode {
-    return CharacterPageStateMapper.ensureInitialized()
-        .hashValue(this as CharacterPageState);
+    return CharacterEditPageStateMapper.ensureInitialized()
+        .hashValue(this as CharacterEditPageState);
   }
 }
 
-extension CharacterPageStateValueCopy<$R, $Out>
-    on ObjectCopyWith<$R, CharacterPageState, $Out> {
-  CharacterPageStateCopyWith<$R, CharacterPageState, $Out>
-      get $asCharacterPageState =>
-          $base.as((v, t, t2) => _CharacterPageStateCopyWithImpl(v, t, t2));
+extension CharacterEditPageStateValueCopy<$R, $Out>
+    on ObjectCopyWith<$R, CharacterEditPageState, $Out> {
+  CharacterEditPageStateCopyWith<$R, CharacterEditPageState, $Out>
+      get $asCharacterEditPageState =>
+          $base.as((v, t, t2) => _CharacterEditPageStateCopyWithImpl(v, t, t2));
 }
 
-abstract class CharacterPageStateCopyWith<$R, $In extends CharacterPageState,
+abstract class CharacterEditPageStateCopyWith<
+    $R,
+    $In extends CharacterEditPageState,
     $Out> implements ClassCopyWith<$R, $In, $Out> {
   CharacterEntityCopyWith<$R, CharacterEntity, CharacterEntity> get character;
   ListCopyWith<$R, int?, ObjectCopyWith<$R, int?, int?>?>
@@ -152,18 +157,19 @@ abstract class CharacterPageStateCopyWith<$R, $In extends CharacterPageState,
       TextEditingController? nameController,
       TextEditingController? problemController,
       List<TextEditingController>? stuntControllers});
-  CharacterPageStateCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
+  CharacterEditPageStateCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
       Then<$Out2, $R2> t);
 }
 
-class _CharacterPageStateCopyWithImpl<$R, $Out>
-    extends ClassCopyWithBase<$R, CharacterPageState, $Out>
-    implements CharacterPageStateCopyWith<$R, CharacterPageState, $Out> {
-  _CharacterPageStateCopyWithImpl(super.value, super.then, super.then2);
+class _CharacterEditPageStateCopyWithImpl<$R, $Out>
+    extends ClassCopyWithBase<$R, CharacterEditPageState, $Out>
+    implements
+        CharacterEditPageStateCopyWith<$R, CharacterEditPageState, $Out> {
+  _CharacterEditPageStateCopyWithImpl(super.value, super.then, super.then2);
 
   @override
-  late final ClassMapperBase<CharacterPageState> $mapper =
-      CharacterPageStateMapper.ensureInitialized();
+  late final ClassMapperBase<CharacterEditPageState> $mapper =
+      CharacterEditPageStateMapper.ensureInitialized();
   @override
   CharacterEntityCopyWith<$R, CharacterEntity, CharacterEntity> get character =>
       $value.character.copyWith.$chain((v) => call(character: v));
@@ -209,7 +215,7 @@ class _CharacterPageStateCopyWithImpl<$R, $Out>
         if (stuntControllers != null) #stuntControllers: stuntControllers
       }));
   @override
-  CharacterPageState $make(CopyWithData data) => CharacterPageState(
+  CharacterEditPageState $make(CopyWithData data) => CharacterEditPageState(
       character: data.get(#character, or: $value.character),
       skillAvailableList:
           data.get(#skillAvailableList, or: $value.skillAvailableList),
@@ -226,9 +232,9 @@ class _CharacterPageStateCopyWithImpl<$R, $Out>
           data.get(#stuntControllers, or: $value.stuntControllers));
 
   @override
-  CharacterPageStateCopyWith<$R2, CharacterPageState, $Out2> $chain<$R2, $Out2>(
-          Then<$Out2, $R2> t) =>
-      _CharacterPageStateCopyWithImpl($value, $cast, t);
+  CharacterEditPageStateCopyWith<$R2, CharacterEditPageState, $Out2>
+      $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+          _CharacterEditPageStateCopyWithImpl($value, $cast, t);
 }
 
 class CharactersListPageStateMapper
@@ -361,4 +367,159 @@ class _CharactersListPageStateCopyWithImpl<$R, $Out>
   CharactersListPageStateCopyWith<$R2, CharactersListPageState, $Out2>
       $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
           _CharactersListPageStateCopyWithImpl($value, $cast, t);
+}
+
+class CharacterPlayPageStateMapper
+    extends ClassMapperBase<CharacterPlayPageState> {
+  CharacterPlayPageStateMapper._();
+
+  static CharacterPlayPageStateMapper? _instance;
+  static CharacterPlayPageStateMapper ensureInitialized() {
+    if (_instance == null) {
+      MapperContainer.globals.use(_instance = CharacterPlayPageStateMapper._());
+      CharacterEntityMapper.ensureInitialized();
+    }
+    return _instance!;
+  }
+
+  @override
+  final String id = 'CharacterPlayPageState';
+
+  static CharacterEntity _$character(CharacterPlayPageState v) => v.character;
+  static const Field<CharacterPlayPageState, CharacterEntity> _f$character =
+      Field('character', _$character);
+  static bool _$isCompact(CharacterPlayPageState v) => v.isCompact;
+  static const Field<CharacterPlayPageState, bool> _f$isCompact =
+      Field('isCompact', _$isCompact);
+  static List<TextEditingController> _$consequencesControllers(
+          CharacterPlayPageState v) =>
+      v.consequencesControllers;
+  static const Field<CharacterPlayPageState, List<TextEditingController>>
+      _f$consequencesControllers =
+      Field('consequencesControllers', _$consequencesControllers);
+
+  @override
+  final MappableFields<CharacterPlayPageState> fields = const {
+    #character: _f$character,
+    #isCompact: _f$isCompact,
+    #consequencesControllers: _f$consequencesControllers,
+  };
+
+  static CharacterPlayPageState _instantiate(DecodingData data) {
+    return CharacterPlayPageState(
+        character: data.dec(_f$character),
+        isCompact: data.dec(_f$isCompact),
+        consequencesControllers: data.dec(_f$consequencesControllers));
+  }
+
+  @override
+  final Function instantiate = _instantiate;
+
+  static CharacterPlayPageState fromMap(Map<String, dynamic> map) {
+    return ensureInitialized().decodeMap<CharacterPlayPageState>(map);
+  }
+
+  static CharacterPlayPageState fromJson(String json) {
+    return ensureInitialized().decodeJson<CharacterPlayPageState>(json);
+  }
+}
+
+mixin CharacterPlayPageStateMappable {
+  String toJson() {
+    return CharacterPlayPageStateMapper.ensureInitialized()
+        .encodeJson<CharacterPlayPageState>(this as CharacterPlayPageState);
+  }
+
+  Map<String, dynamic> toMap() {
+    return CharacterPlayPageStateMapper.ensureInitialized()
+        .encodeMap<CharacterPlayPageState>(this as CharacterPlayPageState);
+  }
+
+  CharacterPlayPageStateCopyWith<CharacterPlayPageState, CharacterPlayPageState,
+          CharacterPlayPageState>
+      get copyWith => _CharacterPlayPageStateCopyWithImpl(
+          this as CharacterPlayPageState, $identity, $identity);
+  @override
+  String toString() {
+    return CharacterPlayPageStateMapper.ensureInitialized()
+        .stringifyValue(this as CharacterPlayPageState);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return CharacterPlayPageStateMapper.ensureInitialized()
+        .equalsValue(this as CharacterPlayPageState, other);
+  }
+
+  @override
+  int get hashCode {
+    return CharacterPlayPageStateMapper.ensureInitialized()
+        .hashValue(this as CharacterPlayPageState);
+  }
+}
+
+extension CharacterPlayPageStateValueCopy<$R, $Out>
+    on ObjectCopyWith<$R, CharacterPlayPageState, $Out> {
+  CharacterPlayPageStateCopyWith<$R, CharacterPlayPageState, $Out>
+      get $asCharacterPlayPageState =>
+          $base.as((v, t, t2) => _CharacterPlayPageStateCopyWithImpl(v, t, t2));
+}
+
+abstract class CharacterPlayPageStateCopyWith<
+    $R,
+    $In extends CharacterPlayPageState,
+    $Out> implements ClassCopyWith<$R, $In, $Out> {
+  CharacterEntityCopyWith<$R, CharacterEntity, CharacterEntity> get character;
+  ListCopyWith<$R, TextEditingController,
+          ObjectCopyWith<$R, TextEditingController, TextEditingController>>
+      get consequencesControllers;
+  $R call(
+      {CharacterEntity? character,
+      bool? isCompact,
+      List<TextEditingController>? consequencesControllers});
+  CharacterPlayPageStateCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
+      Then<$Out2, $R2> t);
+}
+
+class _CharacterPlayPageStateCopyWithImpl<$R, $Out>
+    extends ClassCopyWithBase<$R, CharacterPlayPageState, $Out>
+    implements
+        CharacterPlayPageStateCopyWith<$R, CharacterPlayPageState, $Out> {
+  _CharacterPlayPageStateCopyWithImpl(super.value, super.then, super.then2);
+
+  @override
+  late final ClassMapperBase<CharacterPlayPageState> $mapper =
+      CharacterPlayPageStateMapper.ensureInitialized();
+  @override
+  CharacterEntityCopyWith<$R, CharacterEntity, CharacterEntity> get character =>
+      $value.character.copyWith.$chain((v) => call(character: v));
+  @override
+  ListCopyWith<$R, TextEditingController,
+          ObjectCopyWith<$R, TextEditingController, TextEditingController>>
+      get consequencesControllers => ListCopyWith(
+          $value.consequencesControllers,
+          (v, t) => ObjectCopyWith(v, $identity, t),
+          (v) => call(consequencesControllers: v));
+  @override
+  $R call(
+          {CharacterEntity? character,
+          bool? isCompact,
+          List<TextEditingController>? consequencesControllers}) =>
+      $apply(FieldCopyWithData({
+        if (character != null) #character: character,
+        if (isCompact != null) #isCompact: isCompact,
+        if (consequencesControllers != null)
+          #consequencesControllers: consequencesControllers
+      }));
+  @override
+  CharacterPlayPageState $make(CopyWithData data) => CharacterPlayPageState(
+      character: data.get(#character, or: $value.character),
+      isCompact: data.get(#isCompact, or: $value.isCompact),
+      consequencesControllers: data.get(#consequencesControllers,
+          or: $value.consequencesControllers));
+
+  @override
+  CharacterPlayPageStateCopyWith<$R2, CharacterPlayPageState, $Out2>
+      $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+          _CharacterPlayPageStateCopyWithImpl($value, $cast, t);
 }

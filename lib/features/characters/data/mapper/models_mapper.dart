@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:dart_mappable/dart_mappable.dart';
-import 'package:fate_app/features/characters/domain/mapper/entities_mapper.dart';
+import 'package:fate_app/features/characters/domain/entities/mapper/entities_mapper.dart';
 
 // Модели
 part '../models/character_model.dart';

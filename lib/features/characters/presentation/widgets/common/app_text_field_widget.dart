@@ -4,7 +4,6 @@ import 'package:fate_app/features/characters/presentation/widgets/common/app_ico
 
 import 'package:flutter/material.dart';
 
-
 /// AppTextFieldWidget - это виджет, который представляет собой текстовое поле
 
 /// для ввода данных с дополнительными функциями, такими как подсказка и кнопка помощи.
@@ -17,7 +16,8 @@ class AppTextFieldWidget extends StatelessWidget {
       this.onEditing,
       this.maxLength,
       this.width,
-      this.onTapHelp});
+      this.onTapHelp,
+      this.textStyle});
 
   /// Контроллер для управления текстом в поле ввода.
 
@@ -43,6 +43,10 @@ class AppTextFieldWidget extends StatelessWidget {
 
   final VoidCallback? onTapHelp;
 
+  /// Стиль текста
+
+  final TextStyle? textStyle;
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -51,17 +55,17 @@ class AppTextFieldWidget extends StatelessWidget {
           children: [
             if (onTapHelp != null) AppIconButton(onTap: onTapHelp ?? () {}),
             TextField(
-              style: appTextStyles.text1(context),
+              style: textStyle ?? appTextStyles.text1(context),
               textCapitalization: TextCapitalization.sentences,
               maxLength: maxLength,
               maxLines: null,
               minLines: 1,
               controller: controller,
               decoration: InputDecoration(
-                border: OutlineInputBorder(
-                    borderRadius: appBorderRadius.medium(context)),
-                labelText: hintText,
-              ),
+                  border: OutlineInputBorder(
+                      borderRadius: appBorderRadius.medium(context)),
+                  labelText: hintText,
+                  labelStyle: textStyle ?? appTextStyles.text1(context)),
               onChanged: (value) =>
                   onEditing != null ? onEditing!(value) : null,
             ),

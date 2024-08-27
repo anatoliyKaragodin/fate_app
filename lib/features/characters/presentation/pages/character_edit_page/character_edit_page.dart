@@ -1,7 +1,7 @@
 import 'package:fate_app/core/utils/theme/app_padding.dart';
 import 'package:fate_app/core/utils/theme/app_text_styles.dart';
-import 'package:fate_app/features/characters/domain/mapper/entities_mapper.dart';
-import 'package:fate_app/features/characters/presentation/pages/character_page/character_page_view_model.dart';
+import 'package:fate_app/features/characters/domain/entities/mapper/entities_mapper.dart';
+import 'package:fate_app/features/characters/presentation/pages/character_edit_page/character_edit_page_view_model.dart';
 import 'package:fate_app/core/utils/app_size.dart';
 import 'package:fate_app/features/characters/presentation/widgets/common/app_button_widget.dart';
 import 'package:fate_app/features/characters/presentation/widgets/common/app_dropdown_menu.dart';
@@ -14,12 +14,12 @@ import 'package:gap/gap.dart';
 
 import '../../widgets/common/app_character_avatar_widget.dart';
 
-class CharacterPage extends ConsumerWidget {
-  const CharacterPage({super.key});
+class CharacterEditPage extends ConsumerWidget {
+  const CharacterEditPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final wmProvider = ref.watch(characterPageViewModelProvider);
+    final wmProvider = ref.watch(characterEditPageViewModelProvider);
 
     return Scaffold(
         body: SafeArea(
@@ -28,7 +28,7 @@ class CharacterPage extends ConsumerWidget {
           _AppBar(
             image: wmProvider.character.image,
             onTapBack: () => ref
-                .read(characterPageViewModelProvider.notifier)
+                .read(characterEditPageViewModelProvider.notifier)
                 .goBack(context),
           ),
           SliverToBoxAdapter(
@@ -40,7 +40,7 @@ class CharacterPage extends ConsumerWidget {
                   AppButtonWidget(
                     text: 'Загрузить аватар',
                     onPressed: () => ref
-                        .read(characterPageViewModelProvider.notifier)
+                        .read(characterEditPageViewModelProvider.notifier)
                         .loadImage(context),
                   ),
                   Gap(appPadding.bigH(context)),
@@ -50,7 +50,7 @@ class CharacterPage extends ConsumerWidget {
                       hintText: 'Имя',
                       maxLength: 100,
                       onTapHelp: () => ref
-                          .read(characterPageViewModelProvider.notifier)
+                          .read(characterEditPageViewModelProvider.notifier)
                           .showHelp(context, CharHelpType.name),
                     ),
                   ),
@@ -61,7 +61,7 @@ class CharacterPage extends ConsumerWidget {
                       hintText: 'Концепт',
                       maxLength: 100,
                       onTapHelp: () => ref
-                          .read(characterPageViewModelProvider.notifier)
+                          .read(characterEditPageViewModelProvider.notifier)
                           .showHelp(context, CharHelpType.concept),
                     ),
                   ),
@@ -77,7 +77,7 @@ class CharacterPage extends ConsumerWidget {
                       hintText: 'Проблема',
                       maxLength: 100,
                       onTapHelp: () => ref
-                          .read(characterPageViewModelProvider.notifier)
+                          .read(characterEditPageViewModelProvider.notifier)
                           .showHelp(context, CharHelpType.problem),
                     ),
                   ),
@@ -85,18 +85,18 @@ class CharacterPage extends ConsumerWidget {
                   _Aspects(
                       aspectControllers: wmProvider.aspectControllers,
                       onTapHelp: () => ref
-                          .read(characterPageViewModelProvider.notifier)
+                          .read(characterEditPageViewModelProvider.notifier)
                           .showHelp(context, CharHelpType.aspect)),
                   Gap(appPadding.bigH(context)),
                   _Stunts(
                     stuntControllers: wmProvider.stuntControllers,
                     stunts: wmProvider.character.stunts,
                     onTapHelp: () => ref
-                        .read(characterPageViewModelProvider.notifier)
+                        .read(characterEditPageViewModelProvider.notifier)
                         .showHelp(context, CharHelpType.stunt),
                     onSelectStuntType: (int index, StuntType? value) {
                       ref
-                          .read(characterPageViewModelProvider.notifier)
+                          .read(characterEditPageViewModelProvider.notifier)
                           .saveStuntType(index, value);
                     },
                   ),
@@ -107,7 +107,7 @@ class CharacterPage extends ConsumerWidget {
                       hintText: 'Описание',
                       maxLength: 500,
                       onTapHelp: () => ref
-                          .read(characterPageViewModelProvider.notifier)
+                          .read(characterEditPageViewModelProvider.notifier)
                           .showHelp(context, CharHelpType.description),
                     ),
                   ),
@@ -119,14 +119,15 @@ class CharacterPage extends ConsumerWidget {
                           text: 'Экспорт pdf',
                           onPressed: () {
                             ref
-                                .read(characterPageViewModelProvider.notifier)
+                                .read(
+                                    characterEditPageViewModelProvider.notifier)
                                 .exportPDF(context, ref);
                           }),
                       AppButtonWidget(
                         text: 'Сохранить',
                         onPressed: () {
                           ref
-                              .read(characterPageViewModelProvider.notifier)
+                              .read(characterEditPageViewModelProvider.notifier)
                               .saveCharacter(context, ref);
                         },
                       ),
@@ -306,7 +307,7 @@ class _Skills extends ConsumerWidget {
             ),
             AppIconButton(
                 onTap: () => ref
-                    .read(characterPageViewModelProvider.notifier)
+                    .read(characterEditPageViewModelProvider.notifier)
                     .showHelp(context, CharHelpType.skill))
           ],
         ),
@@ -315,7 +316,7 @@ class _Skills extends ConsumerWidget {
           children: [
             _SkillColumn(
               onTap: (index, value) => ref
-                  .read(characterPageViewModelProvider.notifier)
+                  .read(characterEditPageViewModelProvider.notifier)
                   .saveSkill(index, value),
               skillAvailableList: skillAvailableList,
               skills: skills.sublist(0, skills.length ~/ 2),
@@ -323,7 +324,7 @@ class _Skills extends ConsumerWidget {
             ),
             _SkillColumn(
               onTap: (index, value) => ref
-                  .read(characterPageViewModelProvider.notifier)
+                  .read(characterEditPageViewModelProvider.notifier)
                   .saveSkill(index + skills.length ~/ 2, value),
               skillAvailableList: skillAvailableList,
               skills: skills.sublist(skills.length ~/ 2, skills.length),

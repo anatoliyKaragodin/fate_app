@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:dartz_test/dartz_test.dart';
 import 'package:fate_app/core/error/failure.dart';
-import 'package:fate_app/features/characters/domain/mapper/entities_mapper.dart';
+import 'package:fate_app/features/characters/domain/entities/mapper/entities_mapper.dart';
 import 'package:fate_app/features/characters/domain/repositories/characters_repository.dart';
 import 'package:fate_app/features/characters/domain/usecases/delete_character.dart';
 import 'package:fate_app/features/characters/domain/usecases/get_characters.dart';
@@ -14,6 +14,7 @@ import 'package:mockito/mockito.dart';
 import 'characters_usecases_test.mocks.dart';
 
 @GenerateNiceMocks([MockSpec<CharactersRepository>()])
+
 void main() {
   late SaveNewCharacter saveNewCharacterUC;
   late DeleteCharacter deleteCharacterUC;

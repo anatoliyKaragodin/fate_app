@@ -39,7 +39,7 @@ class CharactersListPage extends ConsumerWidget {
                     character: character,
                     onTap: () => ref
                         .read(charactersListPageViewProvider.notifier)
-                        .goCharacterPage(context, character),
+                        .goCharacterEditPage(ref, character),
                     onTapDelete: () => ref
                         .read(charactersListPageViewProvider.notifier)
                         .onTapDeleteCharacter(context, character),

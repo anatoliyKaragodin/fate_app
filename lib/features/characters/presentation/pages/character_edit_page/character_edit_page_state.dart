@@ -1,7 +1,7 @@
 part of '../../mapper/state_mapper.dart';
 
 @MappableClass()
-class CharacterPageState with CharacterPageStateMappable {
+class CharacterEditPageState with CharacterEditPageStateMappable {
   final CharacterEntity character;
   // final List<int?> skills;
   final List<int?> skillAvailableList;
@@ -12,7 +12,7 @@ class CharacterPageState with CharacterPageStateMappable {
   final List<TextEditingController> aspectControllers;
   final List<TextEditingController> stuntControllers;
 
-  const CharacterPageState(
+  const CharacterEditPageState(
       {required this.character,
       // required this.skills,
       required this.skillAvailableList,

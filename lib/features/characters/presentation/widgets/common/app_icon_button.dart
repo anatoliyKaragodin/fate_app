@@ -6,10 +6,12 @@ import '../../../../../core/utils/theme/app_padding.dart';
 /// AppIconButton - это виджет, который представляет собой кнопку с иконкой.
 
 class AppIconButton extends StatelessWidget {
-  const AppIconButton({super.key, required this.onTap});
+  const AppIconButton({super.key, required this.onTap, this.icon});
 
   /// Функция обратного вызова, которая будет вызвана при нажатии на кнопку.
   final VoidCallback onTap;
+
+  final IconData? icon;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +26,7 @@ class AppIconButton extends StatelessWidget {
                 padding: EdgeInsets.zero,
                 iconSize: 18.width(context),
                 onPressed: onTap,
-                icon: const Icon(Icons.help)),
+                icon: Icon(icon ?? Icons.help)),
           )),
     );
   }

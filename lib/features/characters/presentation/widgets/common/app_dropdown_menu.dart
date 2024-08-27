@@ -1,7 +1,7 @@
 import 'package:fate_app/core/utils/theme/app_text_styles.dart';
 import 'package:flutter/material.dart';
 
-import '../../../domain/mapper/entities_mapper.dart';
+import '../../../domain/entities/mapper/entities_mapper.dart';
 
 /// AppDropdownMenu - это виджет, который представляет собой выпадающее меню
 /// для выбора элемента из списка.

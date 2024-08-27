@@ -26,12 +26,8 @@ Future<void> setupDI() async {
   getIt.registerLazySingleton(() => db);
 
   // Регистрация источника данных
-  getIt.registerLazySingleton<CharactersLDS>(
-      () => CharactersLDSImpl(getIt()));
+  getIt.registerLazySingleton<CharactersLDS>(() => CharactersLDSImpl(getIt()));
   getIt.registerLazySingleton<FileLDS>(() => FileLdsImpl());
-
-  // final charactersLocalDataSource = getIt.get<CharactersLDSInterface>();
-  // final fileLDS = getIt.get<FileLDSInterface>();
 
   // Регистрация репозитория
   getIt.registerLazySingleton<CharactersRepository>(
@@ -39,26 +35,7 @@ Future<void> setupDI() async {
   getIt
       .registerLazySingleton<FileRepository>(() => FileRepositoryImpl(getIt()));
 
-  // final charactersRepository = getIt.get<CharactersRepository>();
-  // final fileRepository = getIt.get<FileRepository>();
-
   // Регистрация use cases
-  // getIt.registerSingleton<GetCharacters>(GetCharacters(charactersRepository));
-
-  // getIt.registerSingleton<SaveNewCharacter>(
-  //     SaveNewCharacter(charactersRepository));
-
-  // getIt.registerSingleton<UpdateCharacter>(
-  //     UpdateCharacter(charactersRepository));
-
-  // getIt.registerSingleton<DeleteCharacter>(
-  //     DeleteCharacter(charactersRepository));
-
-  // getIt.registerSingleton<SavePdf>(SavePdf(fileRepository));
-
-  // getIt.registerSingleton<SaveFile>(SaveFile(fileRepository));
-
-  // getIt.registerSingleton<DeleteFile>(DeleteFile(fileRepository));
 
   getIt.registerLazySingleton(() => GetCharacters(getIt()));
 

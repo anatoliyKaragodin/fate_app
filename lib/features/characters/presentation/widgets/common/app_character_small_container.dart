@@ -1,7 +1,7 @@
 import 'package:fate_app/core/utils/theme/app_boder_radius.dart';
 import 'package:fate_app/core/utils/theme/app_padding.dart';
 import 'package:fate_app/core/utils/theme/app_text_styles.dart';
-import 'package:fate_app/features/characters/domain/mapper/entities_mapper.dart';
+import 'package:fate_app/features/characters/domain/entities/mapper/entities_mapper.dart';
 
 import 'package:fate_app/core/utils/app_size.dart';
 import 'package:fate_app/features/characters/presentation/widgets/common/app_character_avatar_widget.dart';

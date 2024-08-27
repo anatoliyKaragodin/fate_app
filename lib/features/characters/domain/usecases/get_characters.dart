@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:fate_app/core/error/failure.dart';
 import 'package:fate_app/core/usecases/usecase.dart';
-import 'package:fate_app/features/characters/domain/mapper/entities_mapper.dart';
+import 'package:fate_app/features/characters/domain/entities/mapper/entities_mapper.dart';
 import 'package:fate_app/features/characters/domain/repositories/characters_repository.dart';
 
 class GetCharacters extends UseCase<List<CharacterEntity>, void>{

@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:fate_app/core/error/failure.dart';
-import 'package:fate_app/features/characters/domain/mapper/entities_mapper.dart';
+import 'package:fate_app/features/characters/domain/entities/mapper/entities_mapper.dart';
 
 abstract class CharactersRepository {
   Future<Either<Failure, List<CharacterEntity>>> getAll();

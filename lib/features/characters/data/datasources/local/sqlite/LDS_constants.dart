@@ -4,7 +4,7 @@ class LDSconstants {
   static const dbCharacters = 'characters_database.db';
 
   // таблицы
-    static const tableCharacters = 'characters';
+  static const tableCharacters = 'characters';
 
   // колонки
   static const columnLocalId = 'locale_id';
@@ -17,4 +17,12 @@ class LDSconstants {
   static const columnProblems = 'problem';
   static const columnAspects = 'aspects';
   static const columnStunts = 'stunts';
+  
+  // Новые колонки
+  static const columnAudio = 'audio'; // Путь к аудиофайлу
+  static const columnCreatedAt = 'created_at'; // Дата создания
+  static const columnUpdatedAt = 'updated_at'; // Дата последнего обновления
+  static const columnStress = 'stress'; // Уровень стресса
+  static const columnConsequences = 'consequences'; // Последствия действий
+  static const columnFateTokens = 'fate_tokens'; // Количество жетонов судьбы
 }

@@ -1,9 +1,10 @@
 import 'package:fate_app/core/di/di_container.dart';
-import 'package:fate_app/features/characters/domain/mapper/entities_mapper.dart';
+import 'package:fate_app/features/characters/domain/entities/mapper/entities_mapper.dart';
 import 'package:fate_app/features/characters/domain/usecases/delete_character.dart';
 import 'package:fate_app/features/characters/domain/usecases/get_characters.dart';
 import 'package:fate_app/features/characters/presentation/mapper/state_mapper.dart';
-import 'package:fate_app/features/characters/presentation/pages/character_page/character_page_view_model.dart';
+import 'package:fate_app/features/characters/presentation/pages/character_edit_page/character_edit_page_view_model.dart';
+import 'package:fate_app/features/characters/presentation/pages/character_play_page/character_play_page_vm.dart';
 import 'package:fate_app/features/characters/presentation/widgets/common/app_warning_dialog_widget.dart';
 import 'package:fate_app/features/file_managment/domain/usecases/delete_file.dart';
 import 'package:flutter/cupertino.dart';
@@ -45,17 +46,17 @@ class CharactersListPageViewModel
     final character = CharacterEntity.empty();
 
     ref
-        .read(characterPageViewModelProvider.notifier)
+        .read(characterEditPageViewModelProvider.notifier)
         .initNewCharacter(character);
-    RouterHelper.router.go(RouterHelper.characterPath);
+    RouterHelper.router.go(RouterHelper.characterEditPath);
   }
 
   void editCharacter(WidgetRef ref, CharacterEntity character) {
     ref
-        .read(characterPageViewModelProvider.notifier)
+        .read(characterEditPageViewModelProvider.notifier)
         .initNewCharacter(character);
 
-    RouterHelper.router.go(RouterHelper.characterPath);
+    RouterHelper.router.go(RouterHelper.characterEditPath);
   }
 
   void onTapDeleteCharacter(
@@ -63,7 +64,22 @@ class CharactersListPageViewModel
     _showWarning(context, character);
   }
 
-  void goCharacterPage(BuildContext context, CharacterEntity character) {}
+  void goCharacterEditPage(WidgetRef ref, CharacterEntity character) {
+    ref.read(characterPlayPageVMProvider.notifier).initCharacter(character);
+    RouterHelper.router.go(RouterHelper.characterPlayPath);
+  }
+
+  void updateCharacter(CharacterEntity character) {
+    List<CharacterEntity> characters = state.characters;
+
+    final index =
+        characters.indexWhere((char) => char.localeId == character.localeId);
+
+    if (index != -1) {
+      characters[index] = character;
+      state = state.copyWith(characters: characters);
+    }
+  }
 
 // Приватные методы
   void _showWarning(BuildContext context, CharacterEntity character) {
