@@ -5,7 +5,7 @@ import 'package:fate_app/features/characters/presentation/mapper/state_mapper.da
 import 'package:fate_app/features/characters/presentation/pages/characters_list_page/characters_list_page_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../../../../core/di/di_container.dart';
 
@@ -15,11 +15,15 @@ final characterPlayPageVMProvider =
 
 class CharacterPlayPageVm extends StateNotifier<CharacterPlayPageState> {
   CharacterPlayPageVm(this._updateCharacterUC)
-      : super(CharacterPlayPageState(consequencesControllers: [
-          TextEditingController(),
-          TextEditingController(),
-          TextEditingController()
-        ], character: CharacterEntity.empty(), isCompact: false));
+      : super(CharacterPlayPageState(
+            isScreenLocked: false,
+            consequencesControllers: [
+              TextEditingController(),
+              TextEditingController(),
+              TextEditingController()
+            ],
+            character: CharacterEntity.empty(),
+            isCompact: false));
 
   final UpdateCharacter _updateCharacterUC;
 
@@ -35,6 +39,8 @@ class CharacterPlayPageVm extends StateNotifier<CharacterPlayPageState> {
     ref
         .read(charactersListPageViewProvider.notifier)
         .updateCharacter(state.character);
+
+    WakelockPlus.disable();
 
     RouterHelper.router.go(RouterHelper.allCharactersPath);
   }
@@ -67,5 +73,11 @@ class CharacterPlayPageVm extends StateNotifier<CharacterPlayPageState> {
         character: state.character.copyWith(consequences: consequences));
 
     _updateCharacterUC(state.character);
+  }
+
+  void toggleScreenLock() {
+    state = state.copyWith(isScreenLocked: !state.isScreenLocked);
+
+    WakelockPlus.toggle(enable: state.isScreenLocked);
   }
 }

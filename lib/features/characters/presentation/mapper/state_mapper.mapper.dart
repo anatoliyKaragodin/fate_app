@@ -391,6 +391,9 @@ class CharacterPlayPageStateMapper
   static bool _$isCompact(CharacterPlayPageState v) => v.isCompact;
   static const Field<CharacterPlayPageState, bool> _f$isCompact =
       Field('isCompact', _$isCompact);
+  static bool _$isScreenLocked(CharacterPlayPageState v) => v.isScreenLocked;
+  static const Field<CharacterPlayPageState, bool> _f$isScreenLocked =
+      Field('isScreenLocked', _$isScreenLocked);
   static List<TextEditingController> _$consequencesControllers(
           CharacterPlayPageState v) =>
       v.consequencesControllers;
@@ -402,6 +405,7 @@ class CharacterPlayPageStateMapper
   final MappableFields<CharacterPlayPageState> fields = const {
     #character: _f$character,
     #isCompact: _f$isCompact,
+    #isScreenLocked: _f$isScreenLocked,
     #consequencesControllers: _f$consequencesControllers,
   };
 
@@ -409,6 +413,7 @@ class CharacterPlayPageStateMapper
     return CharacterPlayPageState(
         character: data.dec(_f$character),
         isCompact: data.dec(_f$isCompact),
+        isScreenLocked: data.dec(_f$isScreenLocked),
         consequencesControllers: data.dec(_f$consequencesControllers));
   }
 
@@ -476,6 +481,7 @@ abstract class CharacterPlayPageStateCopyWith<
   $R call(
       {CharacterEntity? character,
       bool? isCompact,
+      bool? isScreenLocked,
       List<TextEditingController>? consequencesControllers});
   CharacterPlayPageStateCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
       Then<$Out2, $R2> t);
@@ -504,10 +510,12 @@ class _CharacterPlayPageStateCopyWithImpl<$R, $Out>
   $R call(
           {CharacterEntity? character,
           bool? isCompact,
+          bool? isScreenLocked,
           List<TextEditingController>? consequencesControllers}) =>
       $apply(FieldCopyWithData({
         if (character != null) #character: character,
         if (isCompact != null) #isCompact: isCompact,
+        if (isScreenLocked != null) #isScreenLocked: isScreenLocked,
         if (consequencesControllers != null)
           #consequencesControllers: consequencesControllers
       }));
@@ -515,6 +523,7 @@ class _CharacterPlayPageStateCopyWithImpl<$R, $Out>
   CharacterPlayPageState $make(CopyWithData data) => CharacterPlayPageState(
       character: data.get(#character, or: $value.character),
       isCompact: data.get(#isCompact, or: $value.isCompact),
+      isScreenLocked: data.get(#isScreenLocked, or: $value.isScreenLocked),
       consequencesControllers: data.get(#consequencesControllers,
           or: $value.consequencesControllers));
 

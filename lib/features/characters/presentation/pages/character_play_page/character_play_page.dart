@@ -13,7 +13,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 
-
 class CharacterPlayPage extends ConsumerWidget {
   const CharacterPlayPage({super.key});
 
@@ -42,6 +41,8 @@ class CharacterPlayPage extends ConsumerWidget {
             child: CustomScrollView(
           slivers: [
             _AppBar(
+              isLockedScreen: vmProvider.isScreenLocked,
+              onTapLockScreen: () => ref.read(vm.notifier).toggleScreenLock(),
               onSelectFateTokens: (value) {
                 ref.read(vm.notifier).updateFateTokens(value);
               },
@@ -99,7 +100,7 @@ class CharacterPlayPage extends ConsumerWidget {
                         textStyle: textStyle),
                     Gap(paddingH),
                     _Consequences(
-                      padding: paddingH,
+                        padding: paddingH,
                         onEdititng: (index, value) => ref
                             .read(vm.notifier)
                             .updateConsequence(index, value),
@@ -132,13 +133,17 @@ class _AppBar extends StatelessWidget {
       required this.onTapBack,
       required this.onTapCompact,
       required this.fateTokens,
-      required this.onSelectFateTokens});
+      required this.onSelectFateTokens,
+      required this.isLockedScreen,
+      required this.onTapLockScreen});
 
   final VoidCallback onTapBack;
   final VoidCallback onTapCompact;
   final Function(int value) onSelectFateTokens;
   final bool isCompact;
   final int fateTokens;
+  final VoidCallback onTapLockScreen;
+  final bool isLockedScreen;
 
   @override
   Widget build(BuildContext context) {
@@ -147,6 +152,10 @@ class _AppBar extends StatelessWidget {
         onPressed: onTapBack,
       ),
       actions: [
+        AppIconButton(
+          onTap: onTapLockScreen,
+          icon: isLockedScreen ? Icons.lock : Icons.lock_open,
+        ),
         Padding(
           padding: EdgeInsets.only(right: 8.width(context)),
           child: AppIconButton(
