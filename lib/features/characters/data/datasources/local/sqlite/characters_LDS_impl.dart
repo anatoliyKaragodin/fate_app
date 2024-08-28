@@ -13,7 +13,7 @@ class CharactersLDSImpl implements CharactersLDS {
 
   @override
   Future<List<CharacterModel>> getAll() async {
-    try {
+    // try {
       final List<Map<String, dynamic>> maps =
           await _db.query(LDSconstants.tableCharacters);
 
@@ -22,10 +22,10 @@ class CharactersLDSImpl implements CharactersLDS {
       return List.generate(maps.length, (i) {
         return CharacterModel.fromSQLite(maps[i]);
       });
-    } catch (e) {
-      dev.log(e.toString());
-      throw CacheException();
-    }
+    // } catch (e) {
+    //   dev.log(e.toString());
+    //   throw CacheException();
+    // }
   }
 
   @override

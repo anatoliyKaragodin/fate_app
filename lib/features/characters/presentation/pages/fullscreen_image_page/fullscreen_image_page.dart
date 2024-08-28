@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 import '../../../../../core/router/router.dart';
 
@@ -16,6 +17,7 @@ class FullscreenImagePage extends StatelessWidget {
       body: GestureDetector(
         onTap: () {
           RouterHelper.router.pop();
+          FocusScope.of(context).unfocus();
         },
         child: Center(
           child: Hero(

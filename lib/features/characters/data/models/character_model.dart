@@ -4,7 +4,7 @@ part of '../mapper/models_mapper.dart';
 class CharacterModel with CharacterModelMappable {
   final String?
       remoteId; // Уникальный идентификатор персонажа на удаленном сервере
-  final int? localeId; // Идентификатор локализации
+  final int? localeId; // Идентификатор локальный
   final String name; // Имя персонажа
   final String description; // Описание персонажа
   final String? image; // Путь к изображению персонажа
@@ -73,11 +73,13 @@ class CharacterModel with CharacterModelMappable {
       'aspects': jsonEncode(aspects),
       'stunts': jsonEncode(stunts.map((stunt) => stunt.toMap()).toList()),
       'audio': audio,
-      'created_at': createdAt?.toIso8601String()?? DateTime.now().toIso8601String(),
-      'updated_at': updatedAt?.toIso8601String()?? DateTime.now().toIso8601String(),
+      'created_at':
+          createdAt?.toIso8601String() ?? DateTime.now().toIso8601String(),
+      'updated_at':
+          updatedAt?.toIso8601String() ?? DateTime.now().toIso8601String(),
       'stress': stress,
       'consequences': jsonEncode(consequences),
-      'fate_tokens': fateTokens?? 3,
+      'fate_tokens': fateTokens ?? 3,
     };
   }
 
@@ -128,7 +130,9 @@ class CharacterModel with CharacterModelMappable {
           ? DateTime.parse(data['updated_at'])
           : null,
       stress: data['stress'],
-      consequences: (jsonDecode(data['consequences']) as List).cast<String?>(),
+      consequences: data['consequences'] != null
+          ? (jsonDecode(data['consequences']) as List).cast<String?>()
+          : [null, null, null],
       fateTokens: data['fate_tokens'],
     );
   }
