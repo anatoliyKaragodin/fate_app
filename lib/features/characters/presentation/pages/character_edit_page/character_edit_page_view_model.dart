@@ -1,6 +1,7 @@
-import 'package:fate_app/features/characters/domain/mapper/entities_mapper.dart';
+import 'package:fate_app/features/characters/domain/entities/mapper/entities_mapper.dart';
 import 'package:fate_app/core/router/router.dart';
 import 'package:fate_app/features/characters/presentation/utils/character_help_text.dart';
+import 'package:fate_app/features/file_managment/domain/usecases/delete_file.dart';
 import 'package:fate_app/features/file_managment/domain/usecases/save_file.dart';
 import 'package:fate_app/features/characters/domain/usecases/update_character.dart';
 import 'package:fate_app/features/characters/presentation/mapper/state_mapper.dart';
@@ -19,23 +20,25 @@ import '../../../../../core/di/di_container.dart';
 import '../../../../file_managment/domain/usecases/save_pdf.dart';
 import '../../widgets/common/app_bottom_sheet.dart';
 
-final characterPageViewModelProvider =
-    StateNotifierProvider<CharacterPageViewModel, CharacterPageState>((ref) =>
-        CharacterPageViewModel(
+final characterEditPageViewModelProvider =
+    StateNotifierProvider<CharacterEditPageViewModel, CharacterEditPageState>(
+        (ref) => CharacterEditPageViewModel(
             getIt.get<SaveNewCharacter>(),
             getIt.get<UpdateCharacter>(),
             getIt.get<SavePdf>(),
-            getIt.get<SaveFile>()));
+            getIt.get<SaveFile>(),
+            getIt()));
 
-class CharacterPageViewModel extends StateNotifier<CharacterPageState> {
+class CharacterEditPageViewModel extends StateNotifier<CharacterEditPageState> {
   final SaveNewCharacter _saveNewCharacterUC;
   final UpdateCharacter _updateCharacterUC;
   final SavePdf _savePdfUC;
   final SaveFile _saveFileUC;
+  final DeleteFile _deleteFileUC;
 
-  CharacterPageViewModel(this._saveNewCharacterUC, this._updateCharacterUC,
-      this._savePdfUC, this._saveFileUC)
-      : super(CharacterPageState(
+  CharacterEditPageViewModel(this._saveNewCharacterUC, this._updateCharacterUC,
+      this._savePdfUC, this._saveFileUC, this._deleteFileUC)
+      : super(CharacterEditPageState(
             character: CharacterEntity.empty(),
             skillAvailableList: _defaultAvailableSkillList,
             aspectControllers: [
@@ -138,6 +141,11 @@ class CharacterPageViewModel extends StateNotifier<CharacterPageState> {
     if (result != null && result.files.isNotEmpty) {
       final file = result.files.first;
       dev.log('Выбранный файл: ${file.path}');
+
+      if (state.character.image != null) {
+        _deleteFileUC(state.character.image!);
+      }
+      
       _saveImage(file);
     } else {
       dev.log('Файл не был выбран');
@@ -302,7 +310,7 @@ class CharacterPageViewModel extends StateNotifier<CharacterPageState> {
 
     res.fold((failure) => null, (path) {
       state = state.copyWith(character: state.character.copyWith(image: path));
-      _updateCharacterUC(state.character);
+      // _updateCharacterUC(state.character);
     });
   }
 }

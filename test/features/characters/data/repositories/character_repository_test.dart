@@ -2,7 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:dartz_test/dartz_test.dart';
 import 'package:fate_app/core/error/exeption.dart';
 import 'package:fate_app/core/error/failure.dart';
-import 'package:fate_app/features/characters/data/datasources/characters_LDS_interface.dart';
+import 'package:fate_app/features/characters/data/datasources/characters_lds.dart';
 import 'package:fate_app/features/characters/data/mapper/models_mapper.dart';
 import 'package:fate_app/features/characters/data/repositories/characters_repository_impl.dart';
 import 'package:fate_app/features/characters/domain/repositories/characters_repository.dart';
@@ -12,10 +12,10 @@ import 'package:mockito/mockito.dart';
 
 import 'character_repository_test.mocks.dart';
 
-@GenerateNiceMocks([MockSpec<CharactersLDSInterface>()])
+@GenerateNiceMocks([MockSpec<CharactersLDS>()])
 void main() {
   late CharactersRepository charactersRepository;
-  late MockCharactersLDSInterface mockCharactersLDS;
+  late MockCharactersLDS mockCharactersLDS;
 
   final characterModel = CharacterModel.empty(1);
 
@@ -25,7 +25,7 @@ void main() {
   ];
 
   setUp(() {
-    mockCharactersLDS = MockCharactersLDSInterface();
+    mockCharactersLDS = MockCharactersLDS();
     charactersRepository = CharactersRepositoryImpl(mockCharactersLDS);
   });
 

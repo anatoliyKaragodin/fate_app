@@ -1,5 +1,7 @@
-import 'package:fate_app/core/utils/app_size.dart';
+import 'package:fate_app/core/utils/theme/app_padding.dart';
 import 'package:flutter/material.dart';
+
+import '../../../../../core/utils/theme/app_boder_radius.dart';
 
 /// AppBottomSheet - это виджет, который отображает текст в виде нижнего листа (bottom sheet).
 ///
@@ -14,10 +16,13 @@ class AppBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: appBorderRadius.medium(context)
+      ),
       width: double.infinity,
       child: Padding(
-        padding: EdgeInsets.all(8.width(context)),
+        padding: EdgeInsets.all(appPadding.mediumW(context)),
         child: Center(child: Text(text)),
       ),
     );

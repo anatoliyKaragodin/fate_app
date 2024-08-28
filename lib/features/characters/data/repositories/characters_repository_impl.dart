@@ -1,14 +1,14 @@
 import 'package:dartz/dartz.dart';
 import 'package:fate_app/core/error/exeption.dart';
-import 'package:fate_app/features/characters/data/datasources/characters_LDS_interface.dart';
+import 'package:fate_app/features/characters/data/datasources/characters_lds.dart';
 import 'package:fate_app/features/characters/data/mapper/models_mapper.dart';
-import 'package:fate_app/features/characters/domain/mapper/entities_mapper.dart';
+import 'package:fate_app/features/characters/domain/entities/mapper/entities_mapper.dart';
 import 'package:fate_app/features/characters/domain/repositories/characters_repository.dart';
 
 import '../../../../core/error/failure.dart';
 
 class CharactersRepositoryImpl implements CharactersRepository {
-  final CharactersLDSInterface charactersLDS;
+  final CharactersLDS charactersLDS;
 
   const CharactersRepositoryImpl(this.charactersLDS);
 
@@ -52,6 +52,4 @@ class CharactersRepositoryImpl implements CharactersRepository {
       return Left(CacheFailure());
     }
   }
-
-  
 }

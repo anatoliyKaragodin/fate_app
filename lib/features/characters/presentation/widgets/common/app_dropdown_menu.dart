@@ -1,7 +1,7 @@
-import 'package:fate_app/core/utils/app_size.dart';
+import 'package:fate_app/core/utils/theme/app_text_styles.dart';
 import 'package:flutter/material.dart';
 
-import '../../../domain/mapper/entities_mapper.dart';
+import '../../../domain/entities/mapper/entities_mapper.dart';
 
 /// AppDropdownMenu - это виджет, который представляет собой выпадающее меню
 /// для выбора элемента из списка.
@@ -44,8 +44,7 @@ class AppDropdownMenu<T> extends StatelessWidget {
           Text(label,
               overflow: TextOverflow.clip,
               maxLines: 1,
-              style: TextStyle(
-                  fontSize: 14.width(context), fontWeight: FontWeight.bold)),
+              style: appTextStyles.text1(context)),
           DropdownButton<T?>(
             value: selectedItem,
             onChanged: (T? newValue) {
@@ -58,6 +57,7 @@ class AppDropdownMenu<T> extends StatelessWidget {
                   value is StuntType
                       ? (value as StuntType).toLabel()
                       : (value != null ? value.toString() : 'нет'),
+                      style: appTextStyles.text1(context),
                 ),
               );
             }).toList(),

@@ -1,4 +1,4 @@
-part of '../mapper/entities_mapper.dart';
+part of 'mapper/entities_mapper.dart';
 
 @MappableClass()
 class StuntEntity with StuntEntityMappable {
