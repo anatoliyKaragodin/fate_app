@@ -4,7 +4,7 @@ import 'package:dartz/dartz.dart';
 import 'package:dartz_test/dartz_test.dart';
 import 'package:fate_app/core/error/exeption.dart';
 import 'package:fate_app/core/error/failure.dart';
-import 'package:fate_app/features/file_managment/data/datasources/file_LDS_intrerface.dart';
+import 'package:fate_app/features/file_managment/data/datasources/file_lds_intrerface.dart';
 import 'package:fate_app/features/file_managment/data/repositories/file_repository_impl.dart';
 import 'package:fate_app/features/file_managment/domain/repositories/file_repository.dart';
 import 'package:fate_app/features/file_managment/domain/usecases/save_pdf.dart';
@@ -16,9 +16,9 @@ import 'package:pdf/widgets.dart';
 
 import 'file_repository_test.mocks.dart';
 
-@GenerateNiceMocks([MockSpec<FileLDSInterface>()])
+@GenerateNiceMocks([MockSpec<FileLDS>()])
 void main() {
-  late FileLDSInterface lds;
+  late FileLDS lds;
   late FileRepository repository;
 
   final PlatformFile file = PlatformFile(
@@ -31,7 +31,7 @@ void main() {
   final pdfParams = PdfParams(pdf: Document(), name: 'pdf name');
 
   setUp(() {
-    lds = MockFileLDSInterface();
+    lds = MockFileLDS();
     repository = FileRepositoryImpl(lds);
   });
 

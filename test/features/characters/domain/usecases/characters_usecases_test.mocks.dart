@@ -7,7 +7,7 @@ import 'dart:async' as _i4;
 
 import 'package:dartz/dartz.dart' as _i2;
 import 'package:fate_app/core/error/failure.dart' as _i5;
-import 'package:fate_app/features/characters/domain/mapper/entities_mapper.dart'
+import 'package:fate_app/features/characters/domain/entities/mapper/entities_mapper.dart'
     as _i6;
 import 'package:fate_app/features/characters/domain/repositories/characters_repository.dart'
     as _i3;

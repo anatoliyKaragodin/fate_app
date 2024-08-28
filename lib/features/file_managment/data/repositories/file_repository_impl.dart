@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:fate_app/core/error/failure.dart';
-import 'package:fate_app/features/file_managment/data/datasources/file_LDS_intrerface.dart';
+import 'package:fate_app/features/file_managment/data/datasources/file_lds_intrerface.dart';
 import 'package:fate_app/features/file_managment/domain/repositories/file_repository.dart';
 import 'package:fate_app/features/file_managment/domain/usecases/save_pdf.dart';
 import 'package:file_picker/file_picker.dart';
@@ -8,7 +8,7 @@ import 'package:file_picker/file_picker.dart';
 import '../../../../core/error/exeption.dart';
 
 class FileRepositoryImpl implements FileRepository {
-  final FileLDSInterface _lds;
+  final FileLDS _lds;
 
   FileRepositoryImpl(this._lds);
 

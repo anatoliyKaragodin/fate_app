@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:fate_app/core/utils/app_size.dart';
+import 'package:fate_app/core/utils/theme/app_boder_radius.dart';
 
 import 'package:flutter/material.dart';
 
@@ -13,7 +13,7 @@ class AppCharacterAvatarWidget extends StatelessWidget {
       required this.imagePath,
       required this.height,
       required this.width,
-      this.borderRadius = 16});
+      this.borderRadius});
 
   /// Путь к изображению персонажа на устройстве.
   final String imagePath;
@@ -25,7 +25,7 @@ class AppCharacterAvatarWidget extends StatelessWidget {
   final double width;
 
   /// Радиус скругления углов аватара.
-  final double borderRadius;
+  final double? borderRadius;
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +40,9 @@ class AppCharacterAvatarWidget extends StatelessWidget {
             ),
             fit: BoxFit.cover,
           ),
-          borderRadius: BorderRadius.circular(borderRadius.width(context)),
+          borderRadius: borderRadius != null
+              ? BorderRadius.circular(borderRadius!)
+              : appBorderRadius.medium(context),
         ),
       ),
     );

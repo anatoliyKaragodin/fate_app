@@ -1,4 +1,4 @@
-part of '../mapper/entities_mapper.dart';
+part of 'mapper/entities_mapper.dart';
 
 @MappableClass()
 class SkillEntity with SkillEntityMappable {
@@ -29,4 +29,20 @@ extension SkillTypeExtension on SkillType {
     }
   }
 
+  String toLabelMin() {
+    switch (this) {
+      case SkillType.careful:
+        return 'Акк';
+      case SkillType.clever:
+        return 'Умн';
+      case SkillType.flashy:
+        return 'Эфф';
+      case SkillType.forceful:
+        return 'Сил';
+      case SkillType.quick:
+        return 'Пров';
+      case SkillType.sneaky:
+        return 'Хитр';
+    }
+  }
 }

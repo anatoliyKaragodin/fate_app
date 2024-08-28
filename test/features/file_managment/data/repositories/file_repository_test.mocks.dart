@@ -5,7 +5,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i3;
 
-import 'package:fate_app/features/file_managment/data/datasources/file_LDS_intrerface.dart'
+import 'package:fate_app/features/file_managment/data/datasources/file_lds_intrerface.dart'
     as _i2;
 import 'package:fate_app/features/file_managment/domain/usecases/save_pdf.dart'
     as _i5;
@@ -25,10 +25,10 @@ import 'package:mockito/mockito.dart' as _i1;
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
-/// A class which mocks [FileLDSInterface].
+/// A class which mocks [FileLDS].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockFileLDSInterface extends _i1.Mock implements _i2.FileLDSInterface {
+class MockFileLDS extends _i1.Mock implements _i2.FileLDS {
   @override
   _i3.Future<String?> save(_i4.PlatformFile? file) => (super.noSuchMethod(
         Invocation.method(

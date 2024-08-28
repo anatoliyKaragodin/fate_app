@@ -1,4 +1,6 @@
-import 'package:fate_app/core/utils/app_size.dart';
+import 'package:fate_app/core/utils/theme/app_boder_radius.dart';
+import 'package:fate_app/core/utils/theme/app_text_styles.dart';
+import 'package:fate_app/features/characters/presentation/widgets/common/app_icon_button.dart';
 
 import 'package:flutter/material.dart';
 
@@ -14,7 +16,8 @@ class AppTextFieldWidget extends StatelessWidget {
       this.onEditing,
       this.maxLength,
       this.width,
-      this.onTapHelp});
+      this.onTapHelp,
+      this.textStyle});
 
   /// Контроллер для управления текстом в поле ввода.
 
@@ -40,32 +43,33 @@ class AppTextFieldWidget extends StatelessWidget {
 
   final VoidCallback? onTapHelp;
 
+  /// Стиль текста
+
+  final TextStyle? textStyle;
+
   @override
   Widget build(BuildContext context) {
-    return Padding(
-        padding: EdgeInsets.symmetric(
-            horizontal: 16.width(context), vertical: 16.height(context)),
-        child: SizedBox(
-            width: width,
-            child: Column(
-              children: [
-                if (onTapHelp != null)
-                  IconButton(
-                      onPressed: onTapHelp, icon: const Icon(Icons.help)),
-                TextField(
-                  textCapitalization: TextCapitalization.sentences,
-                  maxLength: maxLength,
-                  maxLines: null,
-                  minLines: 1,
-                  controller: controller,
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: hintText,
-                  ),
-                  onChanged: (value) =>
-                      onEditing != null ? onEditing!(value) : null,
-                ),
-              ],
-            )));
+    return SizedBox(
+        width: width,
+        child: Column(
+          children: [
+            if (onTapHelp != null) AppIconButton(onTap: onTapHelp ?? () {}),
+            TextField(
+              style: textStyle ?? appTextStyles.text1(context),
+              textCapitalization: TextCapitalization.sentences,
+              maxLength: maxLength,
+              maxLines: null,
+              minLines: 1,
+              controller: controller,
+              decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                      borderRadius: appBorderRadius.medium(context)),
+                  labelText: hintText,
+                  labelStyle: textStyle ?? appTextStyles.text1(context)),
+              onChanged: (value) =>
+                  onEditing != null ? onEditing!(value) : null,
+            ),
+          ],
+        ));
   }
 }

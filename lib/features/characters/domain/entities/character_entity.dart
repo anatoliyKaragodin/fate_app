@@ -1,4 +1,4 @@
-part of '../mapper/entities_mapper.dart';
+part of 'mapper/entities_mapper.dart';
 
 @MappableClass()
 class CharacterEntity with CharacterEntityMappable {
@@ -12,6 +12,12 @@ class CharacterEntity with CharacterEntityMappable {
   final String problem;
   final List<String> aspects;
   final List<StuntEntity> stunts;
+  final String? audio;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+  final int? stress;
+  final List<String?> consequences;
+  final int? fateTokens;
 
   const CharacterEntity(
       {this.remoteId,
@@ -23,7 +29,13 @@ class CharacterEntity with CharacterEntityMappable {
       required this.concept,
       required this.problem,
       required this.aspects,
-      required this.stunts});
+      required this.stunts,
+      this.audio,
+      required this.consequences,
+      this.createdAt,
+      this.fateTokens,
+      this.stress,
+      this.updatedAt});
 
   factory CharacterEntity.empty() {
     final skills = List.generate(SkillType.values.length,
@@ -43,6 +55,7 @@ class CharacterEntity with CharacterEntityMappable {
       problem: '',
       aspects: ['', '', ''],
       stunts: stunts,
+      consequences: [null, null, null],
     );
   }
 }

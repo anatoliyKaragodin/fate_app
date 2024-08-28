@@ -51,6 +51,24 @@ class CharacterEntityMapper extends ClassMapperBase<CharacterEntity> {
   static List<StuntEntity> _$stunts(CharacterEntity v) => v.stunts;
   static const Field<CharacterEntity, List<StuntEntity>> _f$stunts =
       Field('stunts', _$stunts);
+  static String? _$audio(CharacterEntity v) => v.audio;
+  static const Field<CharacterEntity, String> _f$audio =
+      Field('audio', _$audio, opt: true);
+  static List<String?> _$consequences(CharacterEntity v) => v.consequences;
+  static const Field<CharacterEntity, List<String?>> _f$consequences =
+      Field('consequences', _$consequences);
+  static DateTime? _$createdAt(CharacterEntity v) => v.createdAt;
+  static const Field<CharacterEntity, DateTime> _f$createdAt =
+      Field('createdAt', _$createdAt, opt: true);
+  static int? _$fateTokens(CharacterEntity v) => v.fateTokens;
+  static const Field<CharacterEntity, int> _f$fateTokens =
+      Field('fateTokens', _$fateTokens, opt: true);
+  static int? _$stress(CharacterEntity v) => v.stress;
+  static const Field<CharacterEntity, int> _f$stress =
+      Field('stress', _$stress, opt: true);
+  static DateTime? _$updatedAt(CharacterEntity v) => v.updatedAt;
+  static const Field<CharacterEntity, DateTime> _f$updatedAt =
+      Field('updatedAt', _$updatedAt, opt: true);
 
   @override
   final MappableFields<CharacterEntity> fields = const {
@@ -64,6 +82,12 @@ class CharacterEntityMapper extends ClassMapperBase<CharacterEntity> {
     #problem: _f$problem,
     #aspects: _f$aspects,
     #stunts: _f$stunts,
+    #audio: _f$audio,
+    #consequences: _f$consequences,
+    #createdAt: _f$createdAt,
+    #fateTokens: _f$fateTokens,
+    #stress: _f$stress,
+    #updatedAt: _f$updatedAt,
   };
 
   static CharacterEntity _instantiate(DecodingData data) {
@@ -77,7 +101,13 @@ class CharacterEntityMapper extends ClassMapperBase<CharacterEntity> {
         concept: data.dec(_f$concept),
         problem: data.dec(_f$problem),
         aspects: data.dec(_f$aspects),
-        stunts: data.dec(_f$stunts));
+        stunts: data.dec(_f$stunts),
+        audio: data.dec(_f$audio),
+        consequences: data.dec(_f$consequences),
+        createdAt: data.dec(_f$createdAt),
+        fateTokens: data.dec(_f$fateTokens),
+        stress: data.dec(_f$stress),
+        updatedAt: data.dec(_f$updatedAt));
   }
 
   @override
@@ -138,6 +168,8 @@ abstract class CharacterEntityCopyWith<$R, $In extends CharacterEntity, $Out>
   ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>> get aspects;
   ListCopyWith<$R, StuntEntity,
       StuntEntityCopyWith<$R, StuntEntity, StuntEntity>> get stunts;
+  ListCopyWith<$R, String?, ObjectCopyWith<$R, String?, String?>?>
+      get consequences;
   $R call(
       {String? remoteId,
       int? localeId,
@@ -148,7 +180,13 @@ abstract class CharacterEntityCopyWith<$R, $In extends CharacterEntity, $Out>
       String? concept,
       String? problem,
       List<String>? aspects,
-      List<StuntEntity>? stunts});
+      List<StuntEntity>? stunts,
+      String? audio,
+      List<String?>? consequences,
+      DateTime? createdAt,
+      int? fateTokens,
+      int? stress,
+      DateTime? updatedAt});
   CharacterEntityCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
       Then<$Out2, $R2> t);
 }
@@ -176,6 +214,12 @@ class _CharacterEntityCopyWithImpl<$R, $Out>
       get stunts => ListCopyWith($value.stunts, (v, t) => v.copyWith.$chain(t),
           (v) => call(stunts: v));
   @override
+  ListCopyWith<$R, String?, ObjectCopyWith<$R, String?, String?>?>
+      get consequences => ListCopyWith(
+          $value.consequences,
+          (v, t) => ObjectCopyWith(v, $identity, t),
+          (v) => call(consequences: v));
+  @override
   $R call(
           {Object? remoteId = $none,
           Object? localeId = $none,
@@ -186,7 +230,13 @@ class _CharacterEntityCopyWithImpl<$R, $Out>
           String? concept,
           String? problem,
           List<String>? aspects,
-          List<StuntEntity>? stunts}) =>
+          List<StuntEntity>? stunts,
+          Object? audio = $none,
+          List<String?>? consequences,
+          Object? createdAt = $none,
+          Object? fateTokens = $none,
+          Object? stress = $none,
+          Object? updatedAt = $none}) =>
       $apply(FieldCopyWithData({
         if (remoteId != $none) #remoteId: remoteId,
         if (localeId != $none) #localeId: localeId,
@@ -197,7 +247,13 @@ class _CharacterEntityCopyWithImpl<$R, $Out>
         if (concept != null) #concept: concept,
         if (problem != null) #problem: problem,
         if (aspects != null) #aspects: aspects,
-        if (stunts != null) #stunts: stunts
+        if (stunts != null) #stunts: stunts,
+        if (audio != $none) #audio: audio,
+        if (consequences != null) #consequences: consequences,
+        if (createdAt != $none) #createdAt: createdAt,
+        if (fateTokens != $none) #fateTokens: fateTokens,
+        if (stress != $none) #stress: stress,
+        if (updatedAt != $none) #updatedAt: updatedAt
       }));
   @override
   CharacterEntity $make(CopyWithData data) => CharacterEntity(
@@ -210,7 +266,13 @@ class _CharacterEntityCopyWithImpl<$R, $Out>
       concept: data.get(#concept, or: $value.concept),
       problem: data.get(#problem, or: $value.problem),
       aspects: data.get(#aspects, or: $value.aspects),
-      stunts: data.get(#stunts, or: $value.stunts));
+      stunts: data.get(#stunts, or: $value.stunts),
+      audio: data.get(#audio, or: $value.audio),
+      consequences: data.get(#consequences, or: $value.consequences),
+      createdAt: data.get(#createdAt, or: $value.createdAt),
+      fateTokens: data.get(#fateTokens, or: $value.fateTokens),
+      stress: data.get(#stress, or: $value.stress),
+      updatedAt: data.get(#updatedAt, or: $value.updatedAt));
 
   @override
   CharacterEntityCopyWith<$R2, CharacterEntity, $Out2> $chain<$R2, $Out2>(
