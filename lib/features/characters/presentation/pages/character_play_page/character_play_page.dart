@@ -4,6 +4,7 @@ import 'package:fate_app/core/utils/theme/app_padding.dart';
 import 'package:fate_app/core/utils/theme/app_text_styles.dart';
 import 'package:fate_app/features/characters/domain/entities/mapper/entities_mapper.dart';
 import 'package:fate_app/features/characters/presentation/pages/character_play_page/character_play_page_vm.dart';
+import 'package:fate_app/features/characters/presentation/widgets/common/app_button_widget.dart';
 import 'package:fate_app/features/characters/presentation/widgets/common/app_character_avatar_widget.dart';
 import 'package:fate_app/features/characters/presentation/widgets/common/app_dropdown_menu.dart';
 import 'package:fate_app/features/characters/presentation/widgets/common/app_focus_container_widget.dart';
@@ -69,10 +70,16 @@ class CharacterPlayPage extends ConsumerWidget {
                       isCompact: vmProvider.isCompact,
                     ),
                     Gap(paddingH),
-                    _Skills(skills: character.skills, textStyle: textStyle),
+                    _Skills(
+                      paddingH: paddingH,
+                      skills: character.skills,
+                      textStyle: textStyle,
+                      onTap: (index) => ref.read(vm.notifier).onTapSkill(index),
+                    ),
                     Gap(paddingH),
                     if (character.problem.isNotEmpty)
                       AppFocusContainerWidget(
+                        width: double.infinity,
                         child: _LabelAndText(
                           textStyle: textStyle,
                           label: 'Проблема',
@@ -260,26 +267,55 @@ class _LabelAndText extends StatelessWidget {
 }
 
 class _Skills extends StatelessWidget {
-  const _Skills({required this.skills, required this.textStyle});
+  const _Skills(
+      {required this.skills,
+      required this.textStyle,
+      required this.onTap,
+      required this.paddingH});
 
   final List<SkillEntity> skills;
   final TextStyle textStyle;
+  final Function(int index) onTap;
+  final double paddingH;
 
   @override
   Widget build(BuildContext context) {
-    return AppFocusContainerWidget(
-      width: double.maxFinite,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: List.generate(
-            skills.length,
-            (index) => _LabelAndText(
-                  textStyle: textStyle,
-                  label: skills[index].type.toLabelMin(),
-                  text: skills[index].value.toString(),
-                )),
-      ),
+    return Column(
+      children: [
+        _SkillsRow(
+            skills: skills.sublist(0, skills.length ~/ 2),
+            textStyle: textStyle,
+            onTap: (index) => onTap(index)),
+        Gap(paddingH),
+        _SkillsRow(
+            skills: skills.sublist(skills.length ~/ 2, skills.length),
+            textStyle: textStyle,
+            onTap: (index) => onTap(index + skills.length ~/ 2))
+      ],
     );
+  }
+}
+
+class _SkillsRow extends StatelessWidget {
+  const _SkillsRow(
+      {required this.skills, required this.textStyle, required this.onTap});
+
+  final TextStyle textStyle;
+  final List<SkillEntity> skills;
+  final Function(int index) onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: List.generate(skills.length, (index) {
+          final skill = skills[index];
+
+          return AppButtonWidget(
+              textStyle: textStyle,
+              text: '${skill.type.toLabelMin()}: ${skill.value}',
+              onPressed: () => onTap(index));
+        }));
   }
 }
 

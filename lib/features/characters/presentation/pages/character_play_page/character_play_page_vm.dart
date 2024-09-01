@@ -6,6 +6,7 @@ import 'package:fate_app/features/characters/presentation/pages/characters_list_
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import 'dart:developer' as dev;
 
 import '../../../../../core/di/di_container.dart';
 
@@ -79,5 +80,9 @@ class CharacterPlayPageVm extends StateNotifier<CharacterPlayPageState> {
     state = state.copyWith(isScreenLocked: !state.isScreenLocked);
 
     WakelockPlus.toggle(enable: state.isScreenLocked);
+  }
+
+  void onTapSkill(int index) {
+    dev.log('tap skill $index');
   }
 }
