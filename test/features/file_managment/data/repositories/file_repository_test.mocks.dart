@@ -8,8 +8,7 @@ import 'dart:async' as _i3;
 import 'package:fate_app/features/file_managment/data/datasources/file_lds_intrerface.dart'
     as _i2;
 import 'package:fate_app/features/file_managment/domain/usecases/save_pdf.dart'
-    as _i5;
-import 'package:file_picker/file_picker.dart' as _i4;
+    as _i4;
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: type=lint
@@ -30,17 +29,17 @@ import 'package:mockito/mockito.dart' as _i1;
 /// See the documentation for Mockito's code generation for more information.
 class MockFileLDS extends _i1.Mock implements _i2.FileLDS {
   @override
-  _i3.Future<String?> save(_i4.PlatformFile? file) => (super.noSuchMethod(
+  _i3.Future<String?> copy(String? filePath) => (super.noSuchMethod(
         Invocation.method(
-          #save,
-          [file],
+          #copy,
+          [filePath],
         ),
         returnValue: _i3.Future<String?>.value(),
         returnValueForMissingStub: _i3.Future<String?>.value(),
       ) as _i3.Future<String?>);
 
   @override
-  _i3.Future<void> savePdf(_i5.PdfParams? params) => (super.noSuchMethod(
+  _i3.Future<void> savePdf(_i4.PdfParams? params) => (super.noSuchMethod(
         Invocation.method(
           #savePdf,
           [params],
