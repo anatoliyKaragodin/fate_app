@@ -74,7 +74,8 @@ class CharacterPlayPage extends ConsumerWidget {
                       paddingH: paddingH,
                       skills: character.skills,
                       textStyle: textStyle,
-                      onTap: (index) => ref.read(vm.notifier).onTapSkill(index),
+                      onTap: (index) =>
+                          ref.read(vm.notifier).onTapSkill(context, index),
                     ),
                     Gap(paddingH),
                     if (character.problem.isNotEmpty)
