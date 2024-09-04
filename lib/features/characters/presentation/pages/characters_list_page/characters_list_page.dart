@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../core/utils/theme/app_text_styles.dart';
 import '../../widgets/common/app_character_small_container.dart';
+import '../../widgets/common/app_icon_button.dart';
 
 class CharactersListPage extends ConsumerWidget {
   const CharactersListPage({super.key});
@@ -82,9 +83,9 @@ class _AppBar extends StatelessWidget {
         ),
       ),
       actions: [
-        IconButton(
-          onPressed: onTapNew,
-          icon: const Icon(Icons.add),
+        AppIconButton(
+          onTap: onTapNew,
+          icon: Icons.add,
         ),
       ],
     );

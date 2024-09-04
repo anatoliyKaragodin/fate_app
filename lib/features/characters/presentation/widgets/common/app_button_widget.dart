@@ -1,4 +1,5 @@
 import 'package:fate_app/core/utils/theme/app_boder_radius.dart';
+import 'package:fate_app/core/utils/theme/app_colors.dart';
 import 'package:fate_app/core/utils/theme/app_padding.dart';
 import 'package:fate_app/core/utils/theme/app_text_styles.dart';
 
@@ -22,6 +23,8 @@ class AppButtonWidget extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
+        elevation: 0,
+        backgroundColor: appColors.buttonColor(context),
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           padding: EdgeInsets.zero,
           minimumSize: const Size(0, 0),

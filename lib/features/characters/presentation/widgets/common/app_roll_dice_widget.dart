@@ -1,11 +1,9 @@
-import 'package:fate_app/core/router/router.dart';
 import 'package:fate_app/core/utils/theme/app_boder_radius.dart';
 import 'package:fate_app/core/utils/theme/app_padding.dart';
 import 'package:fate_app/core/utils/theme/app_text_styles.dart';
 import 'package:fate_app/features/characters/presentation/widgets/common/app_button_widget.dart';
 import 'package:fate_app/features/characters/presentation/widgets/common/app_dropdown_menu.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'dart:developer' as dev;
 
 import '../../../domain/entities/mapper/entities_mapper.dart';

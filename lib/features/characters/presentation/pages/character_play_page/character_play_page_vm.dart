@@ -5,10 +5,10 @@ import 'package:fate_app/features/characters/domain/entities/mapper/entities_map
 import 'package:fate_app/features/characters/domain/usecases/update_character.dart';
 import 'package:fate_app/features/characters/presentation/mapper/state_mapper.dart';
 import 'package:fate_app/features/characters/presentation/pages/characters_list_page/characters_list_page_view_model.dart';
-import 'package:fate_app/features/characters/presentation/widgets/common/app_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+
 import 'dart:developer' as dev;
 
 import '../../../../../core/di/di_container.dart';
@@ -21,6 +21,8 @@ final characterPlayPageVMProvider =
 class CharacterPlayPageVm extends StateNotifier<CharacterPlayPageState> {
   CharacterPlayPageVm(this._updateCharacterUC)
       : super(CharacterPlayPageState(
+            rollResults: [],
+            isDiceRollShown: false,
             isScreenLocked: false,
             consequencesControllers: [
               TextEditingController(),
@@ -100,21 +102,24 @@ class CharacterPlayPageVm extends StateNotifier<CharacterPlayPageState> {
         onRoll: (value) {
           RouterHelper.router.pop();
           _showRollSkill(
-              state.character.skills[index].type.toLabel(), value + 4);
+              state.character.skills[index], value + 4);
         },
       ),
     );
     dev.log('tap skill $index');
   }
 
-  void _showRollSkill(String skillLabel, int diceCount) {
+  void showDiceRollSheet() {
+    state = state.copyWith(isDiceRollShown: !state.isDiceRollShown);
+  }
+
+  // Приватные методы
+  void _showRollSkill(SkillEntity skill, int diceCount) {
     List<FateDiceResult> dicesResult = [];
 
-    if (diceCount > 0) {
-      for (int i = 0; i < diceCount; i++) {
-        final diceRoll = FateDiceResult.values[random.nextInt(3)];
-        dicesResult.add(diceRoll);
-      }
+    for (int i = 0; i < diceCount; i++) {
+      final diceRoll = FateDiceResult.values[random.nextInt(3)];
+      dicesResult.add(diceRoll);
     }
 
     final successCount =
@@ -122,13 +127,18 @@ class CharacterPlayPageVm extends StateNotifier<CharacterPlayPageState> {
     final failCount =
         dicesResult.where((result) => result == FateDiceResult.fail).length;
 
-    showModalBottomSheet(
-        context: RouterHelper.parentNavigatorKey.currentContext!,
-        builder: (context) {
-          return AppBottomSheet(
-              text:
-                  '$skillLabel подход. Успехов: $successCount, Провалов: $failCount, Итог: ${successCount - failCount}');
-        });
+    List<RollResultEntity> rollResultsList = [...state.rollResults];
+
+    final date = DateTime.now();
+
+    rollResultsList.add(RollResultEntity(
+        date: date,
+        skill: skill,
+        result: successCount - failCount,
+        successes: successCount,
+        fails: failCount));
+
+    state = state.copyWith(rollResults: rollResultsList, isDiceRollShown: true);
   }
 }
 
