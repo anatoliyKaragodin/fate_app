@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:fate_app/core/router/router.dart';
 import 'package:fate_app/features/characters/domain/entities/mapper/entities_mapper.dart';
 import 'package:fate_app/features/characters/domain/usecases/update_character.dart';
@@ -7,7 +9,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
+import 'dart:developer' as dev;
+
 import '../../../../../core/di/di_container.dart';
+import '../../widgets/common/app_roll_dice_widget.dart';
 
 final characterPlayPageVMProvider =
     StateNotifierProvider<CharacterPlayPageVm, CharacterPlayPageState>(
@@ -16,6 +21,8 @@ final characterPlayPageVMProvider =
 class CharacterPlayPageVm extends StateNotifier<CharacterPlayPageState> {
   CharacterPlayPageVm(this._updateCharacterUC)
       : super(CharacterPlayPageState(
+            rollResults: [],
+            isDiceRollShown: false,
             isScreenLocked: false,
             consequencesControllers: [
               TextEditingController(),
@@ -26,6 +33,8 @@ class CharacterPlayPageVm extends StateNotifier<CharacterPlayPageState> {
             isCompact: false));
 
   final UpdateCharacter _updateCharacterUC;
+
+  final random = Random();
 
   void initCharacter(CharacterEntity character) {
     state = state.copyWith(character: character);
@@ -80,4 +89,57 @@ class CharacterPlayPageVm extends StateNotifier<CharacterPlayPageState> {
 
     WakelockPlus.toggle(enable: state.isScreenLocked);
   }
+
+  void onTapSkill(BuildContext context, int index) {
+    if (state.character.skills[index].value == null) return;
+
+    showAdaptiveDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) => AppRollDiceWidget(
+        skill: state.character.skills[index],
+        onCancel: () => RouterHelper.router.pop(),
+        onRoll: (value) {
+          RouterHelper.router.pop();
+          _showRollSkill(
+              state.character.skills[index], value + 4);
+        },
+      ),
+    );
+    dev.log('tap skill $index');
+  }
+
+  void showDiceRollSheet() {
+    state = state.copyWith(isDiceRollShown: !state.isDiceRollShown);
+  }
+
+  // Приватные методы
+  void _showRollSkill(SkillEntity skill, int diceCount) {
+    List<FateDiceResult> dicesResult = [];
+
+    for (int i = 0; i < diceCount; i++) {
+      final diceRoll = FateDiceResult.values[random.nextInt(3)];
+      dicesResult.add(diceRoll);
+    }
+
+    final successCount =
+        dicesResult.where((result) => result == FateDiceResult.success).length;
+    final failCount =
+        dicesResult.where((result) => result == FateDiceResult.fail).length;
+
+    List<RollResultEntity> rollResultsList = [...state.rollResults];
+
+    final date = DateTime.now();
+
+    rollResultsList.add(RollResultEntity(
+        date: date,
+        skill: skill,
+        result: successCount - failCount,
+        successes: successCount,
+        fails: failCount));
+
+    state = state.copyWith(rollResults: rollResultsList, isDiceRollShown: true);
+  }
 }
+
+enum FateDiceResult { success, fail, empty }

@@ -11,8 +11,8 @@ class UpdateCharacter extends UseCase<void, CharacterEntity> {
 
   @override
   Future<Either<Failure, void>> call(CharacterEntity params) async {
-    // CharacterEntity char = params.copyWith(updatedAt: DateTime.now());
+    CharacterEntity char = params.copyWith(updatedAt: DateTime.now());
 
-    return await repository.update(params);
+    return await repository.update(char);
   }
 }

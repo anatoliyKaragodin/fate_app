@@ -14,7 +14,6 @@ import 'package:mockito/mockito.dart';
 import 'characters_usecases_test.mocks.dart';
 
 @GenerateNiceMocks([MockSpec<CharactersRepository>()])
-
 void main() {
   late SaveNewCharacter saveNewCharacterUC;
   late DeleteCharacter deleteCharacterUC;
@@ -97,21 +96,22 @@ void main() {
   group('UpdateCharacterUC', () {
     test('UpdateCharacterUC (Ok)', () async {
       // Arrange
-      when(mockCharactersRepository.update(character.copyWith(localeId: 1)))
+      when(mockCharactersRepository.update(any))
           .thenAnswer((_) async => const Right<Failure, void>(null));
 
       // Act
-      final result = await updateCharacterUC(character.copyWith(localeId: 1));
+      final result = await updateCharacterUC(
+          character.copyWith(localeId: 1, createdAt: DateTime.now()));
 
       // Assert
       expect(result, const Right<Failure, void>(null));
-      verify(mockCharactersRepository.update(character.copyWith(localeId: 1))).called(1);
+      verify(mockCharactersRepository.update(any)).called(1);
       verifyNoMoreInteractions(mockCharactersRepository);
     });
 
     test('UpdateCharacterUC (Fail)', () async {
       // Arrange
-      when(mockCharactersRepository.update(character.copyWith(localeId: 1)))
+      when(mockCharactersRepository.update(any))
           .thenAnswer((_) async => Left<Failure, void>(CacheFailure()));
 
       // Act
@@ -119,12 +119,12 @@ void main() {
 
       // Assert
       expect(result, Left<Failure, void>(CacheFailure()));
-      verify(mockCharactersRepository.update(character.copyWith(localeId: 1))).called(1);
+      verify(mockCharactersRepository.update(any)).called(1);
       verifyNoMoreInteractions(mockCharactersRepository);
     });
   });
 
-   group('GetCharactersUC', () {
+  group('GetCharactersUC', () {
     test('GetCharactersUC (Ok)', () async {
       // Arrange
       when(mockCharactersRepository.getAll())

@@ -10,8 +10,7 @@ import 'package:fate_app/core/error/failure.dart' as _i5;
 import 'package:fate_app/features/file_managment/domain/repositories/file_repository.dart'
     as _i3;
 import 'package:fate_app/features/file_managment/domain/usecases/save_pdf.dart'
-    as _i7;
-import 'package:file_picker/file_picker.dart' as _i6;
+    as _i6;
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: type=lint
@@ -42,18 +41,18 @@ class _FakeEither_0<L, R> extends _i1.SmartFake implements _i2.Either<L, R> {
 /// See the documentation for Mockito's code generation for more information.
 class MockFileRepository extends _i1.Mock implements _i3.FileRepository {
   @override
-  _i4.Future<_i2.Either<_i5.Failure, String>> save(_i6.PlatformFile? file) =>
+  _i4.Future<_i2.Either<_i5.Failure, String>> copy(String? filePath) =>
       (super.noSuchMethod(
         Invocation.method(
-          #save,
-          [file],
+          #copy,
+          [filePath],
         ),
         returnValue: _i4.Future<_i2.Either<_i5.Failure, String>>.value(
             _FakeEither_0<_i5.Failure, String>(
           this,
           Invocation.method(
-            #save,
-            [file],
+            #copy,
+            [filePath],
           ),
         )),
         returnValueForMissingStub:
@@ -61,14 +60,14 @@ class MockFileRepository extends _i1.Mock implements _i3.FileRepository {
                 _FakeEither_0<_i5.Failure, String>(
           this,
           Invocation.method(
-            #save,
-            [file],
+            #copy,
+            [filePath],
           ),
         )),
       ) as _i4.Future<_i2.Either<_i5.Failure, String>>);
 
   @override
-  _i4.Future<_i2.Either<_i5.Failure, void>> savePdf(_i7.PdfParams? params) =>
+  _i4.Future<_i2.Either<_i5.Failure, void>> savePdf(_i6.PdfParams? params) =>
       (super.noSuchMethod(
         Invocation.method(
           #savePdf,

@@ -52,10 +52,7 @@ class AppWarningDialogWidget extends StatelessWidget {
             )
           : null,
       actions: [
-        TextButton(
-          onPressed: onTapButton1,
-          child: Text(button1Text),
-        ),
+        AppButtonWidget(onPressed: onTapButton1, text: button1Text),
         AppButtonWidget(text: button2Text, onPressed: onTapButton2),
       ],
     );

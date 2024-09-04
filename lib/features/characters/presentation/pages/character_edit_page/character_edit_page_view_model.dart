@@ -1,8 +1,9 @@
+
 import 'package:fate_app/features/characters/domain/entities/mapper/entities_mapper.dart';
 import 'package:fate_app/core/router/router.dart';
 import 'package:fate_app/features/characters/presentation/utils/character_help_text.dart';
 import 'package:fate_app/features/file_managment/domain/usecases/delete_file.dart';
-import 'package:fate_app/features/file_managment/domain/usecases/save_file.dart';
+import 'package:fate_app/features/file_managment/domain/usecases/copy_file.dart';
 import 'package:fate_app/features/characters/domain/usecases/update_character.dart';
 import 'package:fate_app/features/characters/presentation/mapper/state_mapper.dart';
 import 'package:fate_app/features/characters/presentation/pages/characters_list_page/characters_list_page_view_model.dart';
@@ -13,6 +14,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:developer' as dev;
 import 'package:fate_app/features/characters/domain/usecases/save_new_character.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
@@ -26,18 +28,18 @@ final characterEditPageViewModelProvider =
             getIt.get<SaveNewCharacter>(),
             getIt.get<UpdateCharacter>(),
             getIt.get<SavePdf>(),
-            getIt.get<SaveFile>(),
+            getIt.get<CopyFile>(),
             getIt()));
 
 class CharacterEditPageViewModel extends StateNotifier<CharacterEditPageState> {
   final SaveNewCharacter _saveNewCharacterUC;
   final UpdateCharacter _updateCharacterUC;
   final SavePdf _savePdfUC;
-  final SaveFile _saveFileUC;
+  final CopyFile _copyFileUC;
   final DeleteFile _deleteFileUC;
 
   CharacterEditPageViewModel(this._saveNewCharacterUC, this._updateCharacterUC,
-      this._savePdfUC, this._saveFileUC, this._deleteFileUC)
+      this._savePdfUC, this._copyFileUC, this._deleteFileUC)
       : super(CharacterEditPageState(
             character: CharacterEntity.empty(),
             skillAvailableList: _defaultAvailableSkillList,
@@ -142,11 +144,15 @@ class CharacterEditPageViewModel extends StateNotifier<CharacterEditPageState> {
       final file = result.files.first;
       dev.log('Выбранный файл: ${file.path}');
 
-      if (state.character.image != null) {
-        _deleteFileUC(state.character.image!);
+      final String? croppedImagePath = await _cropImage(file);
+
+      if (croppedImagePath != null) {
+        if (state.character.image != null) {
+          _deleteFileUC(state.character.image!);
+        }
+
+        _copyImage(croppedImagePath);
       }
-      
-      _saveImage(file);
     } else {
       dev.log('Файл не был выбран');
     }
@@ -305,13 +311,25 @@ class CharacterEditPageViewModel extends StateNotifier<CharacterEditPageState> {
         context: context, builder: (context) => AppBottomSheet(text: text));
   }
 
-  Future<void> _saveImage(PlatformFile file) async {
-    final res = await _saveFileUC(file);
+  Future<void> _copyImage(String filePath) async {
+    final res = await _copyFileUC(filePath);
 
     res.fold((failure) => null, (path) {
       state = state.copyWith(character: state.character.copyWith(image: path));
       // _updateCharacterUC(state.character);
     });
+  }
+
+  Future<String?> _cropImage(PlatformFile pickedFile) async {
+    CroppedFile? croppedFile = await ImageCropper().cropImage(
+      sourcePath: pickedFile.path!,
+      aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
+    );
+
+    if (croppedFile == null) {
+      return null;
+    }
+    return croppedFile.path;
   }
 }
 

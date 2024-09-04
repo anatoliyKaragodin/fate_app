@@ -8,7 +8,7 @@ import 'package:fate_app/features/file_managment/data/datasources/local/file_lds
 import 'package:fate_app/features/file_managment/data/repositories/file_repository_impl.dart';
 import 'package:fate_app/features/file_managment/domain/repositories/file_repository.dart';
 import 'package:fate_app/features/file_managment/domain/usecases/delete_file.dart';
-import 'package:fate_app/features/file_managment/domain/usecases/save_file.dart';
+import 'package:fate_app/features/file_managment/domain/usecases/copy_file.dart';
 import 'package:fate_app/features/characters/domain/usecases/save_new_character.dart';
 import 'package:get_it/get_it.dart';
 import 'package:fate_app/features/characters/domain/usecases/get_characters.dart';
@@ -47,7 +47,7 @@ Future<void> setupDI() async {
 
   getIt.registerLazySingleton(() => SavePdf(getIt()));
 
-  getIt.registerLazySingleton(() => SaveFile(getIt()));
+  getIt.registerLazySingleton(() => CopyFile(getIt()));
 
   getIt.registerLazySingleton(() => DeleteFile(getIt()));
 }

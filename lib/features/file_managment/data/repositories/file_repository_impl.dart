@@ -3,7 +3,6 @@ import 'package:fate_app/core/error/failure.dart';
 import 'package:fate_app/features/file_managment/data/datasources/file_lds_intrerface.dart';
 import 'package:fate_app/features/file_managment/domain/repositories/file_repository.dart';
 import 'package:fate_app/features/file_managment/domain/usecases/save_pdf.dart';
-import 'package:file_picker/file_picker.dart';
 
 import '../../../../core/error/exeption.dart';
 
@@ -13,9 +12,9 @@ class FileRepositoryImpl implements FileRepository {
   FileRepositoryImpl(this._lds);
 
   @override
-  Future<Either<Failure, String>> save(PlatformFile file) async {
+  Future<Either<Failure, String>> copy(String filePath) async {
     try {
-      final res = await _lds.save(file);
+      final res = await _lds.copy(filePath);
 
       return Right(res!);
     } on CacheException {

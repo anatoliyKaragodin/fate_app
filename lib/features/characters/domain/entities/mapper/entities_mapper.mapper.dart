@@ -627,3 +627,155 @@ extension StuntTypeMapperExtension on StuntType {
     return MapperContainer.globals.toValue<StuntType>(this) as String;
   }
 }
+
+class RollResultEntityMapper extends ClassMapperBase<RollResultEntity> {
+  RollResultEntityMapper._();
+
+  static RollResultEntityMapper? _instance;
+  static RollResultEntityMapper ensureInitialized() {
+    if (_instance == null) {
+      MapperContainer.globals.use(_instance = RollResultEntityMapper._());
+      SkillEntityMapper.ensureInitialized();
+    }
+    return _instance!;
+  }
+
+  @override
+  final String id = 'RollResultEntity';
+
+  static DateTime _$date(RollResultEntity v) => v.date;
+  static const Field<RollResultEntity, DateTime> _f$date =
+      Field('date', _$date);
+  static SkillEntity _$skill(RollResultEntity v) => v.skill;
+  static const Field<RollResultEntity, SkillEntity> _f$skill =
+      Field('skill', _$skill);
+  static int _$result(RollResultEntity v) => v.result;
+  static const Field<RollResultEntity, int> _f$result =
+      Field('result', _$result);
+  static int _$successes(RollResultEntity v) => v.successes;
+  static const Field<RollResultEntity, int> _f$successes =
+      Field('successes', _$successes);
+  static int _$fails(RollResultEntity v) => v.fails;
+  static const Field<RollResultEntity, int> _f$fails = Field('fails', _$fails);
+
+  @override
+  final MappableFields<RollResultEntity> fields = const {
+    #date: _f$date,
+    #skill: _f$skill,
+    #result: _f$result,
+    #successes: _f$successes,
+    #fails: _f$fails,
+  };
+
+  static RollResultEntity _instantiate(DecodingData data) {
+    return RollResultEntity(
+        date: data.dec(_f$date),
+        skill: data.dec(_f$skill),
+        result: data.dec(_f$result),
+        successes: data.dec(_f$successes),
+        fails: data.dec(_f$fails));
+  }
+
+  @override
+  final Function instantiate = _instantiate;
+
+  static RollResultEntity fromMap(Map<String, dynamic> map) {
+    return ensureInitialized().decodeMap<RollResultEntity>(map);
+  }
+
+  static RollResultEntity fromJson(String json) {
+    return ensureInitialized().decodeJson<RollResultEntity>(json);
+  }
+}
+
+mixin RollResultEntityMappable {
+  String toJson() {
+    return RollResultEntityMapper.ensureInitialized()
+        .encodeJson<RollResultEntity>(this as RollResultEntity);
+  }
+
+  Map<String, dynamic> toMap() {
+    return RollResultEntityMapper.ensureInitialized()
+        .encodeMap<RollResultEntity>(this as RollResultEntity);
+  }
+
+  RollResultEntityCopyWith<RollResultEntity, RollResultEntity, RollResultEntity>
+      get copyWith => _RollResultEntityCopyWithImpl(
+          this as RollResultEntity, $identity, $identity);
+  @override
+  String toString() {
+    return RollResultEntityMapper.ensureInitialized()
+        .stringifyValue(this as RollResultEntity);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return RollResultEntityMapper.ensureInitialized()
+        .equalsValue(this as RollResultEntity, other);
+  }
+
+  @override
+  int get hashCode {
+    return RollResultEntityMapper.ensureInitialized()
+        .hashValue(this as RollResultEntity);
+  }
+}
+
+extension RollResultEntityValueCopy<$R, $Out>
+    on ObjectCopyWith<$R, RollResultEntity, $Out> {
+  RollResultEntityCopyWith<$R, RollResultEntity, $Out>
+      get $asRollResultEntity =>
+          $base.as((v, t, t2) => _RollResultEntityCopyWithImpl(v, t, t2));
+}
+
+abstract class RollResultEntityCopyWith<$R, $In extends RollResultEntity, $Out>
+    implements ClassCopyWith<$R, $In, $Out> {
+  SkillEntityCopyWith<$R, SkillEntity, SkillEntity> get skill;
+  $R call(
+      {DateTime? date,
+      SkillEntity? skill,
+      int? result,
+      int? successes,
+      int? fails});
+  RollResultEntityCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
+      Then<$Out2, $R2> t);
+}
+
+class _RollResultEntityCopyWithImpl<$R, $Out>
+    extends ClassCopyWithBase<$R, RollResultEntity, $Out>
+    implements RollResultEntityCopyWith<$R, RollResultEntity, $Out> {
+  _RollResultEntityCopyWithImpl(super.value, super.then, super.then2);
+
+  @override
+  late final ClassMapperBase<RollResultEntity> $mapper =
+      RollResultEntityMapper.ensureInitialized();
+  @override
+  SkillEntityCopyWith<$R, SkillEntity, SkillEntity> get skill =>
+      $value.skill.copyWith.$chain((v) => call(skill: v));
+  @override
+  $R call(
+          {DateTime? date,
+          SkillEntity? skill,
+          int? result,
+          int? successes,
+          int? fails}) =>
+      $apply(FieldCopyWithData({
+        if (date != null) #date: date,
+        if (skill != null) #skill: skill,
+        if (result != null) #result: result,
+        if (successes != null) #successes: successes,
+        if (fails != null) #fails: fails
+      }));
+  @override
+  RollResultEntity $make(CopyWithData data) => RollResultEntity(
+      date: data.get(#date, or: $value.date),
+      skill: data.get(#skill, or: $value.skill),
+      result: data.get(#result, or: $value.result),
+      successes: data.get(#successes, or: $value.successes),
+      fails: data.get(#fails, or: $value.fails));
+
+  @override
+  RollResultEntityCopyWith<$R2, RollResultEntity, $Out2> $chain<$R2, $Out2>(
+          Then<$Out2, $R2> t) =>
+      _RollResultEntityCopyWithImpl($value, $cast, t);
+}
