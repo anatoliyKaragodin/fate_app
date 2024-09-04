@@ -10,6 +10,7 @@ import 'package:fate_app/features/characters/presentation/widgets/common/app_cha
 import 'package:flutter/material.dart';
 
 import 'package:gap/gap.dart';
+import 'package:intl/intl.dart';
 
 import 'app_icon_button.dart';
 
@@ -49,6 +50,26 @@ class AppCharacterSmallContainer extends StatelessWidget {
           padding: EdgeInsets.all(appPadding.bigW(context)),
           child: Column(
             children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  if (character.createdAt != null)
+                    Text(
+                      'Cоздан: ${DateFormat('yyyy-MM-dd HH:mm').format(character.createdAt!)}',
+                      style: appTextStyles.textUnfocus(context),
+                    ),
+                  if (character.createdAt != null &&
+                      character.updatedAt != null &&
+                      character.updatedAt!
+                              .difference(character.createdAt!)
+                              .inSeconds >
+                          1)
+                    Text(
+                      'Обновлен: ${DateFormat('yyyy-MM-dd HH:mm').format(character.updatedAt!)}',
+                      style: appTextStyles.textUnfocus(context),
+                    )
+                ],
+              ),
               Text(character.name, style: appTextStyles.title1(context)),
               Gap(8.height(context)),
               if (character.image != null)
@@ -92,10 +113,8 @@ class AppCharacterSmallContainer extends StatelessWidget {
                   Column(
                     children: [
                       AppIconButton(
-                          onTap: onTapDelete,
-                          icon: Icons.delete_forever),
-                      AppIconButton(
-                          onTap: onTapEdit, icon: Icons.edit),
+                          onTap: onTapDelete, icon: Icons.delete_forever),
+                      AppIconButton(onTap: onTapEdit, icon: Icons.edit),
                     ],
                   )
                 ],
