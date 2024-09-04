@@ -248,8 +248,9 @@ class _AppBar extends StatelessWidget {
               ),
             )
           : null,
-      leading: BackButton(
-        onPressed: onTapBack,
+      leading: AppIconButton(
+        icon: Icons.arrow_back_ios_new,
+        onTap: onTapBack,
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:fate_app/core/utils/theme/app_boder_radius.dart';
+import 'package:fate_app/core/utils/theme/app_colors.dart';
 import 'package:fate_app/core/utils/theme/app_padding.dart';
 import 'package:fate_app/core/utils/theme/app_text_styles.dart';
 import 'package:fate_app/features/characters/domain/entities/mapper/entities_mapper.dart';
@@ -9,6 +10,9 @@ import 'package:fate_app/features/characters/presentation/widgets/common/app_cha
 import 'package:flutter/material.dart';
 
 import 'package:gap/gap.dart';
+import 'package:intl/intl.dart';
+
+import 'app_icon_button.dart';
 
 /// AppCharacterSmallContainer - это виджет, который отображает информацию о персонаже
 /// в компактном формате, включая имя, аватар, концепцию и навыки.
@@ -39,13 +43,33 @@ class AppCharacterSmallContainer extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+          color: appColors.buttonColor(context),
           borderRadius: appBorderRadius.medium(context),
         ),
         child: Padding(
           padding: EdgeInsets.all(appPadding.bigW(context)),
           child: Column(
             children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  if (character.createdAt != null)
+                    Text(
+                      'Cоздан: ${DateFormat('yyyy-MM-dd HH:mm').format(character.createdAt!)}',
+                      style: appTextStyles.textUnfocus(context),
+                    ),
+                  if (character.createdAt != null &&
+                      character.updatedAt != null &&
+                      character.updatedAt!
+                              .difference(character.createdAt!)
+                              .inSeconds >
+                          1)
+                    Text(
+                      'Обновлен: ${DateFormat('yyyy-MM-dd HH:mm').format(character.updatedAt!)}',
+                      style: appTextStyles.textUnfocus(context),
+                    )
+                ],
+              ),
               Text(character.name, style: appTextStyles.title1(context)),
               Gap(8.height(context)),
               if (character.image != null)
@@ -88,11 +112,9 @@ class AppCharacterSmallContainer extends StatelessWidget {
                   ),
                   Column(
                     children: [
-                      IconButton(
-                          onPressed: onTapDelete,
-                          icon: const Icon(Icons.delete_forever)),
-                      IconButton(
-                          onPressed: onTapEdit, icon: const Icon(Icons.edit)),
+                      AppIconButton(
+                          onTap: onTapDelete, icon: Icons.delete_forever),
+                      AppIconButton(onTap: onTapEdit, icon: Icons.edit),
                     ],
                   )
                 ],

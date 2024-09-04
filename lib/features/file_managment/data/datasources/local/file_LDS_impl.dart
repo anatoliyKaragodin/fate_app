@@ -9,27 +9,27 @@ import '../../../domain/usecases/save_pdf.dart';
 
 class FileLdsImpl implements FileLDS {
   @override
-  Future<String?> save(PlatformFile file) async {
+  Future<String?> copy(String filePath) async {
     try {
-      if (file.path == null) {
-        throw CacheException();
-      }
+      
 
       final directory = await getApplicationDocumentsDirectory();
 
-      String newFilePath = '${directory.path}/${file.name}';
+      String fileName = filePath.split('/').last;
+
+      String newFilePath = '${directory.path}/$fileName';
 
       int counter = 1;
       while (await File(newFilePath).exists()) {
-        final fileNameWithoutExtension = file.name.split('.').first;
-        final fileExtension = file.name.split('.').last;
+        final fileNameWithoutExtension = fileName.split('.').first;
+        final fileExtension = fileName.split('.').last;
         newFilePath =
             '${directory.path}/$fileNameWithoutExtension ($counter).$fileExtension';
         counter++;
       }
 
       final savedFile = File(newFilePath);
-      await File(file.path!).copy(savedFile.path);
+      await File(filePath).copy(savedFile.path);
 
       return savedFile.path;
     } catch (e) {

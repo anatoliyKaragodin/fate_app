@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 
 import 'package:dartz/dartz.dart';
 import 'package:dartz_test/dartz_test.dart';
@@ -8,7 +7,6 @@ import 'package:fate_app/features/file_managment/data/datasources/file_lds_intre
 import 'package:fate_app/features/file_managment/data/repositories/file_repository_impl.dart';
 import 'package:fate_app/features/file_managment/domain/repositories/file_repository.dart';
 import 'package:fate_app/features/file_managment/domain/usecases/save_pdf.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -21,12 +19,7 @@ void main() {
   late FileLDS lds;
   late FileRepository repository;
 
-  final PlatformFile file = PlatformFile(
-    name: 'test_file.txt',
-    path: '/path/to/test_file.txt',
-    bytes: Uint8List(0),
-    size: 0,
-  );
+  const filePath ='/path/to/test_file.txt';
 
   final pdfParams = PdfParams(pdf: Document(), name: 'pdf name');
 
@@ -38,27 +31,27 @@ void main() {
   group('FileRepository save', () {
     test('FileRepository save (Ok)', () async {
       // Arrange
-      when(lds.save(file)).thenAnswer((_) async => file.path);
+      when(lds.copy(filePath)).thenAnswer((_) async => filePath);
 
       // Act
-      final res = await repository.save(file);
+      final res = await repository.copy(filePath);
 
       // Assert
-      expect(res.getRightOrFailTest(), file.path);
-      verify(lds.save(file)).called(1);
+      expect(res.getRightOrFailTest(), filePath);
+      verify(lds.copy(filePath)).called(1);
       verifyNoMoreInteractions(lds);
     });
 
     test('FileRepository save (Fail)', () async {
       // Arrange
-      when(lds.save(file)).thenThrow(CacheException());
+      when(lds.copy(filePath)).thenThrow(CacheException());
 
       // Act
-      final res = await repository.save(file);
+      final res = await repository.copy(filePath);
 
       // Assert
       expect(res.getLeftOrFailTest(), CacheFailure());
-      verify(lds.save(file)).called(1);
+      verify(lds.copy(filePath)).called(1);
       verifyNoMoreInteractions(lds);
     });
   });
@@ -94,27 +87,27 @@ void main() {
   group('FileRepository delete', () {
     test('FileRepository delete (Ok)', () async {
       // Arrange
-      when(lds.delete(file.path!)).thenAnswer((_) async {});
+      when(lds.delete(filePath)).thenAnswer((_) async {});
 
       // Act
-      final res = await repository.delete(file.path!);
+      final res = await repository.delete(filePath);
 
       // Assert
       expect(res, const Right(null));
-      verify(lds.delete(file.path!)).called(1);
+      verify(lds.delete(filePath)).called(1);
       verifyNoMoreInteractions(lds);
     });
 
     test('FileRepository delete (Fail)', () async {
       // Arrange
-      when(lds.delete(file.path!)).thenThrow(CacheException());
+      when(lds.delete(filePath)).thenThrow(CacheException());
 
       // Act
-      final res = await repository.delete(file.path!);
+      final res = await repository.delete(filePath);
 
       // Assert
       expect(res.getLeftOrFailTest(), CacheFailure());
-      verify(lds.delete(file.path!)).called(1);
+      verify(lds.delete(filePath)).called(1);
       verifyNoMoreInteractions(lds);
     });
   });

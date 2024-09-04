@@ -378,6 +378,7 @@ class CharacterPlayPageStateMapper
     if (_instance == null) {
       MapperContainer.globals.use(_instance = CharacterPlayPageStateMapper._());
       CharacterEntityMapper.ensureInitialized();
+      RollResultEntityMapper.ensureInitialized();
     }
     return _instance!;
   }
@@ -400,6 +401,13 @@ class CharacterPlayPageStateMapper
   static const Field<CharacterPlayPageState, List<TextEditingController>>
       _f$consequencesControllers =
       Field('consequencesControllers', _$consequencesControllers);
+  static bool _$isDiceRollShown(CharacterPlayPageState v) => v.isDiceRollShown;
+  static const Field<CharacterPlayPageState, bool> _f$isDiceRollShown =
+      Field('isDiceRollShown', _$isDiceRollShown);
+  static List<RollResultEntity> _$rollResults(CharacterPlayPageState v) =>
+      v.rollResults;
+  static const Field<CharacterPlayPageState, List<RollResultEntity>>
+      _f$rollResults = Field('rollResults', _$rollResults);
 
   @override
   final MappableFields<CharacterPlayPageState> fields = const {
@@ -407,6 +415,8 @@ class CharacterPlayPageStateMapper
     #isCompact: _f$isCompact,
     #isScreenLocked: _f$isScreenLocked,
     #consequencesControllers: _f$consequencesControllers,
+    #isDiceRollShown: _f$isDiceRollShown,
+    #rollResults: _f$rollResults,
   };
 
   static CharacterPlayPageState _instantiate(DecodingData data) {
@@ -414,7 +424,9 @@ class CharacterPlayPageStateMapper
         character: data.dec(_f$character),
         isCompact: data.dec(_f$isCompact),
         isScreenLocked: data.dec(_f$isScreenLocked),
-        consequencesControllers: data.dec(_f$consequencesControllers));
+        consequencesControllers: data.dec(_f$consequencesControllers),
+        isDiceRollShown: data.dec(_f$isDiceRollShown),
+        rollResults: data.dec(_f$rollResults));
   }
 
   @override
@@ -478,11 +490,16 @@ abstract class CharacterPlayPageStateCopyWith<
   ListCopyWith<$R, TextEditingController,
           ObjectCopyWith<$R, TextEditingController, TextEditingController>>
       get consequencesControllers;
+  ListCopyWith<$R, RollResultEntity,
+          RollResultEntityCopyWith<$R, RollResultEntity, RollResultEntity>>
+      get rollResults;
   $R call(
       {CharacterEntity? character,
       bool? isCompact,
       bool? isScreenLocked,
-      List<TextEditingController>? consequencesControllers});
+      List<TextEditingController>? consequencesControllers,
+      bool? isDiceRollShown,
+      List<RollResultEntity>? rollResults});
   CharacterPlayPageStateCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
       Then<$Out2, $R2> t);
 }
@@ -507,17 +524,26 @@ class _CharacterPlayPageStateCopyWithImpl<$R, $Out>
           (v, t) => ObjectCopyWith(v, $identity, t),
           (v) => call(consequencesControllers: v));
   @override
+  ListCopyWith<$R, RollResultEntity,
+          RollResultEntityCopyWith<$R, RollResultEntity, RollResultEntity>>
+      get rollResults => ListCopyWith($value.rollResults,
+          (v, t) => v.copyWith.$chain(t), (v) => call(rollResults: v));
+  @override
   $R call(
           {CharacterEntity? character,
           bool? isCompact,
           bool? isScreenLocked,
-          List<TextEditingController>? consequencesControllers}) =>
+          List<TextEditingController>? consequencesControllers,
+          bool? isDiceRollShown,
+          List<RollResultEntity>? rollResults}) =>
       $apply(FieldCopyWithData({
         if (character != null) #character: character,
         if (isCompact != null) #isCompact: isCompact,
         if (isScreenLocked != null) #isScreenLocked: isScreenLocked,
         if (consequencesControllers != null)
-          #consequencesControllers: consequencesControllers
+          #consequencesControllers: consequencesControllers,
+        if (isDiceRollShown != null) #isDiceRollShown: isDiceRollShown,
+        if (rollResults != null) #rollResults: rollResults
       }));
   @override
   CharacterPlayPageState $make(CopyWithData data) => CharacterPlayPageState(
@@ -525,7 +551,9 @@ class _CharacterPlayPageStateCopyWithImpl<$R, $Out>
       isCompact: data.get(#isCompact, or: $value.isCompact),
       isScreenLocked: data.get(#isScreenLocked, or: $value.isScreenLocked),
       consequencesControllers: data.get(#consequencesControllers,
-          or: $value.consequencesControllers));
+          or: $value.consequencesControllers),
+      isDiceRollShown: data.get(#isDiceRollShown, or: $value.isDiceRollShown),
+      rollResults: data.get(#rollResults, or: $value.rollResults));
 
   @override
   CharacterPlayPageStateCopyWith<$R2, CharacterPlayPageState, $Out2>

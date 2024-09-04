@@ -1,13 +1,11 @@
-import 'dart:typed_data';
 
 import 'package:dartz/dartz.dart';
 import 'package:dartz_test/dartz_test.dart';
 import 'package:fate_app/core/error/failure.dart';
 import 'package:fate_app/features/file_managment/domain/repositories/file_repository.dart';
+import 'package:fate_app/features/file_managment/domain/usecases/copy_file.dart';
 import 'package:fate_app/features/file_managment/domain/usecases/delete_file.dart';
-import 'package:fate_app/features/file_managment/domain/usecases/save_file.dart';
 import 'package:fate_app/features/file_managment/domain/usecases/save_pdf.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -19,16 +17,11 @@ import 'file_usecases_test.mocks.dart';
 void main() {
   late FileRepository repository;
 
-  late SaveFile saveFileUC;
+  late CopyFile copyFileUC;
   late SavePdf savePdfUC;
   late DeleteFile deleteFileUC;
 
-  final PlatformFile file = PlatformFile(
-    name: 'test_file.txt',
-    path: '/path/to/test_file.txt',
-    bytes: Uint8List(0),
-    size: 0,
-  );
+  const filePath = '/path/to/test_file.txt';
 
   final pdfParams = PdfParams(pdf: Document(), name: 'pdf name');
 
@@ -36,34 +29,35 @@ void main() {
     repository = MockFileRepository();
 
     savePdfUC = SavePdf(repository);
-    saveFileUC = SaveFile(repository);
+    copyFileUC = CopyFile(repository);
     deleteFileUC = DeleteFile(repository);
   });
 
   group('SaveFile UC', () {
     test('SaveFile UC (Ok)', () async {
       // Arrange
-      when(repository.save(file)).thenAnswer((_) async => Right(file.path!));
+      when(repository.copy(filePath))
+          .thenAnswer((_) async => const Right(filePath));
 
       // Act
-      final result = await saveFileUC(file);
+      final result = await copyFileUC(filePath);
 
       // Assert
-      expect(result.getRightOrFailTest(), file.path!);
-      verify(repository.save(file)).called(1);
+      expect(result.getRightOrFailTest(), filePath);
+      verify(repository.copy(filePath)).called(1);
       verifyNoMoreInteractions(repository);
     });
 
     test('SaveFile UC (Fail)', () async {
       // Arrange
-      when(repository.save(file)).thenAnswer((_) async => Left(CacheFailure()));
+      when(repository.copy(filePath)).thenAnswer((_) async => Left(CacheFailure()));
 
       // Act
-      final result = await saveFileUC(file);
+      final result = await copyFileUC(filePath);
 
       // Assert
       expect(result.getLeftOrFailTest(), CacheFailure());
-      verify(repository.save(file)).called(1);
+      verify(repository.copy(filePath)).called(1);
       verifyNoMoreInteractions(repository);
     });
   });
@@ -101,28 +95,29 @@ void main() {
   group('DeleteFile UC', () {
     test('DeleteFile UC (Ok)', () async {
       // Arrange
-      when(repository.delete(file.path!)).thenAnswer((_) async => const Right(null));
+      when(repository.delete(filePath))
+          .thenAnswer((_) async => const Right(null));
 
       // Act
-      final result = await deleteFileUC(file.path!);
+      final result = await deleteFileUC(filePath);
 
       // Assert
       expect(result, const Right(null));
-      verify(repository.delete(file.path!)).called(1);
+      verify(repository.delete(filePath)).called(1);
       verifyNoMoreInteractions(repository);
     });
 
     test('DeleteFile UC (Fail)', () async {
       // Arrange
-      when(repository.delete(file.path!))
+      when(repository.delete(filePath))
           .thenAnswer((_) async => Left(CacheFailure()));
 
       // Act
-      final result = await deleteFileUC(file.path!);
+      final result = await deleteFileUC(filePath);
 
       // Assert
       expect(result.getLeftOrFailTest(), CacheFailure());
-      verify(repository.delete(file.path!)).called(1);
+      verify(repository.delete(filePath)).called(1);
       verifyNoMoreInteractions(repository);
     });
   });

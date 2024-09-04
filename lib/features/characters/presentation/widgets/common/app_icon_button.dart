@@ -1,4 +1,5 @@
 import 'package:fate_app/core/utils/app_size.dart';
+import 'package:fate_app/core/utils/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../core/utils/theme/app_padding.dart';
@@ -18,13 +19,14 @@ class AppIconButton extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.all(appPadding.smallW(context)),
       child: SizedBox(
-          width: 18.width(context) + appPadding.mediumW(context),
-          height: 18.width(context) + appPadding.mediumW(context),
+          width: 20.width(context) + appPadding.mediumW(context),
+          height: 20.width(context) + appPadding.mediumW(context),
           child: Center(
             child: IconButton(
+              color: appColors.buttonTextColor(context),
                 alignment: Alignment.center,
                 padding: EdgeInsets.zero,
-                iconSize: 18.width(context),
+                iconSize: 20.width(context),
                 onPressed: onTap,
                 icon: Icon(icon ?? Icons.help)),
           )),
