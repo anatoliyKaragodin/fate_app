@@ -6,17 +6,21 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
     - uses: actions/checkout@v3
     - uses: subosito/flutter-action@v2
-      with:   
-
-        flutter-version: 'stable'
+      with:
+        channel: 'stable'
     - name: Get dependencies
       run: flutter pub get
-    - name: Run tests
-      run: flutter test
+    - name: Run tests with code coverage
+      run: flutter test --coverage
+    - name: Upload coverage report
+    - uses: actions/upload-artifact@v3
+      with:
+        name: code-coverage
+        path: coverage/lcov.info
     - name: Build APK
-      run: flutter build apk
+      run: flutter build apk --release
