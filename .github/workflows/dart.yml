@@ -1,28 +1,29 @@
-name: Flutter CI
+name: Main Branch Workflow (Deployment)
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - uses: subosito/flutter-action@v2
+    - uses: actions/checkout@v2
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
       with:
-        channel: 'stable'
-        arcitecture: x64
-        
-    - name: Get dependencies
-    - run: flutter pub get
-    - name: Run tests with code coverage
-    - run: flutter test --coverage
-    - name: Upload coverage report
-    - uses: actions/upload-artifact@v3
-      with:
-        name: code-coverage
-        path: coverage/lcov.info
+        flutter-version: 'stable'
+
+    - name: Install dependencies
+      run: flutter pub get
+
+    - name: Run tests
+      run: flutter test
+
     - name: Build APK
-    - run: flutter build apk --release
+      run: flutter build apk --release
+
+    - name: Build IPA
+      run: flutter build ios --release
