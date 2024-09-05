@@ -20,7 +20,7 @@ jobs:
       run: flutter pub get
 
     - name: Run tests
-      run: flutter test
+      run: flutter test test/main_test.dart  --coverage
 
     - name: Build APK
       run: flutter build apk --release
