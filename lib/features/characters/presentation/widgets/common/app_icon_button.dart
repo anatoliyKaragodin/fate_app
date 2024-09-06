@@ -23,7 +23,7 @@ class AppIconButton extends StatelessWidget {
           height: 20.width(context) + appPadding.mediumW(context),
           child: Center(
             child: IconButton(
-              color: appColors.buttonTextColor(context),
+              color: appColors.textColor(context),
                 alignment: Alignment.center,
                 padding: EdgeInsets.zero,
                 iconSize: 20.width(context),

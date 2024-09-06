@@ -14,7 +14,7 @@ class AppColors {
 
   Color buttonTextColor(BuildContext context) => _isDarkMode(context)
       ? Theme.of(context).primaryColorLight
-      : Theme.of(context).primaryColorDark;
+      : Theme.of(context).primaryColor;
 
   static bool _isDarkMode(BuildContext context) =>
       MediaQuery.of(context).platformBrightness == Brightness.dark;

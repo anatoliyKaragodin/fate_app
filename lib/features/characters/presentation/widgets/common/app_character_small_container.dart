@@ -55,7 +55,7 @@ class AppCharacterSmallContainer extends StatelessWidget {
                 children: [
                   if (character.createdAt != null)
                     Text(
-                      'Cоздан: ${DateFormat('yyyy-MM-dd HH:mm').format(character.createdAt!)}',
+                      'Cоздан: ${DateFormat('dd-MM-yyyy HH:mm').format(character.createdAt!)}',
                       style: appTextStyles.textUnfocus(context),
                     ),
                   if (character.createdAt != null &&
@@ -65,7 +65,7 @@ class AppCharacterSmallContainer extends StatelessWidget {
                               .inSeconds >
                           1)
                     Text(
-                      'Обновлен: ${DateFormat('yyyy-MM-dd HH:mm').format(character.updatedAt!)}',
+                      'Обновлен: ${DateFormat('dd-MM-yyyy HH:mm').format(character.updatedAt!)}',
                       style: appTextStyles.textUnfocus(context),
                     )
                 ],

@@ -275,6 +275,7 @@ class _SkillColumn extends StatelessWidget {
       children: List.generate(
           skills.length,
           (index) => AppDropdownMenu<int>(
+            height: 30.height(context),
                 width: width,
                 label: skills[index].type.toLabel(),
                 menuItems: skillAvailableList.contains(skills[index].value)
