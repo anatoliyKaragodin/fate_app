@@ -261,16 +261,22 @@ class CharactersListPageStateMapper
   static bool _$isEditing(CharactersListPageState v) => v.isEditing;
   static const Field<CharactersListPageState, bool> _f$isEditing =
       Field('isEditing', _$isEditing);
+  static SortType _$sortType(CharactersListPageState v) => v.sortType;
+  static const Field<CharactersListPageState, SortType> _f$sortType =
+      Field('sortType', _$sortType);
 
   @override
   final MappableFields<CharactersListPageState> fields = const {
     #characters: _f$characters,
     #isEditing: _f$isEditing,
+    #sortType: _f$sortType,
   };
 
   static CharactersListPageState _instantiate(DecodingData data) {
     return CharactersListPageState(
-        characters: data.dec(_f$characters), isEditing: data.dec(_f$isEditing));
+        characters: data.dec(_f$characters),
+        isEditing: data.dec(_f$isEditing),
+        sortType: data.dec(_f$sortType));
   }
 
   @override
@@ -333,7 +339,8 @@ abstract class CharactersListPageStateCopyWith<
   ListCopyWith<$R, CharacterEntity,
           CharacterEntityCopyWith<$R, CharacterEntity, CharacterEntity>>
       get characters;
-  $R call({List<CharacterEntity>? characters, bool? isEditing});
+  $R call(
+      {List<CharacterEntity>? characters, bool? isEditing, SortType? sortType});
   CharactersListPageStateCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
       Then<$Out2, $R2> t);
 }
@@ -353,15 +360,20 @@ class _CharactersListPageStateCopyWithImpl<$R, $Out>
       get characters => ListCopyWith($value.characters,
           (v, t) => v.copyWith.$chain(t), (v) => call(characters: v));
   @override
-  $R call({List<CharacterEntity>? characters, bool? isEditing}) =>
+  $R call(
+          {List<CharacterEntity>? characters,
+          bool? isEditing,
+          SortType? sortType}) =>
       $apply(FieldCopyWithData({
         if (characters != null) #characters: characters,
-        if (isEditing != null) #isEditing: isEditing
+        if (isEditing != null) #isEditing: isEditing,
+        if (sortType != null) #sortType: sortType
       }));
   @override
   CharactersListPageState $make(CopyWithData data) => CharactersListPageState(
       characters: data.get(#characters, or: $value.characters),
-      isEditing: data.get(#isEditing, or: $value.isEditing));
+      isEditing: data.get(#isEditing, or: $value.isEditing),
+      sortType: data.get(#sortType, or: $value.sortType));
 
   @override
   CharactersListPageStateCopyWith<$R2, CharactersListPageState, $Out2>

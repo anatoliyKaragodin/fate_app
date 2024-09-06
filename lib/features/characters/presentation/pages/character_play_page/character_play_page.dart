@@ -199,7 +199,7 @@ class _DiceRollResults extends StatelessWidget {
           children: [
             AppButtonWidget(
                 textStyle: textStyle,
-                text: 'Броски кубов',
+                text: 'Результаты бросков подходов',
                 onPressed: () => onTapShowResults()),
             Gap(padding),
             Expanded(
@@ -237,7 +237,7 @@ class _DiceRollResults extends StatelessWidget {
                                                   style: textStyle),
                                               TextSpan(
                                                   text:
-                                                      '[усп: ${results[index].successes}, првл: ${results[index].fails}]',
+                                                      '[успехи: ${results[index].successes}, провалы: ${results[index].fails}]',
                                                   style: appTextStyles
                                                       .textUnfocus(context)),
                                             ]))
