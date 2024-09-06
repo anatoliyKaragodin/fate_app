@@ -1,5 +1,6 @@
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:fate_app/features/characters/domain/entities/mapper/entities_mapper.dart';
+import 'package:fate_app/features/characters/presentation/pages/characters_list_page/characters_list_page_view_model.dart';
 import 'package:flutter/material.dart';
 
 // Стейты
