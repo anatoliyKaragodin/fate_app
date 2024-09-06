@@ -20,7 +20,7 @@ class CharactersListPage extends ConsumerWidget {
     final vmProvider = ref.watch(charactersListPageViewProvider);
     final characters = vmProvider.characters;
 
-    // final updaterProvider = ref.watch(updaterRustoreProvider);
+    final updaterProvider = ref.watch(updaterRustoreProvider);
 
     return Scaffold(
         body: RefreshIndicator(
@@ -39,15 +39,15 @@ class CharactersListPage extends ConsumerWidget {
                 .createCharacter(ref),
             selectedSort: vmProvider.sortType.toLabel(),
           ),
-          // if (updaterProvider)
-          //   SliverToBoxAdapter(
-          //     child: Center(
-          //       child: AppButtonWidget(
-          //           text: 'Обновить приложение',
-          //           onPressed: () =>
-          //               ref.read(updaterRustoreProvider.notifier).update()),
-          //     ),
-          //   ),
+          if (updaterProvider)
+            SliverToBoxAdapter(
+              child: Center(
+                child: AppButtonWidget(
+                    text: 'Обновить приложение',
+                    onPressed: () =>
+                        ref.read(updaterRustoreProvider.notifier).update()),
+              ),
+            ),
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
