@@ -29,8 +29,8 @@ if (flutterVersionName == null) {
 
 android {
     namespace = "com.example.fate_app"
-    compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    compileSdk 34
+    ndkVersion = "26.1.10909125"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -43,9 +43,10 @@ android {
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdk = 23
-        targetSdk = flutter.targetSdkVersion
-        versionCode = flutterVersionCode.toInteger()
-        versionName = flutterVersionName
+        targetSdk 34
+        versionCode flutterVersionCode.toInteger()
+        versionName = flutterVersionCode
+        multiDexEnabled true
     }
 
     buildTypes {
@@ -55,6 +56,7 @@ android {
             signingConfig = signingConfigs.debug
         }
     }
+    buildToolsVersion '34.0.0'
 }
 
 flutter {
