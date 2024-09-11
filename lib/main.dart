@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
@@ -22,8 +23,15 @@ Future<void> main() async {
 
   RouterHelper.instance;
 
+  await dotenv.load(fileName: ".env");
+  final apiKey = dotenv.env['FIREBASE_API_KEY']!;
+  final appId = dotenv.env['FIREBASE_APP_ID']!;
+
   await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
+    options: DefaultFirebaseOptions.currentPlatform.copyWith(
+      appId: appId,
+      apiKey: apiKey
+    ),
   );
 
   // Ошибки
