@@ -1,3 +1,1 @@
-# For git-crypt
-firebase.json filter=git-crypt diff=git-crypt
-lib/firebase_options.dart filter=git-crypt diff=git-crypt
+
