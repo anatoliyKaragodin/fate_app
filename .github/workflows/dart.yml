@@ -28,13 +28,13 @@ jobs:
     - name: Install dependencies
       run: flutter pub get
 
-    - name: Run tests
-      run: flutter test test/main_test.dart  --coverage
-
     - name: Create .env file
       run: |
         echo "FIREBASE_API_KEY=${{ secrets.FIREBASE_API_KEY }}" >> .env
         echo "FIREBASE_APP_ID=${{ secrets.FIREBASE_APP_ID }}" >> .env
+
+    - name: Run tests
+      run: flutter test test/main_test.dart  --coverage
 
     - name: Build APK
       run: flutter build apk --release
