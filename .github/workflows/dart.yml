@@ -31,5 +31,10 @@ jobs:
     - name: Run tests
       run: flutter test test/main_test.dart  --coverage
 
+    - name: Set environment variables
+      run: |
+        echo "FIREBASE_API_KEY=${{ secrets.FIREBASE_API_KEY }}" >> $GITHUB_ENV
+        echo "FIREBASE_APP_ID=${{ secrets.FIREBASE_APP_ID }}" >> $GITHUB_ENV
+
     - name: Build APK
       run: flutter build apk --release
