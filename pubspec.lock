@@ -478,10 +478,11 @@ packages:
   flutter_rustore_update:
     dependency: "direct main"
     description:
-      name: flutter_rustore_update
-      sha256: b03ef061fe6422d64ade48df22f441bf6d42dda9a0b4aaf4122ccfe6ea36081b
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: master
+      resolved-ref: "8ee6567332b33e63116d615dfbda6b1b5b7642dd"
+      url: "https://github.com/anatoliyKaragodin/flutter-rustore-update.git"
+    source: git
     version: "6.1.0"
   flutter_test:
     dependency: "direct dev"
