@@ -31,8 +31,7 @@ jobs:
       # Создание .env файла
       - name: Create .env file
         run: |
-          echo "FIREBASE_API_KEY=${{ secrets.FIREBASE_API_KEY }}" >> .env
-          echo "FIREBASE_APP_ID=${{ secrets.FIREBASE_APP_ID }}" >> .env
+          echo "FIREBASE_CONFIG=${{ secrets.FIREBASE_CONFIG }}" >> .env
 
       - name: Run tests
         run: flutter test test/main_test.dart --coverage

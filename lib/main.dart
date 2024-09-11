@@ -1,6 +1,7 @@
+import 'dart:convert';
+
 import 'package:fate_app/core/di/di_container.dart';
 import 'package:fate_app/core/router/router.dart';
-import 'package:fate_app/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -23,14 +24,23 @@ Future<void> main() async {
 
   RouterHelper.instance;
 
+  // Загружаем переменные из .env файла
   await dotenv.load(fileName: ".env");
-  final apiKey = dotenv.env['FIREBASE_API_KEY']!;
-  final appId = dotenv.env['FIREBASE_APP_ID']!;
 
+  // Получаем конфигурацию из .env
+  final firebaseConfigString = dotenv.env['FIREBASE_CONFIG']!;
+
+  // Парсим JSON-конфигурацию
+  final firebaseConfig = jsonDecode(firebaseConfigString);
+
+  // Инициализация Firebase с использованием данных из JSON
   await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform.copyWith(
-      appId: appId,
-      apiKey: apiKey
+    options: FirebaseOptions(
+      apiKey: firebaseConfig['apiKey'],
+      appId: firebaseConfig['appId'],
+      messagingSenderId: firebaseConfig['messagingSenderId'],
+      projectId: firebaseConfig['projectId'],
+      storageBucket: firebaseConfig['storageBucket'],
     ),
   );
 
