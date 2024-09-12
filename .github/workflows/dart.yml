@@ -49,4 +49,4 @@ jobs:
         run: flutter test test/main_test.dart --coverage
 
       - name: Build APK
-        run: flutter build apk --release --stacktrace
+        run: flutter build apk --release -v
