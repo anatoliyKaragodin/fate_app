@@ -37,10 +37,14 @@ jobs:
 #        run: |
 #          echo "${{ secrets.GOOGLE_SERVICES_JSON }}" > android/app/google-services.json
 
-      - name: Load Google Service file
-        env:
-          DATA: ${{ secrets.GOOGLE_SERVICES_JSON }}
-        run: echo $DATA | base64 -d > android/app/google-services.json
+#      - name: Load Google Service file
+#        env:
+#          DATA: ${{ secrets.GOOGLE_SERVICES_JSON }}
+#        run: echo $DATA | base64 -d > android/app/google-services.json
+
+      - name: Create google-services.json
+        run: |
+          echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > android/app/google-services.json
 
       - name: Print google-services.json content
         run: cat android/app/google-services.json
@@ -49,4 +53,4 @@ jobs:
         run: flutter test test/main_test.dart --coverage
 
       - name: Build APK
-        run: flutter build apk --release -v
+        run: flutter build apk --release
