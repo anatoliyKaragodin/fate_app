@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'dart:developer' as dev;
@@ -6,6 +10,29 @@ import '../../features/characters/data/datasources/local/sqlite/LDS_constants.da
 
 class DatabaseManager {
   DatabaseManager._();
+
+
+  static Future<void> initFirebase() async {
+    // Загружаем переменные из .env файла
+    await dotenv.load(fileName: ".env");
+
+    // Получаем конфигурацию из .env
+    final firebaseConfigString = dotenv.env['FIREBASE_CONFIG']!;
+
+    // Парсим JSON-конфигурацию
+    final firebaseConfig = jsonDecode(firebaseConfigString);
+
+    // Инициализация Firebase с использованием данных из .env
+    await Firebase.initializeApp(
+      options: FirebaseOptions(
+        apiKey: firebaseConfig['apiKey'],
+        appId: firebaseConfig['appId'],
+        messagingSenderId: firebaseConfig['messagingSenderId'],
+        projectId: firebaseConfig['projectId'],
+        storageBucket: firebaseConfig['storageBucket'],
+      ),
+    );
+  }
 
   static Future<Database> initDB(String dbLabel) async {
     return await openDatabase(

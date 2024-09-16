@@ -3,20 +3,20 @@ import 'package:fate_app/features/characters/data/datasources/characters_lds.dar
 import 'package:fate_app/features/characters/data/datasources/local/sqlite/characters_lds_impl.dart';
 import 'package:fate_app/features/characters/domain/repositories/characters_repository.dart';
 import 'package:fate_app/features/characters/domain/usecases/delete_character.dart';
-import 'package:fate_app/features/file_managment/data/datasources/file_lds_intrerface.dart';
-import 'package:fate_app/features/file_managment/data/datasources/local/file_lds_impl.dart';
-import 'package:fate_app/features/file_managment/data/repositories/file_repository_impl.dart';
-import 'package:fate_app/features/file_managment/domain/repositories/file_repository.dart';
-import 'package:fate_app/features/file_managment/domain/usecases/delete_file.dart';
-import 'package:fate_app/features/file_managment/domain/usecases/copy_file.dart';
+import 'package:fate_app/features/file_management/data/datasources/file_lds_intrerface.dart';
+import 'package:fate_app/features/file_management/data/repositories/file_repository_impl.dart';
+import 'package:fate_app/features/file_management/domain/repositories/file_repository.dart';
+import 'package:fate_app/features/file_management/domain/usecases/delete_file.dart';
+import 'package:fate_app/features/file_management/domain/usecases/copy_file.dart';
 import 'package:fate_app/features/characters/domain/usecases/save_new_character.dart';
 import 'package:get_it/get_it.dart';
 import 'package:fate_app/features/characters/domain/usecases/get_characters.dart';
 import 'package:fate_app/features/characters/domain/usecases/update_character.dart';
-import 'package:fate_app/features/characters/data/repositories/characters_repository_impl.dart';
 
 import '../../features/characters/data/datasources/local/sqlite/LDS_constants.dart';
-import '../../features/file_managment/domain/usecases/save_pdf.dart';
+import '../../features/characters/data/repositories/characters_repository_impl.dart';
+import '../../features/file_management/data/datasources/local/file_LDS_impl.dart';
+import '../../features/file_management/domain/usecases/save_pdf.dart';
 
 final getIt = GetIt.instance;
 

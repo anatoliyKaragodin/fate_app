@@ -2,8 +2,8 @@
 import 'package:fate_app/features/characters/domain/entities/mapper/entities_mapper.dart';
 import 'package:fate_app/core/router/router.dart';
 import 'package:fate_app/features/characters/presentation/utils/character_help_text.dart';
-import 'package:fate_app/features/file_managment/domain/usecases/delete_file.dart';
-import 'package:fate_app/features/file_managment/domain/usecases/copy_file.dart';
+import 'package:fate_app/features/file_management/domain/usecases/delete_file.dart';
+import 'package:fate_app/features/file_management/domain/usecases/copy_file.dart';
 import 'package:fate_app/features/characters/domain/usecases/update_character.dart';
 import 'package:fate_app/features/characters/presentation/mapper/state_mapper.dart';
 import 'package:fate_app/features/characters/presentation/pages/characters_list_page/characters_list_page_view_model.dart';
@@ -19,7 +19,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 import '../../../../../core/di/di_container.dart';
-import '../../../../file_managment/domain/usecases/save_pdf.dart';
+import '../../../../file_management/domain/usecases/save_pdf.dart';
 import '../../widgets/common/app_bottom_sheet.dart';
 
 final characterEditPageViewModelProvider =

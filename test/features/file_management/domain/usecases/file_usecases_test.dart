@@ -2,10 +2,10 @@
 import 'package:dartz/dartz.dart';
 import 'package:dartz_test/dartz_test.dart';
 import 'package:fate_app/core/error/failure.dart';
-import 'package:fate_app/features/file_managment/domain/repositories/file_repository.dart';
-import 'package:fate_app/features/file_managment/domain/usecases/copy_file.dart';
-import 'package:fate_app/features/file_managment/domain/usecases/delete_file.dart';
-import 'package:fate_app/features/file_managment/domain/usecases/save_pdf.dart';
+import 'package:fate_app/features/file_management/domain/repositories/file_repository.dart';
+import 'package:fate_app/features/file_management/domain/usecases/copy_file.dart';
+import 'package:fate_app/features/file_management/domain/usecases/delete_file.dart';
+import 'package:fate_app/features/file_management/domain/usecases/save_pdf.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';

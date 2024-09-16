@@ -6,7 +6,7 @@ import 'package:fate_app/features/characters/presentation/mapper/state_mapper.da
 import 'package:fate_app/features/characters/presentation/pages/character_edit_page/character_edit_page_view_model.dart';
 import 'package:fate_app/features/characters/presentation/pages/character_play_page/character_play_page_vm.dart';
 import 'package:fate_app/features/characters/presentation/widgets/common/app_warning_dialog_widget.dart';
-import 'package:fate_app/features/file_managment/domain/usecases/delete_file.dart';
+import 'package:fate_app/features/file_management/domain/usecases/delete_file.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:developer' as dev;
