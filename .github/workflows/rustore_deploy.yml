@@ -60,6 +60,5 @@ jobs:
         run: flutter build apk --release
 
       - name: Generate RuStore API token
-        uses: actions/cache@v3
         run: |
             python generate_token.py
