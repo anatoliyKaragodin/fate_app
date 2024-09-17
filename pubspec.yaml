@@ -63,6 +63,9 @@ dependencies:
       ref: master
   flutter_dotenv: ^5.1.0
 #  dio: ^5.7.0
+  crypto: ^3.0.5
+  basic_utils: ^5.7.0
+  dotenv: ^4.2.0
 
 dev_dependencies:
   flutter_test:
