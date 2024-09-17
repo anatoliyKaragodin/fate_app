@@ -54,6 +54,8 @@ def main():
     key_id = os.getenv('RUSTORE_KEY_ID')
     private_key_content = os.getenv('RUSTORE_PRIVATE_KEY')
 
+    print("Private Key Content:", private_key_content[:100] + "...")
+
     if key_id is None or private_key_content is None:
         print("Отсутствуют переменные окружения RUSTORE_KEY_ID или RUSTORE_PRIVATE_KEY")
     else:
