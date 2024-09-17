@@ -20,7 +20,14 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-            python-version: '3.11'
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pycryptodome 
+          pip install python-dotenv
+          pip install requests
 
       # Установка JDK 17
       - name: Set up JDK 17
@@ -56,8 +63,8 @@ jobs:
       - name: Run tests
         run: flutter test test/main_test.dart --coverage
 
-      - name: Build APK
-        run: flutter build apk --release
+#      - name: Build APK
+#        run: flutter build apk --release
 
       - name: Generate RuStore API token
         run: |
