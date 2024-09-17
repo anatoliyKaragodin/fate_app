@@ -16,7 +16,6 @@ def generate_signature(key_id, private_key_content):
     timestamp = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='milliseconds')
     # Формируем сообщение для подписи
     message_to_sign = key_id + timestamp
-    print("Message to sign:", message_to_sign)
 
     # Подписываем сообщение
     hash_obj = SHA512.new(message_to_sign.encode())
@@ -41,10 +40,8 @@ def authenticate_rustore(key_id, timestamp, signature):
 
     if response.status_code == 200:
         print("Request successful.")
-        print("Response:", response.json())
     else:
         print("Request failed with status code:", response.status_code)
-        print("Response:", response.text)
 
 def main():
     # Загружаем переменные окружения из .env файла
@@ -53,8 +50,6 @@ def main():
     # Получаем переменные окружения
     key_id = os.getenv('RUSTORE_KEY_ID')
     private_key_content = os.getenv('RUSTORE_PRIVATE_KEY')
-
-    print("Private Key Content:", private_key_content[:100] + "...")
 
     if key_id is None or private_key_content is None:
         print("Отсутствуют переменные окружения RUSTORE_KEY_ID или RUSTORE_PRIVATE_KEY")
