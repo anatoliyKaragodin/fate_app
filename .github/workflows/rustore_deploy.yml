@@ -1,13 +1,13 @@
 name: Rustore release (Deployment)
 
-on:
-  push:
-    branches:
-      - main
+#on:
+#  push:
+#    branches:
+#      - main
 
-# on:
-#   release:
-#     types: [published]      
+on:
+  release:
+    types: [published]
 
 jobs:
   build:
@@ -30,22 +30,22 @@ jobs:
           pip install requests
 
       # Установка JDK 17
-#      - name: Set up JDK 17
-#        uses: actions/setup-java@v2
-#        with:
-#          distribution: 'temurin'
-#          java-version: '17'
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '17'
 
       # Установка Flutter
-#      - name: Set up Flutter
-#        uses: subosito/flutter-action@v2
-#        with:
-#          flutter-version: '3.24.0'
-#
-#      - name: Install dependencies
-#        run: flutter pub get
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
 
-#     Создание .env файла
+      - name: Install dependencies
+        run: flutter pub get
+
+      # Создание .env файла
       - name: Create .env file
         run: |
           echo "FIREBASE_CONFIG=${{ secrets.FIREBASE_CONFIG }}" >> .env
@@ -60,12 +60,12 @@ jobs:
       - name: Print google-services.json content
         run: cat android/app/google-services.json
 
-#      - name: Run tests
-#        run: flutter test test/main_test.dart --coverage
+      - name: Run tests
+        run: flutter test test/main_test.dart --coverage
 
-#      - name: Build APK
-#        run: flutter build apk --release
+      - name: Build APK
+        run: flutter build apk --release
 
-      - name: Generate RuStore API token
+      - name: Release APK to RuStore
         run: |
-            python generate_token.py
+            python release_apk_rustore.py "${{ github.event.release.body }}"
