@@ -29,7 +29,7 @@ class CharacterEditPage extends ConsumerWidget {
             image: wmProvider.character.image,
             onTapBack: () => ref
                 .read(characterEditPageViewModelProvider.notifier)
-                .goBack(context),
+                .goBack(),
           ),
           SliverToBoxAdapter(
             child: Padding(

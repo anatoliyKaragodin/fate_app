@@ -3,12 +3,14 @@ import 'package:fate_app/features/characters/data/datasources/characters_lds.dar
 import 'package:fate_app/features/characters/data/datasources/local/sqlite/characters_lds_impl.dart';
 import 'package:fate_app/features/characters/domain/repositories/characters_repository.dart';
 import 'package:fate_app/features/characters/domain/usecases/delete_character.dart';
+import 'package:fate_app/features/characters/presentation/pages/characters_list_page/characters_list_page_view_model.dart';
 import 'package:fate_app/features/file_management/data/datasources/file_lds_intrerface.dart';
 import 'package:fate_app/features/file_management/data/repositories/file_repository_impl.dart';
 import 'package:fate_app/features/file_management/domain/repositories/file_repository.dart';
 import 'package:fate_app/features/file_management/domain/usecases/delete_file.dart';
 import 'package:fate_app/features/file_management/domain/usecases/copy_file.dart';
 import 'package:fate_app/features/characters/domain/usecases/save_new_character.dart';
+import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:fate_app/features/characters/domain/usecases/get_characters.dart';
 import 'package:fate_app/features/characters/domain/usecases/update_character.dart';
@@ -19,6 +21,8 @@ import '../../features/file_management/data/datasources/local/file_LDS_impl.dart
 import '../../features/file_management/domain/usecases/save_pdf.dart';
 
 final getIt = GetIt.instance;
+
+final get = Get;
 
 Future<void> setupDI() async {
   final db = await DatabaseManager.initDB(LDSconstants.dbCharacters);
@@ -50,4 +54,7 @@ Future<void> setupDI() async {
   getIt.registerLazySingleton(() => CopyFile(getIt()));
 
   getIt.registerLazySingleton(() => DeleteFile(getIt()));
+
+  // VM (getX)
+  get.put(CharactersListPageVM(getIt.get(), getIt.get(), getIt.get()));
 }

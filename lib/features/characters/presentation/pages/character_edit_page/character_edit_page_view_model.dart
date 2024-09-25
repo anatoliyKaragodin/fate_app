@@ -14,6 +14,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:developer' as dev;
 import 'package:fate_app/features/characters/domain/usecases/save_new_character.dart';
+import 'package:get/get.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -82,9 +83,11 @@ class CharacterEditPageViewModel extends StateNotifier<CharacterEditPageState> {
       dev.log('Character saved: $character');
     }
 
-    ref.read(charactersListPageViewProvider.notifier).fetchCharacters();
+    final CharactersListPageVM charactersListPageVM = Get.find();
 
-    goBack(context);
+    charactersListPageVM.fetchCharacters();
+
+    goBack();
   }
 
   Future<void> exportPDF(BuildContext context, WidgetRef ref) async {
@@ -94,12 +97,14 @@ class CharacterEditPageViewModel extends StateNotifier<CharacterEditPageState> {
 
     _savePdfUC(PdfParams(pdf: pdf, name: state.character.name));
 
-    ref.read(charactersListPageViewProvider.notifier).fetchCharacters();
+    final CharactersListPageVM charactersListPageVM = Get.find();
 
-    goBack(context);
+    charactersListPageVM.fetchCharacters();
+
+    goBack();
   }
 
-  void goBack(BuildContext context) {
+  void goBack() {
     // ref.read(charactersListPageViewProvider.notifier).fetchCharacters();
 
     RouterHelper.router.go(RouterHelper.allCharactersPath);

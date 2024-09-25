@@ -7,6 +7,8 @@ import 'package:fate_app/features/characters/presentation/widgets/common/app_dro
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
 import '../../../../../core/utils/theme/app_text_styles.dart';
 import '../../widgets/common/app_character_small_container.dart';
@@ -17,64 +19,63 @@ class CharactersListPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final vmProvider = ref.watch(charactersListPageViewProvider);
+    final CharactersListPageVM vmProvider = Get.find();
+
+    // final vmProvider = ref.watch(charactersListPageViewProvider);
     final characters = vmProvider.characters;
 
     final updaterProvider = ref.watch(updaterRustoreProvider);
 
     return Scaffold(
-        body: RefreshIndicator(
-      onRefresh: () async {
-        await ref
-            .read(charactersListPageViewProvider.notifier)
-            .fetchCharacters();
-      },
-      child: CustomScrollView(
-        slivers: [
-          _AppBar(
-            onTapSort: (value) =>
-                ref.read(charactersListPageViewProvider.notifier).sortBy(value),
-            onTapNew: () => ref
-                .read(charactersListPageViewProvider.notifier)
-                .createCharacter(ref),
-            selectedSort: vmProvider.sortType.toLabel(),
-          ),
-          if (updaterProvider)
-            SliverToBoxAdapter(
-              child: Center(
-                child: AppButtonWidget(
-                    text: 'Обновить приложение',
-                    onPressed: () =>
-                        ref.read(updaterRustoreProvider.notifier).update()),
+        body: Obx(() {
+          return RefreshIndicator(
+                onRefresh: () async {
+                  await vmProvider.fetchCharacters();
+          // await ref
+          //     .read(charactersListPageViewProvider.notifier)
+          //     .fetchCharacters();
+                },
+                child: CustomScrollView(
+          slivers: [
+            _AppBar(
+              onTapSort: (value) =>
+                  vmProvider.sortBy(value),
+              onTapNew: () => vmProvider.createCharacter(ref),
+              selectedSort: vmProvider.sortType.value.toLabel(),
+            ),
+            if (updaterProvider)
+              SliverToBoxAdapter(
+                child: Center(
+                  child: AppButtonWidget(
+                      text: 'Обновить приложение',
+                      onPressed: () =>
+                          ref.read(updaterRustoreProvider.notifier).update()),
+                ),
+              ),
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (BuildContext context, int index) {
+                  final character = characters[index];
+          
+                  return Padding(
+                    padding: EdgeInsets.all(appPadding.bigW(context)),
+                    child: AppCharacterSmallContainer(
+                      character: character,
+                      onTap: () => vmProvider.goCharacterPlayPage(character, ref),
+                      onTapDelete: () => vmProvider
+                          .onTapDeleteCharacter(context, character),
+                      onTapEdit: () => vmProvider
+                          .editCharacter(character, ref),
+                    ),
+                  );
+                },
+                childCount: characters.length,
               ),
             ),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (BuildContext context, int index) {
-                final character = characters[index];
-
-                return Padding(
-                  padding: EdgeInsets.all(appPadding.bigW(context)),
-                  child: AppCharacterSmallContainer(
-                    character: character,
-                    onTap: () => ref
-                        .read(charactersListPageViewProvider.notifier)
-                        .goCharacterEditPage(ref, character),
-                    onTapDelete: () => ref
-                        .read(charactersListPageViewProvider.notifier)
-                        .onTapDeleteCharacter(context, character),
-                    onTapEdit: () => ref
-                        .read(charactersListPageViewProvider.notifier)
-                        .editCharacter(ref, character),
-                  ),
-                );
-              },
-              childCount: characters.length,
-            ),
-          ),
-        ],
-      ),
-    ));
+          ],
+                ),
+              );}
+        ));
   }
 }
 

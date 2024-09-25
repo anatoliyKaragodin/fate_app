@@ -7,6 +7,7 @@ import 'package:fate_app/features/characters/presentation/mapper/state_mapper.da
 import 'package:fate_app/features/characters/presentation/pages/characters_list_page/characters_list_page_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get/get.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import 'dart:developer' as dev;
@@ -45,9 +46,9 @@ class CharacterPlayPageVm extends StateNotifier<CharacterPlayPageState> {
   }
 
   void goBack(WidgetRef ref) {
-    ref
-        .read(charactersListPageViewProvider.notifier)
-        .updateCharacter(state.character);
+    final CharactersListPageVM charactersListPageVM = Get.find();
+
+    charactersListPageVM.updateCharacter(state.character);
 
     WakelockPlus.disable();
 
