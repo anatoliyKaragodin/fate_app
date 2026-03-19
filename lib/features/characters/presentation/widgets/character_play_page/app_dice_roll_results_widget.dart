@@ -102,7 +102,8 @@ class _RollResultText extends StatelessWidget {
                     style: textStyle),
                 TextSpan(text: 'Итог: ${result.result}. ', style: textStyle),
                 TextSpan(
-                    text: '[успехи: ${result.successes}, провалы: ${result.fails}]',
+                    text:
+                        '[успехи: ${result.successes}, провалы: ${result.fails}]',
                     style: appTextStyles.textUnfocus(context)),
               ]))
             ],

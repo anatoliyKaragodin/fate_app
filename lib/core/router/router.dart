@@ -6,6 +6,12 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/characters/presentation/pages/character_play_page/character_play_page.dart';
 
+class FullscreenImageArgs {
+  final String imagePath;
+
+  const FullscreenImageArgs({required this.imagePath});
+}
+
 class RouterHelper {
   static final RouterHelper _instance = RouterHelper._internal();
 
@@ -26,9 +32,6 @@ class RouterHelper {
   static const String characterEditPath = '/character_edit';
   static const String characterPlayPath = '/character_play';
   static const String fullscreenImagePath = '/fullscreen_image';
-
-  BuildContext get context =>
-      router.routerDelegate.navigatorKey.currentContext!;
 
   GoRouterDelegate get routerDelegate => router.routerDelegate;
 
@@ -61,11 +64,20 @@ class RouterHelper {
       GoRoute(
         path: fullscreenImagePath,
         pageBuilder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>?;
-          
+          final args = state.extra as FullscreenImageArgs?;
+
+          if (args == null) {
+            return getPage(
+              child: const Scaffold(
+                body: Center(child: Text('No image provided')),
+              ),
+              state: state,
+            );
+          }
+
           return getPage(
               child: FullscreenImagePage(
-                imagePath: extra?['imagePath'],
+                imagePath: args.imagePath,
               ),
               state: state);
         },

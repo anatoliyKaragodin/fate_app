@@ -10,5 +10,4 @@ abstract class CharactersRepository {
   Future<Either<Failure, void>> update(CharacterEntity character);
 
   Future<Either<Failure, void>> deleteCharacter(int id);
-
 }

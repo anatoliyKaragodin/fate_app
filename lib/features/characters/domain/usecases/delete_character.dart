@@ -4,8 +4,8 @@ import 'package:fate_app/core/usecases/usecase.dart';
 
 import '../repositories/characters_repository.dart';
 
-class DeleteCharacter extends UseCase<void ,int> {
-final CharactersRepository repository;
+class DeleteCharacter extends UseCase<void, int> {
+  final CharactersRepository repository;
 
   DeleteCharacter(this.repository);
 

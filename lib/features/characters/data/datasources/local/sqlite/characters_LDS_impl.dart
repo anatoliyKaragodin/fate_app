@@ -1,4 +1,4 @@
-import 'package:fate_app/core/error/exeption.dart';
+import 'package:fate_app/core/error/exception.dart';
 import 'package:fate_app/features/characters/data/datasources/characters_lds.dart';
 import 'package:fate_app/features/characters/data/datasources/local/sqlite/LDS_constants.dart';
 import 'package:fate_app/features/characters/data/mapper/models_mapper.dart';
@@ -22,9 +22,10 @@ class CharactersLDSImpl implements CharactersLDS {
       return List.generate(maps.length, (i) {
         return CharacterModel.fromSQLite(maps[i]);
       });
-    } catch (e) {
-      dev.log(e.toString());
-      throw CacheException();
+    } catch (e, st) {
+      dev.log('CharactersLDSImpl.getAll error: $e', stackTrace: st);
+      throw CacheException(
+          message: 'Failed to load characters', cause: e, stackTrace: st);
     }
   }
 
@@ -43,6 +44,9 @@ class CharactersLDSImpl implements CharactersLDS {
 
   @override
   Future<void> update(CharacterModel character) async {
+    if (character.localeId == null) {
+      throw CacheException();
+    }
     final res = await _db.update(
       LDSconstants.tableCharacters,
       character.toSQLite(),
@@ -50,7 +54,8 @@ class CharactersLDSImpl implements CharactersLDS {
       whereArgs: [character.localeId],
     );
 
-    if (res != character.localeId) {
+    // sqflite update() returns number of affected rows
+    if (res != 1) {
       throw CacheException();
     }
   }

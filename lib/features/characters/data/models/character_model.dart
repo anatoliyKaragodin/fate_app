@@ -63,7 +63,6 @@ class CharacterModel with CharacterModelMappable {
   Map<String, dynamic> toSQLite() {
     return {
       'remote_id': remoteId,
-      'locale_id': localeId,
       'name': name,
       'description': description,
       'image': image,

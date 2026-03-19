@@ -50,3 +50,6 @@ android/app/google-services.json
 *.env
 
 fate-char-firebase-adminsdk-y0p5u-0e0701fc49.json
+
+# FVM Version Cache
+.fvm/

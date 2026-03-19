@@ -1,5 +1,6 @@
 import 'package:fate_app/core/utils/theme/app_padding.dart';
 import 'package:fate_app/core/utils/theme/app_text_styles.dart';
+import 'package:fate_app/core/router/router.dart';
 import 'package:fate_app/features/characters/domain/entities/mapper/entities_mapper.dart';
 import 'package:fate_app/features/characters/presentation/pages/character_edit_page/character_edit_page_view_model.dart';
 import 'package:fate_app/core/utils/app_size.dart';
@@ -8,17 +9,98 @@ import 'package:fate_app/features/characters/presentation/widgets/common/app_dro
 import 'package:fate_app/features/characters/presentation/widgets/common/app_focus_container_widget.dart';
 import 'package:fate_app/features/characters/presentation/widgets/common/app_icon_button.dart';
 import 'package:fate_app/features/characters/presentation/widgets/common/app_text_field_widget.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
+import 'package:image_cropper/image_cropper.dart';
 
 import '../../widgets/common/app_character_avatar_widget.dart';
+import '../../widgets/common/app_bottom_sheet.dart';
 
-class CharacterEditPage extends ConsumerWidget {
+class CharacterEditPage extends ConsumerStatefulWidget {
   const CharacterEditPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CharacterEditPage> createState() => _CharacterEditPageState();
+}
+
+class _CharacterEditPageState extends ConsumerState<CharacterEditPage> {
+  late final TextEditingController _nameController;
+  late final TextEditingController _conceptController;
+  late final TextEditingController _problemController;
+  late final TextEditingController _descriptionController;
+  late final List<TextEditingController> _aspectControllers;
+  late final List<TextEditingController> _stuntControllers;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController();
+    _conceptController = TextEditingController();
+    _problemController = TextEditingController();
+    _descriptionController = TextEditingController();
+    _aspectControllers = List.generate(3, (_) => TextEditingController());
+    _stuntControllers = List.generate(3, (_) => TextEditingController());
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _conceptController.dispose();
+    _problemController.dispose();
+    _descriptionController.dispose();
+    for (final c in _aspectControllers) {
+      c.dispose();
+    }
+    for (final c in _stuntControllers) {
+      c.dispose();
+    }
+    super.dispose();
+  }
+
+  void _syncControllers(CharacterEntity character) {
+    _nameController.text = character.name;
+    _conceptController.text = character.concept;
+    _problemController.text = character.problem;
+    _descriptionController.text = character.description;
+    for (int i = 0; i < _aspectControllers.length; i++) {
+      _aspectControllers[i].text =
+          i < character.aspects.length ? character.aspects[i] : '';
+    }
+    for (int i = 0; i < _stuntControllers.length; i++) {
+      _stuntControllers[i].text = i < character.stunts.length
+          ? (character.stunts[i].description ?? '')
+          : '';
+    }
+  }
+
+  void _showBottomSheet(BuildContext context, String text) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => AppBottomSheet(text: text),
+    );
+  }
+
+  Future<String?> _cropImage(String filePath) async {
+    final croppedFile = await ImageCropper().cropImage(
+      sourcePath: filePath,
+      aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
+    );
+    return croppedFile?.path;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    ref.listen(characterEditPageViewModelProvider, (prev, next) {
+      final prevId = prev?.character.localeId;
+      final nextId = next.character.localeId;
+
+      if (prevId != nextId || prev?.character != next.character) {
+        _syncControllers(next.character);
+      }
+    });
+
     final wmProvider = ref.watch(characterEditPageViewModelProvider);
 
     return Scaffold(
@@ -27,9 +109,8 @@ class CharacterEditPage extends ConsumerWidget {
         slivers: [
           _AppBar(
             image: wmProvider.character.image,
-            onTapBack: () => ref
-                .read(characterEditPageViewModelProvider.notifier)
-                .goBack(context),
+            onTapBack: () =>
+                RouterHelper.router.go(RouterHelper.allCharactersPath),
           ),
           SliverToBoxAdapter(
             child: Padding(
@@ -39,61 +120,98 @@ class CharacterEditPage extends ConsumerWidget {
                 children: [
                   AppButtonWidget(
                     text: 'Загрузить аватар',
-                    onPressed: () => ref
-                        .read(characterEditPageViewModelProvider.notifier)
-                        .loadImage(context),
+                    onPressed: () async {
+                      final result = await FilePicker.platform.pickFiles(
+                        type: FileType.image,
+                        allowMultiple: false,
+                      );
+
+                      if (result == null || result.files.isEmpty) return;
+
+                      final pickedPath = result.files.first.path;
+                      if (pickedPath == null) return;
+
+                      final croppedPath = await _cropImage(pickedPath);
+                      if (croppedPath == null) return;
+
+                      await ref
+                          .read(characterEditPageViewModelProvider.notifier)
+                          .importAvatar(croppedPath);
+                    },
                   ),
                   Gap(appPadding.bigH(context)),
                   AppFocusContainerWidget(
                     child: AppTextFieldWidget(
-                      controller: wmProvider.nameController,
+                      controller: _nameController,
                       hintText: 'Имя',
                       maxLength: 100,
-                      onTapHelp: () => ref
-                          .read(characterEditPageViewModelProvider.notifier)
-                          .showHelp(context, CharHelpType.name),
+                      onTapHelp: () => _showBottomSheet(
+                        context,
+                        ref
+                            .read(characterEditPageViewModelProvider.notifier)
+                            .helpText(CharHelpType.name),
+                      ),
                     ),
                   ),
                   Gap(appPadding.bigH(context)),
                   AppFocusContainerWidget(
                     child: AppTextFieldWidget(
-                      controller: wmProvider.conceptController,
+                      controller: _conceptController,
                       hintText: 'Концепт',
                       maxLength: 100,
-                      onTapHelp: () => ref
-                          .read(characterEditPageViewModelProvider.notifier)
-                          .showHelp(context, CharHelpType.concept),
+                      onTapHelp: () => _showBottomSheet(
+                        context,
+                        ref
+                            .read(characterEditPageViewModelProvider.notifier)
+                            .helpText(CharHelpType.concept),
+                      ),
                     ),
                   ),
                   Gap(appPadding.bigH(context)),
                   _Skills(
                     skills: wmProvider.character.skills,
                     skillAvailableList: wmProvider.skillAvailableList,
+                    onTapHelp: () => _showBottomSheet(
+                      context,
+                      ref
+                          .read(characterEditPageViewModelProvider.notifier)
+                          .helpText(CharHelpType.skill),
+                    ),
                   ),
                   Gap(appPadding.bigH(context)),
                   AppFocusContainerWidget(
                     child: AppTextFieldWidget(
-                      controller: wmProvider.problemController,
+                      controller: _problemController,
                       hintText: 'Проблема',
                       maxLength: 100,
-                      onTapHelp: () => ref
-                          .read(characterEditPageViewModelProvider.notifier)
-                          .showHelp(context, CharHelpType.problem),
+                      onTapHelp: () => _showBottomSheet(
+                        context,
+                        ref
+                            .read(characterEditPageViewModelProvider.notifier)
+                            .helpText(CharHelpType.problem),
+                      ),
                     ),
                   ),
                   Gap(appPadding.bigH(context)),
                   _Aspects(
-                      aspectControllers: wmProvider.aspectControllers,
-                      onTapHelp: () => ref
-                          .read(characterEditPageViewModelProvider.notifier)
-                          .showHelp(context, CharHelpType.aspect)),
+                      aspectControllers: _aspectControllers,
+                      onTapHelp: () => _showBottomSheet(
+                            context,
+                            ref
+                                .read(
+                                    characterEditPageViewModelProvider.notifier)
+                                .helpText(CharHelpType.aspect),
+                          )),
                   Gap(appPadding.bigH(context)),
                   _Stunts(
-                    stuntControllers: wmProvider.stuntControllers,
+                    stuntControllers: _stuntControllers,
                     stunts: wmProvider.character.stunts,
-                    onTapHelp: () => ref
-                        .read(characterEditPageViewModelProvider.notifier)
-                        .showHelp(context, CharHelpType.stunt),
+                    onTapHelp: () => _showBottomSheet(
+                      context,
+                      ref
+                          .read(characterEditPageViewModelProvider.notifier)
+                          .helpText(CharHelpType.stunt),
+                    ),
                     onSelectStuntType: (int index, StuntType? value) {
                       ref
                           .read(characterEditPageViewModelProvider.notifier)
@@ -103,12 +221,15 @@ class CharacterEditPage extends ConsumerWidget {
                   Gap(appPadding.bigH(context)),
                   AppFocusContainerWidget(
                     child: AppTextFieldWidget(
-                      controller: wmProvider.descriptionController,
+                      controller: _descriptionController,
                       hintText: 'Описание',
                       maxLength: 500,
-                      onTapHelp: () => ref
-                          .read(characterEditPageViewModelProvider.notifier)
-                          .showHelp(context, CharHelpType.description),
+                      onTapHelp: () => _showBottomSheet(
+                        context,
+                        ref
+                            .read(characterEditPageViewModelProvider.notifier)
+                            .helpText(CharHelpType.description),
+                      ),
                     ),
                   ),
                   Gap(appPadding.bigH(context)),
@@ -117,18 +238,80 @@ class CharacterEditPage extends ConsumerWidget {
                     children: [
                       AppButtonWidget(
                           text: 'Экспорт pdf',
-                          onPressed: () {
-                            ref
-                                .read(
-                                    characterEditPageViewModelProvider.notifier)
-                                .exportPDF(context, ref);
+                          onPressed: () async {
+                            final notifier = ref.read(
+                                characterEditPageViewModelProvider.notifier);
+                            final character = wmProvider.character;
+
+                            if (_nameController.text.isEmpty) {
+                              _showBottomSheet(
+                                  context, 'Напишите имя персонажа');
+                              return;
+                            }
+                            if (_conceptController.text.isEmpty) {
+                              _showBottomSheet(context, 'Напишите концепт');
+                              return;
+                            }
+                            if (character.skills.any((s) => s.value == null)) {
+                              _showBottomSheet(context, 'Выберите скиллы');
+                              return;
+                            }
+
+                            final ok = await notifier.saveCharacter(
+                              ref,
+                              name: _nameController.text,
+                              concept: _conceptController.text,
+                              problem: _problemController.text,
+                              description: _descriptionController.text,
+                              aspects: _aspectControllers
+                                  .map((c) => c.text)
+                                  .toList(),
+                              stunts:
+                                  _stuntControllers.map((c) => c.text).toList(),
+                            );
+
+                            if (!ok) return;
+
+                            final pdf = await notifier.createPdf();
+                            await notifier.exportPDF(pdf);
+                            RouterHelper.router
+                                .go(RouterHelper.allCharactersPath);
                           }),
                       AppButtonWidget(
                         text: 'Сохранить',
-                        onPressed: () {
-                          ref
-                              .read(characterEditPageViewModelProvider.notifier)
-                              .saveCharacter(context, ref);
+                        onPressed: () async {
+                          final notifier = ref.read(
+                              characterEditPageViewModelProvider.notifier);
+                          final character = wmProvider.character;
+
+                          if (_nameController.text.isEmpty) {
+                            _showBottomSheet(context, 'Напишите имя персонажа');
+                            return;
+                          }
+                          if (_conceptController.text.isEmpty) {
+                            _showBottomSheet(context, 'Напишите концепт');
+                            return;
+                          }
+                          if (character.skills.any((s) => s.value == null)) {
+                            _showBottomSheet(context, 'Выберите скиллы');
+                            return;
+                          }
+
+                          final ok = await notifier.saveCharacter(
+                            ref,
+                            name: _nameController.text,
+                            concept: _conceptController.text,
+                            problem: _problemController.text,
+                            description: _descriptionController.text,
+                            aspects:
+                                _aspectControllers.map((c) => c.text).toList(),
+                            stunts:
+                                _stuntControllers.map((c) => c.text).toList(),
+                          );
+                          if (!ok) return;
+
+                          RouterHelper.router
+                              .go(RouterHelper.allCharactersPath);
                         },
                       ),
                     ],
@@ -275,7 +458,7 @@ class _SkillColumn extends StatelessWidget {
       children: List.generate(
           skills.length,
           (index) => AppDropdownMenu<int>(
-            height: 30.height(context),
+                height: 30.height(context),
                 width: width,
                 label: skills[index].type.toLabel(),
                 menuItems: skillAvailableList.contains(skills[index].value)
@@ -291,10 +474,14 @@ class _SkillColumn extends StatelessWidget {
 }
 
 class _Skills extends ConsumerWidget {
-  const _Skills({required this.skillAvailableList, required this.skills});
+  const _Skills(
+      {required this.skillAvailableList,
+      required this.skills,
+      required this.onTapHelp});
 
   final List<SkillEntity> skills;
   final List<int?> skillAvailableList;
+  final VoidCallback onTapHelp;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -307,10 +494,7 @@ class _Skills extends ConsumerWidget {
               'Подходы',
               style: appTextStyles.text1(context),
             ),
-            AppIconButton(
-                onTap: () => ref
-                    .read(characterEditPageViewModelProvider.notifier)
-                    .showHelp(context, CharHelpType.skill))
+            AppIconButton(onTap: onTapHelp)
           ],
         ),
         Row(

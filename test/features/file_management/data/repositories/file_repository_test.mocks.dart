@@ -5,7 +5,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i3;
 
-import 'package:fate_app/features/file_management/data/datasources/file_lds_intrerface.dart'
+import 'package:fate_app/features/file_management/data/datasources/file_lds_interface.dart'
     as _i2;
 import 'package:fate_app/features/file_management/domain/usecases/save_pdf.dart'
     as _i4;

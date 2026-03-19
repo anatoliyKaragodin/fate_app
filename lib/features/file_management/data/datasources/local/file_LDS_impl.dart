@@ -1,5 +1,5 @@
-import 'package:fate_app/core/error/exeption.dart'; // Убедитесь, что у вас есть этот импорт
-import 'package:fate_app/features/file_management/data/datasources/file_lds_intrerface.dart';
+import 'package:fate_app/core/error/exception.dart';
+import 'package:fate_app/features/file_management/data/datasources/file_lds_interface.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
@@ -11,8 +11,6 @@ class FileLdsImpl implements FileLDS {
   @override
   Future<String?> copy(String filePath) async {
     try {
-      
-
       final directory = await getApplicationDocumentsDirectory();
 
       String fileName = filePath.split('/').last;
@@ -32,8 +30,9 @@ class FileLdsImpl implements FileLDS {
       await File(filePath).copy(savedFile.path);
 
       return savedFile.path;
-    } catch (e) {
-      throw CacheException();
+    } catch (e, st) {
+      throw CacheException(
+          message: 'Failed to copy file', cause: e, stackTrace: st);
     }
   }
 
@@ -50,10 +49,12 @@ class FileLdsImpl implements FileLDS {
 
         dev.log('PDF сохранен: $newFilePath');
       } else {
-        throw CacheException();
+        throw const CacheException(message: 'Directory is not selected');
       }
-    } catch (e) {
-      throw CacheException();
+    } catch (e, st) {
+      if (e is CacheException) rethrow;
+      throw CacheException(
+          message: 'Failed to save PDF', cause: e, stackTrace: st);
     }
   }
 
@@ -64,10 +65,12 @@ class FileLdsImpl implements FileLDS {
       if (await file.exists()) {
         await file.delete();
       } else {
-        throw CacheException();
+        throw const CacheException(message: 'File does not exist');
       }
-    } catch (e) {
-      throw CacheException();
+    } catch (e, st) {
+      if (e is CacheException) rethrow;
+      throw CacheException(
+          message: 'Failed to delete file', cause: e, stackTrace: st);
     }
   }
 }

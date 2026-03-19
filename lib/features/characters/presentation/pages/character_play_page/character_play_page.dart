@@ -15,13 +15,49 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
+import '../../widgets/common/app_roll_dice_widget.dart';
 
-class CharacterPlayPage extends ConsumerWidget {
+class CharacterPlayPage extends ConsumerStatefulWidget {
   const CharacterPlayPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CharacterPlayPage> createState() => _CharacterPlayPageState();
+}
+
+class _CharacterPlayPageState extends ConsumerState<CharacterPlayPage> {
+  late final List<TextEditingController> _consequencesControllers;
+
+  @override
+  void initState() {
+    super.initState();
+    _consequencesControllers = List.generate(3, (_) => TextEditingController());
+  }
+
+  @override
+  void dispose() {
+    for (final c in _consequencesControllers) {
+      c.dispose();
+    }
+    super.dispose();
+  }
+
+  void _syncConsequences(CharacterEntity character) {
+    for (int i = 0; i < _consequencesControllers.length; i++) {
+      _consequencesControllers[i].text = i < character.consequences.length
+          ? (character.consequences[i] ?? '')
+          : '';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final vm = characterPlayPageVMProvider;
+    ref.listen(vm, (prev, next) {
+      if (prev?.character != next.character) {
+        _syncConsequences(next.character);
+      }
+    });
+
     final vmProvider = ref.watch(vm);
     final character = vmProvider.character;
     final textStyle = vmProvider.isCompact
@@ -58,7 +94,11 @@ class CharacterPlayPage extends ConsumerWidget {
                   },
                   fateTokens: character.fateTokens ?? 0,
                   isCompact: vmProvider.isCompact,
-                  onTapBack: () => ref.read(vm.notifier).goBack(ref),
+                  onTapBack: () {
+                    ref.read(vm.notifier).persistCharacterToList(ref);
+                    ref.read(vm.notifier).disableWakelock();
+                    RouterHelper.router.go(RouterHelper.allCharactersPath);
+                  },
                   onTapCompact: ref.read(vm.notifier).switchCompactMode,
                 ),
                 SliverToBoxAdapter(
@@ -73,7 +113,8 @@ class CharacterPlayPage extends ConsumerWidget {
                         _ImageNameConceptWidget(
                           onShowFullAvatar: () => RouterHelper.router.push(
                               RouterHelper.fullscreenImagePath,
-                              extra: {'imagePath': character.image!}),
+                              extra: FullscreenImageArgs(
+                                  imagePath: character.image!)),
                           character: character,
                           textStyle: textStyle,
                           isCompact: vmProvider.isCompact,
@@ -83,8 +124,23 @@ class CharacterPlayPage extends ConsumerWidget {
                           paddingH: paddingH,
                           skills: character.skills,
                           textStyle: textStyle,
-                          onTap: (index) =>
-                              ref.read(vm.notifier).onTapSkill(context, index),
+                          onTap: (index) {
+                            if (character.skills[index].value == null) return;
+
+                            showAdaptiveDialog(
+                              barrierDismissible: false,
+                              context: context,
+                              builder: (context) => AppRollDiceWidget(
+                                skill: character.skills[index],
+                                onCancel: () => RouterHelper.router.pop(),
+                                onRoll: (value) {
+                                  RouterHelper.router.pop();
+                                  ref.read(vm.notifier).rollSkill(
+                                      character.skills[index], value + 4);
+                                },
+                              ),
+                            );
+                          },
                         ),
                         Gap(paddingH),
                         if (character.problem.isNotEmpty)
@@ -122,8 +178,7 @@ class CharacterPlayPage extends ConsumerWidget {
                                 .read(vm.notifier)
                                 .updateConsequence(index, value),
                             textStyle: textStyle,
-                            consequencesContollers:
-                                vmProvider.consequencesControllers),
+                            consequencesContollers: _consequencesControllers),
                         Gap(paddingH),
                         AppFocusContainerWidget(
                           child: _LabelAndText(

@@ -1,9 +1,15 @@
 import 'package:fate_app/core/rustore_updater/rustore_updater.dart';
+import 'package:fate_app/core/router/router.dart';
 import 'package:fate_app/core/utils/theme/app_padding.dart';
+import 'package:fate_app/features/characters/domain/entities/mapper/entities_mapper.dart';
+import 'package:fate_app/features/characters/presentation/pages/character_edit_page/character_edit_page_view_model.dart';
+import 'package:fate_app/features/characters/presentation/pages/character_play_page/character_play_page_vm.dart';
 import 'package:fate_app/features/characters/presentation/pages/characters_list_page/characters_list_page_view_model.dart';
 import 'package:fate_app/core/utils/app_size.dart';
 import 'package:fate_app/features/characters/presentation/widgets/common/app_button_widget.dart';
 import 'package:fate_app/features/characters/presentation/widgets/common/app_dropdown_menu.dart';
+import 'package:fate_app/features/characters/presentation/widgets/common/app_warning_dialog_widget.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
@@ -34,9 +40,13 @@ class CharactersListPage extends ConsumerWidget {
           _AppBar(
             onTapSort: (value) =>
                 ref.read(charactersListPageViewProvider.notifier).sortBy(value),
-            onTapNew: () => ref
-                .read(charactersListPageViewProvider.notifier)
-                .createCharacter(ref),
+            onTapNew: () {
+              final character = CharacterEntity.empty();
+              ref
+                  .read(characterEditPageViewModelProvider.notifier)
+                  .initNewCharacter(character);
+              RouterHelper.router.go(RouterHelper.characterEditPath);
+            },
             selectedSort: vmProvider.sortType.toLabel(),
           ),
           if (updaterProvider)
@@ -57,15 +67,39 @@ class CharactersListPage extends ConsumerWidget {
                   padding: EdgeInsets.all(appPadding.bigW(context)),
                   child: AppCharacterSmallContainer(
                     character: character,
-                    onTap: () => ref
-                        .read(charactersListPageViewProvider.notifier)
-                        .goCharacterEditPage(ref, character),
-                    onTapDelete: () => ref
-                        .read(charactersListPageViewProvider.notifier)
-                        .onTapDeleteCharacter(context, character),
-                    onTapEdit: () => ref
-                        .read(charactersListPageViewProvider.notifier)
-                        .editCharacter(ref, character),
+                    onTap: () {
+                      ref
+                          .read(characterPlayPageVMProvider.notifier)
+                          .initCharacter(character);
+                      RouterHelper.router.go(RouterHelper.characterPlayPath);
+                    },
+                    onTapDelete: () {
+                      showCupertinoModalPopup(
+                        context: context,
+                        builder: (context) {
+                          return AppWarningDialogWidget(
+                            button1Text: 'Да',
+                            button2Text: 'Нет',
+                            onTapButton1: () {
+                              ref
+                                  .read(charactersListPageViewProvider.notifier)
+                                  .deleteCharacter(character);
+                              Navigator.of(context).pop();
+                            },
+                            onTapButton2: () => Navigator.of(context).pop(),
+                            text:
+                                'Вы уверены, что хотите предать ${character.name.toUpperCase()} забвению?',
+                            title: 'Внимание!',
+                          );
+                        },
+                      );
+                    },
+                    onTapEdit: () {
+                      ref
+                          .read(characterEditPageViewModelProvider.notifier)
+                          .initNewCharacter(character);
+                      RouterHelper.router.go(RouterHelper.characterEditPath);
+                    },
                   ),
                 );
               },

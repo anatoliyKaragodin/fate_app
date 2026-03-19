@@ -27,7 +27,7 @@ extension SizeIntExtention on int {
     return AppSize.height(toDouble(), context);
   }
 
-   double width(BuildContext context) {
+  double width(BuildContext context) {
     return AppSize.width(toDouble(), context);
   }
 }
@@ -37,7 +37,7 @@ extension SizeDoubleExtention on double {
     return AppSize.height(this, context);
   }
 
-   double width(BuildContext context) {
+  double width(BuildContext context) {
     return AppSize.width(this, context);
   }
 }

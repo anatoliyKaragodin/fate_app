@@ -17,7 +17,7 @@ class LDSconstants {
   static const columnProblems = 'problem';
   static const columnAspects = 'aspects';
   static const columnStunts = 'stunts';
-  
+
   // Новые колонки
   static const columnAudio = 'audio'; // Путь к аудиофайлу
   static const columnCreatedAt = 'created_at'; // Дата создания

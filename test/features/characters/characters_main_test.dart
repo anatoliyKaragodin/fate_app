@@ -11,5 +11,4 @@ void main() {
   characters_usecases_test.main();
   character_repository_test.main();
   characters_lds_impl_test.main();
-  
 }

@@ -1,6 +1,4 @@
-
 import 'package:fate_app/features/characters/domain/entities/mapper/entities_mapper.dart';
-import 'package:fate_app/core/router/router.dart';
 import 'package:fate_app/features/characters/presentation/utils/character_help_text.dart';
 import 'package:fate_app/features/file_management/domain/usecases/delete_file.dart';
 import 'package:fate_app/features/file_management/domain/usecases/copy_file.dart';
@@ -8,19 +6,15 @@ import 'package:fate_app/features/characters/domain/usecases/update_character.da
 import 'package:fate_app/features/characters/presentation/mapper/state_mapper.dart';
 import 'package:fate_app/features/characters/presentation/pages/characters_list_page/characters_list_page_view_model.dart';
 import 'package:fate_app/features/characters/presentation/widgets/common/app_pdf_widget.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:developer' as dev;
 import 'package:fate_app/features/characters/domain/usecases/save_new_character.dart';
-import 'package:image_cropper/image_cropper.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 import '../../../../../core/di/di_container.dart';
 import '../../../../file_management/domain/usecases/save_pdf.dart';
-import '../../widgets/common/app_bottom_sheet.dart';
 
 final characterEditPageViewModelProvider =
     StateNotifierProvider<CharacterEditPageViewModel, CharacterEditPageState>(
@@ -42,68 +36,58 @@ class CharacterEditPageViewModel extends StateNotifier<CharacterEditPageState> {
       this._savePdfUC, this._copyFileUC, this._deleteFileUC)
       : super(CharacterEditPageState(
             character: CharacterEntity.empty(),
-            skillAvailableList: _defaultAvailableSkillList,
-            aspectControllers: [
-              TextEditingController(),
-              TextEditingController(),
-              TextEditingController(),
-            ],
-            conceptController: TextEditingController(),
-            descriptionController: TextEditingController(),
-            nameController: TextEditingController(),
-            problemController: TextEditingController(),
-            stuntControllers: [
-              TextEditingController(),
-              TextEditingController(),
-              TextEditingController(),
-            ]));
+            skillAvailableList: _defaultAvailableSkillList));
 
   static const List<int?> _defaultAvailableSkillList = [null, 0, 1, 1, 2, 2, 3];
 
-  void saveCharacter(BuildContext context, WidgetRef ref) {
-    _saveAspects();
-    _saveName();
-    _saveConcept();
-    _saveProblem();
-    _saveStuntsDescriptions();
-    _saveDescription();
+  Future<bool> saveCharacter(
+    WidgetRef ref, {
+    required String name,
+    required String concept,
+    required String problem,
+    required String description,
+    required List<String> aspects,
+    required List<String> stunts,
+  }) async {
+    final updatedCharacter = state.character.copyWith(
+      name: name,
+      concept: concept,
+      problem: problem,
+      description: description,
+      aspects: aspects,
+      stunts: [
+        for (int i = 0; i < state.character.stunts.length; i++)
+          state.character.stunts[i].copyWith(
+            description: i < stunts.length ? stunts[i] : null,
+          ),
+      ],
+    );
 
-    final character = state.character;
-
-    if (!_checkCharacterComplete(context, character)) {
-      return;
+    if (!_isCharacterComplete(updatedCharacter)) {
+      return false;
     }
 
-    if (character.localeId != null) {
-      _updateCharacterUC(character);
-      dev.log('Character updated: $character');
+    state = state.copyWith(character: updatedCharacter);
+
+    if (updatedCharacter.localeId != null) {
+      await _updateCharacterUC(updatedCharacter);
+      dev.log('Character updated: $updatedCharacter');
     } else {
-      _saveNewCharacterUC(character);
-      dev.log('Character saved: $character');
+      await _saveNewCharacterUC(updatedCharacter);
+      dev.log('Character saved: $updatedCharacter');
     }
 
-    ref.read(charactersListPageViewProvider.notifier).fetchCharacters();
-
-    goBack(context);
+    await ref.read(charactersListPageViewProvider.notifier).fetchCharacters();
+    return true;
   }
 
-  Future<void> exportPDF(BuildContext context, WidgetRef ref) async {
-    saveCharacter(context, ref);
-
-    final pdf = await _createPDF(state.character);
-
-    _savePdfUC(PdfParams(pdf: pdf, name: state.character.name));
-
-    ref.read(charactersListPageViewProvider.notifier).fetchCharacters();
-
-    goBack(context);
+  Future<void> exportPDF(pw.Document pdf) async {
+    await _savePdfUC(PdfParams(pdf: pdf, name: state.character.name));
   }
 
-  void goBack(BuildContext context) {
-    // ref.read(charactersListPageViewProvider.notifier).fetchCharacters();
+  void goBack() {}
 
-    RouterHelper.router.go(RouterHelper.allCharactersPath);
-  }
+  Future<pw.Document> createPdf() => _createPDF(state.character);
 
   void saveStuntType(int stuntIndex, StuntType? value) {
     if (value == null) return;
@@ -130,132 +114,34 @@ class CharacterEditPageViewModel extends StateNotifier<CharacterEditPageState> {
   }
 
   void initNewCharacter(CharacterEntity character) {
-    _updateControllersText(character);
-
     state = state.copyWith(character: character);
     _updateAvailableSkillList();
   }
 
-  void loadImage(BuildContext context) async {
-    final result = await FilePicker.platform
-        .pickFiles(type: FileType.image, allowMultiple: false);
-
-    if (result != null && result.files.isNotEmpty) {
-      final file = result.files.first;
-      dev.log('Выбранный файл: ${file.path}');
-
-      final String? croppedImagePath = await _cropImage(file);
-
-      if (croppedImagePath != null) {
-        if (state.character.image != null) {
-          _deleteFileUC(state.character.image!);
-        }
-
-        _copyImage(croppedImagePath);
-      }
-    } else {
-      dev.log('Файл не был выбран');
-    }
-  }
-
-  void showHelp(BuildContext context, CharHelpType helpType) {
+  String helpText(CharHelpType helpType) {
     switch (helpType) {
       case CharHelpType.name:
-        _showBottomSheet(context, CharacterHelpText.name);
-        break;
+        return CharacterHelpText.name;
       case CharHelpType.concept:
-        _showBottomSheet(context, CharacterHelpText.concept);
-        break;
+        return CharacterHelpText.concept;
       case CharHelpType.description:
-        _showBottomSheet(context, CharacterHelpText.description);
-        break;
+        return CharacterHelpText.description;
       case CharHelpType.skill:
-        _showBottomSheet(context, CharacterHelpText.skill);
-        break;
+        return CharacterHelpText.skill;
       case CharHelpType.aspect:
-        _showBottomSheet(context, CharacterHelpText.aspect);
-        break;
+        return CharacterHelpText.aspect;
       case CharHelpType.stunt:
-        _showBottomSheet(context, CharacterHelpText.stunt);
-        break;
+        return CharacterHelpText.stunt;
       case CharHelpType.problem:
-        _showBottomSheet(context, CharacterHelpText.problem);
-        break;
-      default:
-        return;
+        return CharacterHelpText.problem;
     }
   }
 
   // Приватные методы
-
-  void _saveAspects() {
-    List<String> newAspects = List.from(state.character.aspects);
-
-    for (int i = 0; i < state.aspectControllers.length; i++) {
-      newAspects[i] = state.aspectControllers[i].text;
-    }
-
-    state = state.copyWith(
-        character: state.character.copyWith(aspects: newAspects));
-  }
-
-  void _saveStuntsDescriptions() {
-    List<StuntEntity> newStunts = List.from(state.character.stunts);
-
-    for (int i = 0; i < state.stuntControllers.length; i++) {
-      newStunts[i] =
-          newStunts[i].copyWith(description: state.stuntControllers[i].text);
-    }
-
-    CharacterEntity newCharacter = state.character.copyWith(stunts: newStunts);
-
-    state = state.copyWith(character: newCharacter);
-  }
-
-  void _saveName() {
-    state = state.copyWith(
-        character: state.character.copyWith(name: state.nameController.text));
-  }
-
-  void _saveDescription() {
-    state = state.copyWith(
-        character: state.character
-            .copyWith(description: state.descriptionController.text));
-  }
-
-  void _saveConcept() {
-    state = state.copyWith(
-        character:
-            state.character.copyWith(concept: state.conceptController.text));
-  }
-
-  void _saveProblem() {
-    state = state.copyWith(
-        character:
-            state.character.copyWith(problem: state.problemController.text));
-  }
-
-  bool _checkCharacterComplete(
-      BuildContext context, CharacterEntity character) {
-    dev.log('check character: $character');
-
-    if (character.name.isEmpty) {
-      _showBottomSheet(context, 'Напишите имя персонажа');
-      return false;
-    }
-
-    if (character.concept.isEmpty) {
-      _showBottomSheet(context, 'Напишите концепт');
-      return false;
-    }
-
-    if (character.skills.any((skill) => skill.value == null)) {
-      dev.log('подход равен null');
-      _showBottomSheet(context, 'Выберите скиллы');
-
-      return false;
-    }
-
+  bool _isCharacterComplete(CharacterEntity character) {
+    if (character.name.isEmpty) return false;
+    if (character.concept.isEmpty) return false;
+    if (character.skills.any((skill) => skill.value == null)) return false;
     return true;
   }
 
@@ -290,46 +176,15 @@ class CharacterEditPageViewModel extends StateNotifier<CharacterEditPageState> {
     return pdf;
   }
 
-  void _updateControllersText(CharacterEntity character) {
-    state
-      ..nameController.text = character.name
-      ..conceptController.text = character.concept
-      ..descriptionController.text = character.description
-      ..problemController.text = character.problem;
-
-    for (int i = 0; i < state.aspectControllers.length; i++) {
-      state.aspectControllers[i].text = character.aspects[i];
-    }
-
-    for (int i = 0; i < state.stuntControllers.length; i++) {
-      state.stuntControllers[i].text = character.stunts[i].description ?? '';
-    }
-  }
-
-  void _showBottomSheet(BuildContext context, String text) {
-    showModalBottomSheet(
-        context: context, builder: (context) => AppBottomSheet(text: text));
-  }
-
-  Future<void> _copyImage(String filePath) async {
+  Future<void> importAvatar(String filePath) async {
     final res = await _copyFileUC(filePath);
 
     res.fold((failure) => null, (path) {
+      if (state.character.image != null) {
+        _deleteFileUC(state.character.image!);
+      }
       state = state.copyWith(character: state.character.copyWith(image: path));
-      // _updateCharacterUC(state.character);
     });
-  }
-
-  Future<String?> _cropImage(PlatformFile pickedFile) async {
-    CroppedFile? croppedFile = await ImageCropper().cropImage(
-      sourcePath: pickedFile.path!,
-      aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
-    );
-
-    if (croppedFile == null) {
-      return null;
-    }
-    return croppedFile.path;
   }
 }
 

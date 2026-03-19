@@ -11,7 +11,6 @@ import '../../features/characters/data/datasources/local/sqlite/LDS_constants.da
 class DatabaseManager {
   DatabaseManager._();
 
-
   static Future<void> initFirebase() async {
     // Загружаем переменные из .env файла
     await dotenv.load(fileName: ".env");

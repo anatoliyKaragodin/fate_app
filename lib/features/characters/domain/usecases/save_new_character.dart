@@ -12,7 +12,7 @@ class SaveNewCharacter extends UseCase<void, CharacterEntity> {
   @override
   Future<Either<Failure, void>> call(CharacterEntity params) async {
     // final char = params.copyWith(createdAt: DateTime.now());
-    
+
     return await repository.saveNew(params);
   }
 }

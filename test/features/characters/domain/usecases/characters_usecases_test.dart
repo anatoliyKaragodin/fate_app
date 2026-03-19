@@ -1,5 +1,4 @@
 import 'package:dartz/dartz.dart';
-import 'package:dartz_test/dartz_test.dart';
 import 'package:fate_app/core/error/failure.dart';
 import 'package:fate_app/features/characters/domain/entities/mapper/entities_mapper.dart';
 import 'package:fate_app/features/characters/domain/repositories/characters_repository.dart';
@@ -12,6 +11,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
 import 'characters_usecases_test.mocks.dart';
+import '../../../../test_utils/either_test_x.dart';
 
 @GenerateNiceMocks([MockSpec<CharactersRepository>()])
 void main() {

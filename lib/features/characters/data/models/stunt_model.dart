@@ -5,7 +5,7 @@ class StuntModel extends StuntEntity with StuntModelMappable {
   StuntModel({required StuntType type, String? description})
       : super(type: type, description: description);
 
-      StuntEntity toEntity() {
+  StuntEntity toEntity() {
     return StuntEntity(
       type: type,
       description: description,

@@ -3,7 +3,7 @@ import 'package:fate_app/features/characters/data/datasources/characters_lds.dar
 import 'package:fate_app/features/characters/data/datasources/local/sqlite/characters_lds_impl.dart';
 import 'package:fate_app/features/characters/domain/repositories/characters_repository.dart';
 import 'package:fate_app/features/characters/domain/usecases/delete_character.dart';
-import 'package:fate_app/features/file_management/data/datasources/file_lds_intrerface.dart';
+import 'package:fate_app/features/file_management/data/datasources/file_lds_interface.dart';
 import 'package:fate_app/features/file_management/data/repositories/file_repository_impl.dart';
 import 'package:fate_app/features/file_management/domain/repositories/file_repository.dart';
 import 'package:fate_app/features/file_management/domain/usecases/delete_file.dart';

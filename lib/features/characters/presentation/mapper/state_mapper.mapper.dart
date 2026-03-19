@@ -29,57 +29,17 @@ class CharacterEditPageStateMapper
       v.skillAvailableList;
   static const Field<CharacterEditPageState, List<int?>> _f$skillAvailableList =
       Field('skillAvailableList', _$skillAvailableList);
-  static List<TextEditingController> _$aspectControllers(
-          CharacterEditPageState v) =>
-      v.aspectControllers;
-  static const Field<CharacterEditPageState, List<TextEditingController>>
-      _f$aspectControllers = Field('aspectControllers', _$aspectControllers);
-  static TextEditingController _$conceptController(CharacterEditPageState v) =>
-      v.conceptController;
-  static const Field<CharacterEditPageState, TextEditingController>
-      _f$conceptController = Field('conceptController', _$conceptController);
-  static TextEditingController _$descriptionController(
-          CharacterEditPageState v) =>
-      v.descriptionController;
-  static const Field<CharacterEditPageState, TextEditingController>
-      _f$descriptionController =
-      Field('descriptionController', _$descriptionController);
-  static TextEditingController _$nameController(CharacterEditPageState v) =>
-      v.nameController;
-  static const Field<CharacterEditPageState, TextEditingController>
-      _f$nameController = Field('nameController', _$nameController);
-  static TextEditingController _$problemController(CharacterEditPageState v) =>
-      v.problemController;
-  static const Field<CharacterEditPageState, TextEditingController>
-      _f$problemController = Field('problemController', _$problemController);
-  static List<TextEditingController> _$stuntControllers(
-          CharacterEditPageState v) =>
-      v.stuntControllers;
-  static const Field<CharacterEditPageState, List<TextEditingController>>
-      _f$stuntControllers = Field('stuntControllers', _$stuntControllers);
 
   @override
   final MappableFields<CharacterEditPageState> fields = const {
     #character: _f$character,
     #skillAvailableList: _f$skillAvailableList,
-    #aspectControllers: _f$aspectControllers,
-    #conceptController: _f$conceptController,
-    #descriptionController: _f$descriptionController,
-    #nameController: _f$nameController,
-    #problemController: _f$problemController,
-    #stuntControllers: _f$stuntControllers,
   };
 
   static CharacterEditPageState _instantiate(DecodingData data) {
     return CharacterEditPageState(
         character: data.dec(_f$character),
-        skillAvailableList: data.dec(_f$skillAvailableList),
-        aspectControllers: data.dec(_f$aspectControllers),
-        conceptController: data.dec(_f$conceptController),
-        descriptionController: data.dec(_f$descriptionController),
-        nameController: data.dec(_f$nameController),
-        problemController: data.dec(_f$problemController),
-        stuntControllers: data.dec(_f$stuntControllers));
+        skillAvailableList: data.dec(_f$skillAvailableList));
   }
 
   @override
@@ -142,21 +102,7 @@ abstract class CharacterEditPageStateCopyWith<
   CharacterEntityCopyWith<$R, CharacterEntity, CharacterEntity> get character;
   ListCopyWith<$R, int?, ObjectCopyWith<$R, int?, int?>?>
       get skillAvailableList;
-  ListCopyWith<$R, TextEditingController,
-          ObjectCopyWith<$R, TextEditingController, TextEditingController>>
-      get aspectControllers;
-  ListCopyWith<$R, TextEditingController,
-          ObjectCopyWith<$R, TextEditingController, TextEditingController>>
-      get stuntControllers;
-  $R call(
-      {CharacterEntity? character,
-      List<int?>? skillAvailableList,
-      List<TextEditingController>? aspectControllers,
-      TextEditingController? conceptController,
-      TextEditingController? descriptionController,
-      TextEditingController? nameController,
-      TextEditingController? problemController,
-      List<TextEditingController>? stuntControllers});
+  $R call({CharacterEntity? character, List<int?>? skillAvailableList});
   CharacterEditPageStateCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
       Then<$Out2, $R2> t);
 }
@@ -180,56 +126,16 @@ class _CharacterEditPageStateCopyWithImpl<$R, $Out>
           (v, t) => ObjectCopyWith(v, $identity, t),
           (v) => call(skillAvailableList: v));
   @override
-  ListCopyWith<$R, TextEditingController,
-          ObjectCopyWith<$R, TextEditingController, TextEditingController>>
-      get aspectControllers => ListCopyWith(
-          $value.aspectControllers,
-          (v, t) => ObjectCopyWith(v, $identity, t),
-          (v) => call(aspectControllers: v));
-  @override
-  ListCopyWith<$R, TextEditingController,
-          ObjectCopyWith<$R, TextEditingController, TextEditingController>>
-      get stuntControllers => ListCopyWith(
-          $value.stuntControllers,
-          (v, t) => ObjectCopyWith(v, $identity, t),
-          (v) => call(stuntControllers: v));
-  @override
-  $R call(
-          {CharacterEntity? character,
-          List<int?>? skillAvailableList,
-          List<TextEditingController>? aspectControllers,
-          TextEditingController? conceptController,
-          TextEditingController? descriptionController,
-          TextEditingController? nameController,
-          TextEditingController? problemController,
-          List<TextEditingController>? stuntControllers}) =>
+  $R call({CharacterEntity? character, List<int?>? skillAvailableList}) =>
       $apply(FieldCopyWithData({
         if (character != null) #character: character,
-        if (skillAvailableList != null) #skillAvailableList: skillAvailableList,
-        if (aspectControllers != null) #aspectControllers: aspectControllers,
-        if (conceptController != null) #conceptController: conceptController,
-        if (descriptionController != null)
-          #descriptionController: descriptionController,
-        if (nameController != null) #nameController: nameController,
-        if (problemController != null) #problemController: problemController,
-        if (stuntControllers != null) #stuntControllers: stuntControllers
+        if (skillAvailableList != null) #skillAvailableList: skillAvailableList
       }));
   @override
   CharacterEditPageState $make(CopyWithData data) => CharacterEditPageState(
       character: data.get(#character, or: $value.character),
       skillAvailableList:
-          data.get(#skillAvailableList, or: $value.skillAvailableList),
-      aspectControllers:
-          data.get(#aspectControllers, or: $value.aspectControllers),
-      conceptController:
-          data.get(#conceptController, or: $value.conceptController),
-      descriptionController:
-          data.get(#descriptionController, or: $value.descriptionController),
-      nameController: data.get(#nameController, or: $value.nameController),
-      problemController:
-          data.get(#problemController, or: $value.problemController),
-      stuntControllers:
-          data.get(#stuntControllers, or: $value.stuntControllers));
+          data.get(#skillAvailableList, or: $value.skillAvailableList));
 
   @override
   CharacterEditPageStateCopyWith<$R2, CharacterEditPageState, $Out2>
@@ -407,12 +313,6 @@ class CharacterPlayPageStateMapper
   static bool _$isScreenLocked(CharacterPlayPageState v) => v.isScreenLocked;
   static const Field<CharacterPlayPageState, bool> _f$isScreenLocked =
       Field('isScreenLocked', _$isScreenLocked);
-  static List<TextEditingController> _$consequencesControllers(
-          CharacterPlayPageState v) =>
-      v.consequencesControllers;
-  static const Field<CharacterPlayPageState, List<TextEditingController>>
-      _f$consequencesControllers =
-      Field('consequencesControllers', _$consequencesControllers);
   static bool _$isDiceRollShown(CharacterPlayPageState v) => v.isDiceRollShown;
   static const Field<CharacterPlayPageState, bool> _f$isDiceRollShown =
       Field('isDiceRollShown', _$isDiceRollShown);
@@ -426,7 +326,6 @@ class CharacterPlayPageStateMapper
     #character: _f$character,
     #isCompact: _f$isCompact,
     #isScreenLocked: _f$isScreenLocked,
-    #consequencesControllers: _f$consequencesControllers,
     #isDiceRollShown: _f$isDiceRollShown,
     #rollResults: _f$rollResults,
   };
@@ -436,7 +335,6 @@ class CharacterPlayPageStateMapper
         character: data.dec(_f$character),
         isCompact: data.dec(_f$isCompact),
         isScreenLocked: data.dec(_f$isScreenLocked),
-        consequencesControllers: data.dec(_f$consequencesControllers),
         isDiceRollShown: data.dec(_f$isDiceRollShown),
         rollResults: data.dec(_f$rollResults));
   }
@@ -499,9 +397,6 @@ abstract class CharacterPlayPageStateCopyWith<
     $In extends CharacterPlayPageState,
     $Out> implements ClassCopyWith<$R, $In, $Out> {
   CharacterEntityCopyWith<$R, CharacterEntity, CharacterEntity> get character;
-  ListCopyWith<$R, TextEditingController,
-          ObjectCopyWith<$R, TextEditingController, TextEditingController>>
-      get consequencesControllers;
   ListCopyWith<$R, RollResultEntity,
           RollResultEntityCopyWith<$R, RollResultEntity, RollResultEntity>>
       get rollResults;
@@ -509,7 +404,6 @@ abstract class CharacterPlayPageStateCopyWith<
       {CharacterEntity? character,
       bool? isCompact,
       bool? isScreenLocked,
-      List<TextEditingController>? consequencesControllers,
       bool? isDiceRollShown,
       List<RollResultEntity>? rollResults});
   CharacterPlayPageStateCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
@@ -529,13 +423,6 @@ class _CharacterPlayPageStateCopyWithImpl<$R, $Out>
   CharacterEntityCopyWith<$R, CharacterEntity, CharacterEntity> get character =>
       $value.character.copyWith.$chain((v) => call(character: v));
   @override
-  ListCopyWith<$R, TextEditingController,
-          ObjectCopyWith<$R, TextEditingController, TextEditingController>>
-      get consequencesControllers => ListCopyWith(
-          $value.consequencesControllers,
-          (v, t) => ObjectCopyWith(v, $identity, t),
-          (v) => call(consequencesControllers: v));
-  @override
   ListCopyWith<$R, RollResultEntity,
           RollResultEntityCopyWith<$R, RollResultEntity, RollResultEntity>>
       get rollResults => ListCopyWith($value.rollResults,
@@ -545,15 +432,12 @@ class _CharacterPlayPageStateCopyWithImpl<$R, $Out>
           {CharacterEntity? character,
           bool? isCompact,
           bool? isScreenLocked,
-          List<TextEditingController>? consequencesControllers,
           bool? isDiceRollShown,
           List<RollResultEntity>? rollResults}) =>
       $apply(FieldCopyWithData({
         if (character != null) #character: character,
         if (isCompact != null) #isCompact: isCompact,
         if (isScreenLocked != null) #isScreenLocked: isScreenLocked,
-        if (consequencesControllers != null)
-          #consequencesControllers: consequencesControllers,
         if (isDiceRollShown != null) #isDiceRollShown: isDiceRollShown,
         if (rollResults != null) #rollResults: rollResults
       }));
@@ -562,8 +446,6 @@ class _CharacterPlayPageStateCopyWithImpl<$R, $Out>
       character: data.get(#character, or: $value.character),
       isCompact: data.get(#isCompact, or: $value.isCompact),
       isScreenLocked: data.get(#isScreenLocked, or: $value.isScreenLocked),
-      consequencesControllers: data.get(#consequencesControllers,
-          or: $value.consequencesControllers),
       isDiceRollShown: data.get(#isDiceRollShown, or: $value.isDiceRollShown),
       rollResults: data.get(#rollResults, or: $value.rollResults));
 

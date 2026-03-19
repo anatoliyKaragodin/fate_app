@@ -1,6 +1,4 @@
-
 import 'package:dartz/dartz.dart';
-import 'package:dartz_test/dartz_test.dart';
 import 'package:fate_app/core/error/failure.dart';
 import 'package:fate_app/features/file_management/domain/repositories/file_repository.dart';
 import 'package:fate_app/features/file_management/domain/usecases/copy_file.dart';
@@ -12,6 +10,7 @@ import 'package:mockito/mockito.dart';
 import 'package:pdf/widgets.dart';
 
 import 'file_usecases_test.mocks.dart';
+import '../../../../test_utils/either_test_x.dart';
 
 @GenerateNiceMocks([MockSpec<FileRepository>()])
 void main() {
@@ -50,7 +49,8 @@ void main() {
 
     test('SaveFile UC (Fail)', () async {
       // Arrange
-      when(repository.copy(filePath)).thenAnswer((_) async => Left(CacheFailure()));
+      when(repository.copy(filePath))
+          .thenAnswer((_) async => Left(CacheFailure()));
 
       // Act
       final result = await copyFileUC(filePath);

@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import 'package:fate_app/core/error/exeption.dart';
+import 'package:fate_app/core/error/exception.dart';
 import 'package:fate_app/features/characters/data/datasources/characters_lds.dart';
 import 'package:fate_app/features/characters/data/mapper/models_mapper.dart';
 import 'package:fate_app/features/characters/domain/entities/mapper/entities_mapper.dart';
@@ -18,8 +18,10 @@ class CharactersRepositoryImpl implements CharactersRepository {
       final res = await charactersLDS.getAll();
 
       return Right(res.map((e) => e.toEntity()).toList());
-    } on CacheException {
-      return Left(CacheFailure());
+    } on CacheException catch (e) {
+      return Left(CacheFailure(message: e.message, cause: e.cause));
+    } on Exception catch (e) {
+      return Left(UnknownFailure(message: 'Unknown error', cause: e));
     }
   }
 
@@ -28,8 +30,10 @@ class CharactersRepositoryImpl implements CharactersRepository {
     try {
       await charactersLDS.insert(CharacterModel.fromEntity(character));
       return const Right(null);
-    } on CacheException {
-      return Left(CacheFailure());
+    } on CacheException catch (e) {
+      return Left(CacheFailure(message: e.message, cause: e.cause));
+    } on Exception catch (e) {
+      return Left(UnknownFailure(message: 'Unknown error', cause: e));
     }
   }
 
@@ -38,8 +42,10 @@ class CharactersRepositoryImpl implements CharactersRepository {
     try {
       await charactersLDS.update(CharacterModel.fromEntity(character));
       return const Right(null);
-    } on CacheException {
-      return Left(CacheFailure());
+    } on CacheException catch (e) {
+      return Left(CacheFailure(message: e.message, cause: e.cause));
+    } on Exception catch (e) {
+      return Left(UnknownFailure(message: 'Unknown error', cause: e));
     }
   }
 
@@ -48,8 +54,10 @@ class CharactersRepositoryImpl implements CharactersRepository {
     try {
       await charactersLDS.delete(id);
       return const Right(null);
-    } on CacheException {
-      return Left(CacheFailure());
+    } on CacheException catch (e) {
+      return Left(CacheFailure(message: e.message, cause: e.cause));
+    } on Exception catch (e) {
+      return Left(UnknownFailure(message: 'Unknown error', cause: e));
     }
   }
 }

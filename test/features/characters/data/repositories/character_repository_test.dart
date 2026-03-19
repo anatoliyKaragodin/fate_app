@@ -1,6 +1,5 @@
 import 'package:dartz/dartz.dart';
-import 'package:dartz_test/dartz_test.dart';
-import 'package:fate_app/core/error/exeption.dart';
+import 'package:fate_app/core/error/exception.dart';
 import 'package:fate_app/core/error/failure.dart';
 import 'package:fate_app/features/characters/data/datasources/characters_lds.dart';
 import 'package:fate_app/features/characters/data/mapper/models_mapper.dart';
@@ -11,6 +10,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
 import 'character_repository_test.mocks.dart';
+import '../../../../test_utils/either_test_x.dart';
 
 @GenerateNiceMocks([MockSpec<CharactersLDS>()])
 void main() {
@@ -68,8 +68,9 @@ void main() {
       final res = await charactersRepository.getAll();
 
       // Assert
-      
-      expect(res.getRightOrFailTest(), equals(loadingCharacterList.map((e)=> e.toEntity()).toList()));
+
+      expect(res.getRightOrFailTest(),
+          equals(loadingCharacterList.map((e) => e.toEntity()).toList()));
       verify(mockCharactersLDS.getAll()).called(1);
       verifyNoMoreInteractions(mockCharactersLDS);
     });

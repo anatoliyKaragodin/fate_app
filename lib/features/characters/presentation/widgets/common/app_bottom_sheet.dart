@@ -17,9 +17,7 @@ class AppBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        borderRadius: appBorderRadius.medium(context)
-      ),
+      decoration: BoxDecoration(borderRadius: appBorderRadius.medium(context)),
       width: double.infinity,
       child: Padding(
         padding: EdgeInsets.all(appPadding.mediumW(context)),

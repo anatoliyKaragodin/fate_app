@@ -23,8 +23,8 @@ class AppButtonWidget extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        elevation: 0,
-        backgroundColor: appColors.buttonColor(context),
+          elevation: 0,
+          backgroundColor: appColors.buttonColor(context),
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           padding: EdgeInsets.zero,
           minimumSize: const Size(0, 0),

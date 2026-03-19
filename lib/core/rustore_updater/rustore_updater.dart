@@ -28,11 +28,8 @@ class RustoreUpdater extends StateNotifier<bool> {
     RustoreUpdateClient.info().then((info) {
       if (info.updateAvailability == UPDATE_AILABILITY_AVAILABLE) {
         RustoreUpdateClient.listener((value) {
-          
-
           if (value.installStatus == INSTALL_STATUS_DOWNLOADED) {
-            RustoreUpdateClient.completeUpdateFlexible().catchError((err) {
-            });
+            RustoreUpdateClient.completeUpdateFlexible().catchError((err) {});
           }
         });
         RustoreUpdateClient.download().then((value) {

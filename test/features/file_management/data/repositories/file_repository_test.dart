@@ -1,9 +1,7 @@
-
 import 'package:dartz/dartz.dart';
-import 'package:dartz_test/dartz_test.dart';
-import 'package:fate_app/core/error/exeption.dart';
+import 'package:fate_app/core/error/exception.dart';
 import 'package:fate_app/core/error/failure.dart';
-import 'package:fate_app/features/file_management/data/datasources/file_lds_intrerface.dart';
+import 'package:fate_app/features/file_management/data/datasources/file_lds_interface.dart';
 import 'package:fate_app/features/file_management/data/repositories/file_repository_impl.dart';
 import 'package:fate_app/features/file_management/domain/repositories/file_repository.dart';
 import 'package:fate_app/features/file_management/domain/usecases/save_pdf.dart';
@@ -13,13 +11,14 @@ import 'package:mockito/mockito.dart';
 import 'package:pdf/widgets.dart';
 
 import 'file_repository_test.mocks.dart';
+import '../../../../test_utils/either_test_x.dart';
 
 @GenerateNiceMocks([MockSpec<FileLDS>()])
 void main() {
   late FileLDS lds;
   late FileRepository repository;
 
-  const filePath ='/path/to/test_file.txt';
+  const filePath = '/path/to/test_file.txt';
 
   final pdfParams = PdfParams(pdf: Document(), name: 'pdf name');
 
