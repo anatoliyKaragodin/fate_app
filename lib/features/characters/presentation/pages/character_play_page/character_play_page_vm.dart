@@ -4,6 +4,8 @@ import 'package:fate_app/features/characters/domain/entities/mapper/entities_map
 import 'package:fate_app/features/characters/domain/usecases/update_character.dart';
 import 'package:fate_app/features/characters/presentation/mapper/state_mapper.dart';
 import 'package:fate_app/features/characters/presentation/pages/characters_list_page/characters_list_page_view_model.dart';
+import 'package:fate_app/features/characters/presentation/utils/character_pdf_document_builder.dart';
+import 'package:fate_app/features/file_management/domain/usecases/save_pdf.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
@@ -11,10 +13,10 @@ import '../../../../../core/di/di_container.dart';
 
 final characterPlayPageVMProvider =
     StateNotifierProvider<CharacterPlayPageVm, CharacterPlayPageState>(
-        (ref) => CharacterPlayPageVm(getIt()));
+        (ref) => CharacterPlayPageVm(getIt(), getIt.get<SavePdf>()));
 
 class CharacterPlayPageVm extends StateNotifier<CharacterPlayPageState> {
-  CharacterPlayPageVm(this._updateCharacterUC)
+  CharacterPlayPageVm(this._updateCharacterUC, this._savePdfUC)
       : super(CharacterPlayPageState(
             rollResults: [],
             isDiceRollShown: false,
@@ -23,8 +25,27 @@ class CharacterPlayPageVm extends StateNotifier<CharacterPlayPageState> {
             isCompact: false));
 
   final UpdateCharacter _updateCharacterUC;
+  final SavePdf _savePdfUC;
 
   final random = Random();
+
+  /// Сообщение об ошибке или `null`, если экспорт выполнен.
+  Future<String?> exportCharacterPdf() async {
+    final c = state.character;
+    final validation = _pdfExportValidationMessage(c);
+    if (validation != null) return validation;
+
+    final doc = await buildCharacterPdfDocument(c);
+    await _savePdfUC(PdfParams(pdf: doc, name: c.name));
+    return null;
+  }
+
+  String? _pdfExportValidationMessage(CharacterEntity c) {
+    if (c.name.isEmpty) return 'Напишите имя персонажа';
+    if (c.concept.isEmpty) return 'Напишите концепт';
+    if (c.skills.any((s) => s.value == null)) return 'Выберите скиллы';
+    return null;
+  }
 
   void initCharacter(CharacterEntity character) {
     state = state.copyWith(character: character);

@@ -1,3 +1,11 @@
+import 'package:dartz/dartz.dart';
+import 'package:fate_app/core/error/failure.dart';
+import 'package:fate_app/features/character_ai/domain/entities/character_ai_draft.dart';
+import 'package:fate_app/features/character_ai/domain/entities/character_field_regen_patch.dart';
+import 'package:fate_app/features/character_ai/domain/entities/character_regen_field.dart';
+import 'package:fate_app/features/characters/domain/character_field_limits.dart';
+import 'package:fate_app/features/character_ai/domain/usecases/generate_character_draft.dart';
+import 'package:fate_app/features/character_ai/domain/usecases/regenerate_character_field.dart';
 import 'package:fate_app/features/characters/domain/entities/mapper/entities_mapper.dart';
 import 'package:fate_app/features/characters/presentation/utils/character_help_text.dart';
 import 'package:fate_app/features/file_management/domain/usecases/delete_file.dart';
@@ -5,12 +13,10 @@ import 'package:fate_app/features/file_management/domain/usecases/copy_file.dart
 import 'package:fate_app/features/characters/domain/usecases/update_character.dart';
 import 'package:fate_app/features/characters/presentation/mapper/state_mapper.dart';
 import 'package:fate_app/features/characters/presentation/pages/characters_list_page/characters_list_page_view_model.dart';
-import 'package:fate_app/features/characters/presentation/widgets/common/app_pdf_widget.dart';
-import 'package:flutter/services.dart';
+import 'package:fate_app/features/characters/presentation/utils/character_pdf_document_builder.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:developer' as dev;
 import 'package:fate_app/features/characters/domain/usecases/save_new_character.dart';
-import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 import '../../../../../core/di/di_container.dart';
@@ -23,7 +29,9 @@ final characterEditPageViewModelProvider =
             getIt.get<UpdateCharacter>(),
             getIt.get<SavePdf>(),
             getIt.get<CopyFile>(),
-            getIt()));
+            getIt(),
+            getIt.get<GenerateCharacterDraft>(),
+            getIt.get<RegenerateCharacterField>()));
 
 class CharacterEditPageViewModel extends StateNotifier<CharacterEditPageState> {
   final SaveNewCharacter _saveNewCharacterUC;
@@ -31,9 +39,17 @@ class CharacterEditPageViewModel extends StateNotifier<CharacterEditPageState> {
   final SavePdf _savePdfUC;
   final CopyFile _copyFileUC;
   final DeleteFile _deleteFileUC;
+  final GenerateCharacterDraft _generateCharacterDraft;
+  final RegenerateCharacterField _regenerateCharacterField;
 
-  CharacterEditPageViewModel(this._saveNewCharacterUC, this._updateCharacterUC,
-      this._savePdfUC, this._copyFileUC, this._deleteFileUC)
+  CharacterEditPageViewModel(
+      this._saveNewCharacterUC,
+      this._updateCharacterUC,
+      this._savePdfUC,
+      this._copyFileUC,
+      this._deleteFileUC,
+      this._generateCharacterDraft,
+      this._regenerateCharacterField)
       : super(CharacterEditPageState(
             character: CharacterEntity.empty(),
             skillAvailableList: _defaultAvailableSkillList));
@@ -87,7 +103,7 @@ class CharacterEditPageViewModel extends StateNotifier<CharacterEditPageState> {
 
   void goBack() {}
 
-  Future<pw.Document> createPdf() => _createPDF(state.character);
+  Future<pw.Document> createPdf() => buildCharacterPdfDocument(state.character);
 
   void saveStuntType(int stuntIndex, StuntType? value) {
     if (value == null) return;
@@ -114,6 +130,130 @@ class CharacterEditPageViewModel extends StateNotifier<CharacterEditPageState> {
   }
 
   void initNewCharacter(CharacterEntity character) {
+    state = state.copyWith(character: character);
+    _updateAvailableSkillList();
+  }
+
+  /// Запрос к ИИ и применение черновика к текущему персонажу в стейте.
+  Future<Either<Failure, void>> generateCharacterWithAi(String userHint) async {
+    final trimmed = userHint.trim();
+    if (trimmed.isEmpty) {
+      return const Left(UnknownFailure(message: 'Опишите идею персонажа.'));
+    }
+    dev.log('[AI] VM: вызов GenerateCharacterDraft…');
+    final result = await _generateCharacterDraft(
+      GenerateCharacterDraftParams(userHint: trimmed),
+    );
+    dev.log('[AI] VM: use case вернул ${result.isLeft() ? "ошибку" : "черновик"}');
+    return result.fold<Either<Failure, void>>(
+      Left.new,
+      (draft) {
+        dev.log('[AI] VM: applyAiDraft…');
+        applyAiDraft(draft);
+        dev.log('[AI] VM: applyAiDraft готово');
+        return const Right(null);
+      },
+    );
+  }
+
+  String buildSheetContextForAi() {
+    final c = state.character;
+    final aspects = c.aspects.join('; ');
+    final stunts = c.stunts
+        .map((s) => '${s.type.toLabel()}: ${s.description ?? ''}')
+        .join('; ');
+    return '''
+Имя: ${c.name}
+Концепт: ${c.concept}
+Проблема: ${c.problem}
+Описание: ${c.description}
+Аспекты: $aspects
+Трюки: $stunts
+'''.trim();
+  }
+
+  Future<Either<Failure, void>> regenerateCharacterFieldWithAi({
+    required CharacterRegenField field,
+    required String hint,
+  }) async {
+    final stuntLabel = field.stuntIndex != null
+        ? state.character.stunts[field.stuntIndex!].type.toLabel()
+        : null;
+    final result = await _regenerateCharacterField(
+      RegenerateCharacterFieldParams(
+        field: field,
+        userHint: hint,
+        sheetContext: buildSheetContextForAi(),
+        stuntTypeLabel: stuntLabel,
+      ),
+    );
+    return result.fold(Left.new, (patch) {
+      applyFieldRegenPatch(patch);
+      return const Right(null);
+    });
+  }
+
+  void applyFieldRegenPatch(CharacterFieldRegenPatch patch) {
+    final c = state.character;
+    switch (patch.field) {
+      case CharacterRegenField.name:
+        state = state.copyWith(character: c.copyWith(name: patch.text));
+        break;
+      case CharacterRegenField.concept:
+        state = state.copyWith(character: c.copyWith(concept: patch.text));
+        break;
+      case CharacterRegenField.problem:
+        state = state.copyWith(character: c.copyWith(problem: patch.text));
+        break;
+      case CharacterRegenField.description:
+        state = state.copyWith(character: c.copyWith(description: patch.text));
+        break;
+      case CharacterRegenField.aspect0:
+      case CharacterRegenField.aspect1:
+      case CharacterRegenField.aspect2:
+        final i = patch.field.aspectIndex!;
+        final old = c.aspects;
+        final next = <String>[
+          for (var j = 0; j < 3; j++)
+            j == i ? patch.text : (j < old.length ? old[j] : ''),
+        ];
+        state = state.copyWith(character: c.copyWith(aspects: next));
+        break;
+      case CharacterRegenField.stunt0:
+      case CharacterRegenField.stunt1:
+      case CharacterRegenField.stunt2:
+        final i = patch.field.stuntIndex!;
+        final stunts = [...c.stunts];
+        stunts[i] = stunts[i].copyWith(description: patch.text);
+        state = state.copyWith(character: c.copyWith(stunts: stunts));
+        break;
+    }
+  }
+
+  void applyAiDraft(CharacterAiDraft draft) {
+    final skills = [
+      for (final s in state.character.skills)
+        s.copyWith(value: draft.skills[s.type]),
+    ];
+    final stunts = [
+      for (var i = 0; i < 3; i++)
+        state.character.stunts[i].copyWith(
+          type: draft.stunts[i].type,
+          description: draft.stunts[i].description,
+        ),
+    ];
+    final character = state.character.copyWith(
+      name: draft.name,
+      concept: draft.concept,
+      problem: draft.problem,
+      description: mergeAppearanceIntoDescription(
+        appearance: draft.appearance,
+        descriptionBody: draft.description,
+      ),
+      aspects: draft.aspects,
+      skills: skills,
+      stunts: stunts,
+    );
     state = state.copyWith(character: character);
     _updateAvailableSkillList();
   }
@@ -157,23 +297,6 @@ class CharacterEditPageViewModel extends StateNotifier<CharacterEditPageState> {
     dev.log('avaibale skills: $currentAvailableSkillList');
 
     state = state.copyWith(skillAvailableList: currentAvailableSkillList);
-  }
-
-  Future<pw.Document> _createPDF(CharacterEntity character) async {
-    final myTheme = pw.ThemeData.withFont(
-        base: pw.Font.ttf(
-            await rootBundle.load("assets/fonts/Roboto-Regular.ttf")),
-        bold:
-            pw.Font.ttf(await rootBundle.load("assets/fonts/Roboto-Bold.ttf")));
-
-    final pdf = pw.Document(theme: myTheme);
-
-    pdf.addPage(pw.Page(
-      pageFormat: PdfPageFormat.a4,
-      build: (pw.Context context) => AppPdfWidget(character: character),
-    ));
-
-    return pdf;
   }
 
   Future<void> importAvatar(String filePath) async {

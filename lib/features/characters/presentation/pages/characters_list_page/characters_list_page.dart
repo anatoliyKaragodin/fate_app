@@ -9,7 +9,6 @@ import 'package:fate_app/core/utils/app_size.dart';
 import 'package:fate_app/features/characters/presentation/widgets/common/app_button_widget.dart';
 import 'package:fate_app/features/characters/presentation/widgets/common/app_dropdown_menu.dart';
 import 'package:fate_app/features/characters/presentation/widgets/common/app_warning_dialog_widget.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
@@ -28,6 +27,14 @@ class CharactersListPage extends ConsumerWidget {
 
     final updaterProvider = ref.watch(updaterRustoreProvider);
 
+    void goToNewCharacter() {
+      final character = CharacterEntity.empty();
+      ref
+          .read(characterEditPageViewModelProvider.notifier)
+          .initNewCharacter(character);
+      RouterHelper.router.go(RouterHelper.characterEditPath);
+    }
+
     return Scaffold(
         body: RefreshIndicator(
       onRefresh: () async {
@@ -36,17 +43,14 @@ class CharactersListPage extends ConsumerWidget {
             .fetchCharacters();
       },
       child: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
           _AppBar(
             onTapSort: (value) =>
                 ref.read(charactersListPageViewProvider.notifier).sortBy(value),
-            onTapNew: () {
-              final character = CharacterEntity.empty();
-              ref
-                  .read(characterEditPageViewModelProvider.notifier)
-                  .initNewCharacter(character);
-              RouterHelper.router.go(RouterHelper.characterEditPath);
-            },
+            onTapNew: goToNewCharacter,
+            onTapSettings: () =>
+                RouterHelper.router.go(RouterHelper.aiSettingsPath),
             selectedSort: vmProvider.sortType.toLabel(),
           ),
           if (updaterProvider)
@@ -58,54 +62,87 @@ class CharactersListPage extends ConsumerWidget {
                         ref.read(updaterRustoreProvider.notifier).update()),
               ),
             ),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (BuildContext context, int index) {
-                final character = characters[index];
+          if (characters.isEmpty)
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Padding(
+                padding: EdgeInsets.all(appPadding.bigW(context)),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.groups_outlined,
+                      size: 64.width(context),
+                      color: Theme.of(context).colorScheme.outline,
+                    ),
+                    Gap(appPadding.bigH(context)),
+                    Text(
+                      'Пока нет персонажей',
+                      textAlign: TextAlign.center,
+                      style: appTextStyles.title1(context),
+                    ),
+                    Gap(appPadding.smallH(context)),
+                    Text(
+                      'Создайте первого, чтобы начать игру.',
+                      textAlign: TextAlign.center,
+                      style: appTextStyles.text2(context),
+                    ),
+                    Gap(appPadding.bigH(context)),
+                    AppButtonWidget(text: 'Создать персонажа', onPressed: goToNewCharacter),
+                  ],
+                ),
+              ),
+            )
+          else
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (BuildContext context, int index) {
+                  final character = characters[index];
 
-                return Padding(
-                  padding: EdgeInsets.all(appPadding.bigW(context)),
-                  child: AppCharacterSmallContainer(
-                    character: character,
-                    onTap: () {
-                      ref
-                          .read(characterPlayPageVMProvider.notifier)
-                          .initCharacter(character);
-                      RouterHelper.router.go(RouterHelper.characterPlayPath);
-                    },
-                    onTapDelete: () {
-                      showCupertinoModalPopup(
-                        context: context,
-                        builder: (context) {
-                          return AppWarningDialogWidget(
-                            button1Text: 'Да',
-                            button2Text: 'Нет',
-                            onTapButton1: () {
-                              ref
-                                  .read(charactersListPageViewProvider.notifier)
-                                  .deleteCharacter(character);
-                              Navigator.of(context).pop();
-                            },
-                            onTapButton2: () => Navigator.of(context).pop(),
-                            text:
-                                'Вы уверены, что хотите предать ${character.name.toUpperCase()} забвению?',
-                            title: 'Внимание!',
-                          );
-                        },
-                      );
-                    },
-                    onTapEdit: () {
-                      ref
-                          .read(characterEditPageViewModelProvider.notifier)
-                          .initNewCharacter(character);
-                      RouterHelper.router.go(RouterHelper.characterEditPath);
-                    },
-                  ),
-                );
-              },
-              childCount: characters.length,
+                  return Padding(
+                    padding: EdgeInsets.all(appPadding.bigW(context)),
+                    child: AppCharacterSmallContainer(
+                      character: character,
+                      onTap: () {
+                        ref
+                            .read(characterPlayPageVMProvider.notifier)
+                            .initCharacter(character);
+                        RouterHelper.router.go(RouterHelper.characterPlayPath);
+                      },
+                      onTapDelete: () {
+                        showDialog<void>(
+                          context: context,
+                          builder: (dialogContext) {
+                            return AppWarningDialogWidget(
+                              button1Text: 'Да',
+                              button2Text: 'Нет',
+                              onTapButton1: () {
+                                ref
+                                    .read(charactersListPageViewProvider.notifier)
+                                    .deleteCharacter(character);
+                                Navigator.of(dialogContext).pop();
+                              },
+                              onTapButton2: () =>
+                                  Navigator.of(dialogContext).pop(),
+                              text:
+                                  'Вы уверены, что хотите предать ${character.name.toUpperCase()} забвению?',
+                              title: 'Внимание!',
+                            );
+                          },
+                        );
+                      },
+                      onTapEdit: () {
+                        ref
+                            .read(characterEditPageViewModelProvider.notifier)
+                            .initNewCharacter(character);
+                        RouterHelper.router.go(RouterHelper.characterEditPath);
+                      },
+                    ),
+                  );
+                },
+                childCount: characters.length,
+              ),
             ),
-          ),
         ],
       ),
     ));
@@ -116,9 +153,12 @@ class _AppBar extends StatelessWidget {
   const _AppBar(
       {required this.onTapNew,
       required this.onTapSort,
+      required this.onTapSettings,
       required this.selectedSort});
 
   final VoidCallback onTapNew;
+
+  final VoidCallback onTapSettings;
 
   final Function(String? value) onTapSort;
 
@@ -129,11 +169,12 @@ class _AppBar extends StatelessWidget {
     return SliverAppBar(
       pinned: true,
       centerTitle: true,
-      expandedHeight: 95.height(context),
-      collapsedHeight: 70.height(context),
+      expandedHeight: 118.height(context),
+      collapsedHeight: 74.height(context),
       flexibleSpace: FlexibleSpaceBar(
         centerTitle: true,
         title: Column(
+          mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Text("FAE", style: appTextStyles.title1(context)),
@@ -157,7 +198,9 @@ class _AppBar extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Padding(
-              padding: EdgeInsets.only(top: 35.height(context)),
+              padding: EdgeInsets.only(
+                top: MediaQuery.paddingOf(context).top + 8.height(context),
+              ),
               child: Text(
                 "Убежище персонажей для",
                 style: appTextStyles.text1(context),
@@ -167,6 +210,10 @@ class _AppBar extends StatelessWidget {
         ),
       ),
       actions: [
+        AppIconButton(
+          onTap: onTapSettings,
+          icon: Icons.settings,
+        ),
         AppIconButton(
           onTap: onTapNew,
           icon: Icons.add,

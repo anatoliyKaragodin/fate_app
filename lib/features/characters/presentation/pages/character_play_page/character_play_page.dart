@@ -9,6 +9,7 @@ import 'package:fate_app/features/characters/presentation/widgets/common/app_but
 import 'package:fate_app/features/characters/presentation/widgets/common/app_character_avatar_widget.dart';
 import 'package:fate_app/features/characters/presentation/widgets/common/app_dropdown_menu.dart';
 import 'package:fate_app/features/characters/presentation/widgets/common/app_focus_container_widget.dart';
+import 'package:fate_app/features/characters/presentation/widgets/common/app_bottom_sheet.dart';
 import 'package:fate_app/features/characters/presentation/widgets/common/app_icon_button.dart';
 import 'package:fate_app/features/characters/presentation/widgets/common/app_text_field_widget.dart';
 import 'package:flutter/material.dart';
@@ -46,6 +47,25 @@ class _CharacterPlayPageState extends ConsumerState<CharacterPlayPage> {
       _consequencesControllers[i].text = i < character.consequences.length
           ? (character.consequences[i] ?? '')
           : '';
+    }
+  }
+
+  Future<void> _exportPdf(BuildContext context, WidgetRef ref) async {
+    final msg = await ref
+        .read(characterPlayPageVMProvider.notifier)
+        .exportCharacterPdf();
+    if (!context.mounted) return;
+    if (msg != null) {
+      showModalBottomSheet<void>(
+        context: context,
+        showDragHandle: true,
+        useSafeArea: true,
+        builder: (ctx) => AppBottomSheet(text: msg),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('PDF сохранён')),
+      );
     }
   }
 
@@ -100,6 +120,7 @@ class _CharacterPlayPageState extends ConsumerState<CharacterPlayPage> {
                     RouterHelper.router.go(RouterHelper.allCharactersPath);
                   },
                   onTapCompact: ref.read(vm.notifier).switchCompactMode,
+                  onTapExportPdf: () => _exportPdf(context, ref),
                 ),
                 SliverToBoxAdapter(
                   child: Padding(
@@ -315,10 +336,12 @@ class _AppBar extends StatelessWidget {
       required this.fateTokens,
       required this.onSelectFateTokens,
       required this.isLockedScreen,
-      required this.onTapLockScreen});
+      required this.onTapLockScreen,
+      required this.onTapExportPdf});
 
   final VoidCallback onTapBack;
   final VoidCallback onTapCompact;
+  final VoidCallback onTapExportPdf;
   final Function(int value) onSelectFateTokens;
   final bool isCompact;
   final int fateTokens;
@@ -333,6 +356,10 @@ class _AppBar extends StatelessWidget {
         onTap: onTapBack,
       ),
       actions: [
+        AppIconButton(
+          onTap: onTapExportPdf,
+          icon: Icons.picture_as_pdf_outlined,
+        ),
         AppIconButton(
           onTap: onTapLockScreen,
           icon: isLockedScreen ? Icons.lock : Icons.lock_open,

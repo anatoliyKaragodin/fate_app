@@ -5,9 +5,11 @@
 *.swp
 .DS_Store
 .atom/
+.build/
 .buildlog/
 .history
 .svn/
+.swiftpm/
 migrate_working_dir/
 
 # IntelliJ related
@@ -51,5 +53,6 @@ android/app/google-services.json
 
 fate-char-firebase-adminsdk-y0p5u-0e0701fc49.json
 
-# FVM Version Cache
-.fvm/
+# FVM — в репозитории только конфиг; SDK подтягивается через `fvm install`
+.fvm/flutter_sdk
+.fvm/versions

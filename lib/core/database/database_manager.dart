@@ -11,26 +11,40 @@ import '../../features/characters/data/datasources/local/sqlite/LDS_constants.da
 class DatabaseManager {
   DatabaseManager._();
 
+  /// Инициализация Firebase из `.env` (`FIREBASE_CONFIG` = JSON одной строкой).
+  /// Без конфига или при ошибке — тихий выход (локальная разработка без Firebase).
   static Future<void> initFirebase() async {
-    // Загружаем переменные из .env файла
-    await dotenv.load(fileName: ".env");
+    try {
+      await dotenv.load(fileName: '.env');
+    } catch (e, st) {
+      dev.log('dotenv: не удалось загрузить .env', error: e, stackTrace: st);
+      return;
+    }
 
-    // Получаем конфигурацию из .env
-    final firebaseConfigString = dotenv.env['FIREBASE_CONFIG']!;
+    final raw = dotenv.env['FIREBASE_CONFIG']?.trim();
+    if (raw == null || raw.isEmpty) {
+      dev.log('Firebase: нет FIREBASE_CONFIG в .env — пропуск инициализации');
+      return;
+    }
 
-    // Парсим JSON-конфигурацию
-    final firebaseConfig = jsonDecode(firebaseConfigString);
-
-    // Инициализация Firebase с использованием данных из .env
-    await Firebase.initializeApp(
-      options: FirebaseOptions(
-        apiKey: firebaseConfig['apiKey'],
-        appId: firebaseConfig['appId'],
-        messagingSenderId: firebaseConfig['messagingSenderId'],
-        projectId: firebaseConfig['projectId'],
-        storageBucket: firebaseConfig['storageBucket'],
-      ),
-    );
+    try {
+      final firebaseConfig = jsonDecode(raw);
+      if (firebaseConfig is! Map<String, dynamic>) {
+        dev.log('Firebase: FIREBASE_CONFIG должен быть JSON-объектом');
+        return;
+      }
+      await Firebase.initializeApp(
+        options: FirebaseOptions(
+          apiKey: '${firebaseConfig['apiKey']}',
+          appId: '${firebaseConfig['appId']}',
+          messagingSenderId: '${firebaseConfig['messagingSenderId']}',
+          projectId: '${firebaseConfig['projectId']}',
+          storageBucket: '${firebaseConfig['storageBucket']}',
+        ),
+      );
+    } catch (e, st) {
+      dev.log('Firebase.initializeApp не удался', error: e, stackTrace: st);
+    }
   }
 
   static Future<Database> initDB(String dbLabel) async {

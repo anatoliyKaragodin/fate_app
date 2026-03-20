@@ -1,6 +1,6 @@
 import 'package:fate_app/core/utils/theme/app_boder_radius.dart';
+import 'package:fate_app/core/utils/theme/app_colors.dart';
 import 'package:fate_app/core/utils/theme/app_text_styles.dart';
-import 'package:fate_app/features/characters/presentation/widgets/common/app_icon_button.dart';
 
 import 'package:flutter/material.dart';
 
@@ -17,6 +17,7 @@ class AppTextFieldWidget extends StatelessWidget {
       this.maxLength,
       this.width,
       this.onTapHelp,
+      this.onTapRegenerateAi,
       this.textStyle});
 
   /// Контроллер для управления текстом в поле ввода.
@@ -43,33 +44,89 @@ class AppTextFieldWidget extends StatelessWidget {
 
   final VoidCallback? onTapHelp;
 
+  /// Перегенерация поля с ИИ — кнопка рядом с помощью (если задана).
+  final VoidCallback? onTapRegenerateAi;
+
   /// Стиль текста
 
   final TextStyle? textStyle;
 
+  static const double _suffixTap = 44;
+
   @override
   Widget build(BuildContext context) {
+    final iconColor = appColors.textColor(context);
+    final hasSuffix = onTapHelp != null || onTapRegenerateAi != null;
+
+    var suffixMinWidth = 0.0;
+    if (onTapHelp != null) suffixMinWidth += _suffixTap;
+    if (onTapRegenerateAi != null) suffixMinWidth += _suffixTap;
+
     return SizedBox(
         width: width,
-        child: Column(
-          children: [
-            if (onTapHelp != null) AppIconButton(onTap: onTapHelp ?? () {}),
-            TextField(
-              style: textStyle ?? appTextStyles.text1(context),
-              textCapitalization: TextCapitalization.sentences,
-              maxLength: maxLength,
-              maxLines: null,
-              minLines: 1,
-              controller: controller,
-              decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                      borderRadius: appBorderRadius.medium(context)),
-                  labelText: hintText,
-                  labelStyle: textStyle ?? appTextStyles.text1(context)),
-              onChanged: (value) =>
-                  onEditing != null ? onEditing!(value) : null,
-            ),
-          ],
+        child: TextField(
+          style: textStyle ?? appTextStyles.text1(context),
+          textCapitalization: TextCapitalization.sentences,
+          maxLength: maxLength,
+          maxLines: null,
+          minLines: 1,
+          controller: controller,
+          decoration: InputDecoration(
+              border: OutlineInputBorder(
+                  borderRadius: appBorderRadius.medium(context)),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: appBorderRadius.medium(context),
+                borderSide: BorderSide(color: Theme.of(context).colorScheme.outline),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: appBorderRadius.medium(context),
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.primary,
+                  width: 2,
+                ),
+              ),
+              labelText: hintText,
+              labelStyle: textStyle ?? appTextStyles.text1(context),
+              suffixIcon: hasSuffix
+                  ? Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (onTapHelp != null)
+                          IconButton(
+                            onPressed: onTapHelp,
+                            icon: Icon(Icons.help_outline, color: iconColor),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(
+                              minWidth: _suffixTap,
+                              minHeight: _suffixTap,
+                            ),
+                            tooltip: 'Справка',
+                          ),
+                        if (onTapRegenerateAi != null)
+                          Tooltip(
+                            message: 'Перегенерировать с ИИ',
+                            child: IconButton(
+                              onPressed: onTapRegenerateAi,
+                              icon: Icon(Icons.auto_awesome_outlined,
+                                  color: iconColor),
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(
+                                minWidth: _suffixTap,
+                                minHeight: _suffixTap,
+                              ),
+                            ),
+                          ),
+                      ],
+                    )
+                  : null,
+              suffixIconConstraints: hasSuffix
+                  ? BoxConstraints(
+                      minHeight: _suffixTap,
+                      minWidth: suffixMinWidth,
+                    )
+                  : null),
+          onChanged: (value) =>
+              onEditing != null ? onEditing!(value) : null,
         ));
   }
 }

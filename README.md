@@ -1,5 +1,16 @@
 # fate_app
 
+## Flutter SDK (FVM)
+
+Версия Flutter зафиксирована в [`.fvm/fvm_config.json`](.fvm/fvm_config.json). Нужен [FVM](https://fvm.app/):
+
+```bash
+fvm install
+fvm flutter pub get
+```
+
+Дальше используйте `fvm flutter` / `fvm dart` вместо глобальных `flutter` / `dart`. В VS Code / Cursor путь к SDK уже задан в [`.vscode/settings.json`](.vscode/settings.json).
+
 ## Описание проекта
 
 **fate_app** - это приложение на Flutter, разработанное для управления персонажами в ролевых играх по системе FAE. Оно предоставляет пользователям возможность создавать, редактировать и просматривать персонажей, а также управлять их характеристиками, навыками и другими аспектами.

@@ -13,6 +13,16 @@ subprojects {
     project.evaluationDependsOn(":app")
 }
 
+// Плагины часто тянут source/target 8 → предупреждения javac на JDK 21+.
+// Без afterEvaluate: из‑за evaluationDependsOn(":app") часть подпроектов уже evaluated,
+// и afterEvaluate падает с «Cannot run ... when the project is already evaluated».
+subprojects { subproject ->
+    subproject.tasks.withType(JavaCompile).configureEach {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+}
+
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }

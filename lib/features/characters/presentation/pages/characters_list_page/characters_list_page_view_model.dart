@@ -123,7 +123,11 @@ class CharactersListPageViewModel
   }
 
   List<CharacterEntity> _sortByLocalId(List<CharacterEntity> characters) {
-    characters.sort((a, b) => a.localeId!.compareTo(b.localeId!));
+    characters.sort((a, b) {
+      final la = a.localeId ?? -1;
+      final lb = b.localeId ?? -1;
+      return la.compareTo(lb);
+    });
 
     return characters;
   }

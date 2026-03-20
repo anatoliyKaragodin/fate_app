@@ -20,7 +20,7 @@ Future<void> main() async {
 
   RouterHelper.instance;
 
-  DatabaseManager.initFirebase();
+  await DatabaseManager.initFirebase();
 
   ErrorHandler.initialize();
 

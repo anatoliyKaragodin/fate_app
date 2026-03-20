@@ -1,5 +1,4 @@
 import 'package:fate_app/core/utils/theme/app_boder_radius.dart';
-import 'package:fate_app/core/utils/theme/app_colors.dart';
 import 'package:fate_app/core/utils/theme/app_padding.dart';
 import 'package:fate_app/core/utils/theme/app_text_styles.dart';
 import 'package:fate_app/features/characters/domain/entities/mapper/entities_mapper.dart';
@@ -39,13 +38,19 @@ class AppCharacterSmallContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: appColors.buttonColor(context),
-          borderRadius: appBorderRadius.medium(context),
-        ),
+    final scheme = Theme.of(context).colorScheme;
+    final radius = appBorderRadius.medium(context);
+    return Material(
+      color: scheme.surfaceContainerHighest,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: radius,
+        side: BorderSide(color: scheme.outlineVariant),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: radius,
         child: Padding(
           padding: EdgeInsets.all(appPadding.bigW(context)),
           child: Column(

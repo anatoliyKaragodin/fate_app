@@ -42,49 +42,69 @@ class AppDropdownMenu<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final items = menuItems.map<DropdownMenuItem<T?>>((T? value) {
+      return DropdownMenuItem<T?>(
+        value: value,
+        child: Text(
+          value is StuntType
+              ? (value as StuntType).toLabel()
+              : (value != null ? value.toString() : 'нет'),
+          overflow: TextOverflow.ellipsis,
+          style: appTextStyles.text1(context),
+        ),
+      );
+    }).toList();
+
+    final dropdown = DropdownButton<T?>(
+      borderRadius: appBorderRadius.medium(context),
+      itemHeight: 48.0,
+      // В Row без фиксированной ширины (напр. диалог броска кубов) maxWidth = ∞ —
+      // isExpanded + Expanded даёт assert «unbounded constraints».
+      isExpanded: width != null,
+      underline: const SizedBox.shrink(),
+      value: selectedItem,
+      onChanged: (T? newValue) {
+        onItemSelected(newValue);
+      },
+      items: items,
+    );
+
+    final labelText = Text(
+      label,
+      overflow: TextOverflow.ellipsis,
+      maxLines: 1,
+      style: appTextStyles.text1(context),
+    );
+
+    final row = width != null
+        ? Row(
+            children: [
+              Expanded(child: labelText),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: dropdown,
+                ),
+              ),
+            ],
+          )
+        : Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(
+                fit: FlexFit.loose,
+                child: labelText,
+              ),
+              const SizedBox(width: 8),
+              dropdown,
+            ],
+          );
+
     return SizedBox(
       height: height,
       width: width,
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              label,
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-              style: appTextStyles.text1(context),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Flexible(
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: DropdownButton<T?>(
-                borderRadius: appBorderRadius.medium(context),
-                itemHeight: 48.0,
-                isExpanded: true,
-                underline: const SizedBox.shrink(),
-                value: selectedItem,
-                onChanged: (T? newValue) {
-                  onItemSelected(newValue);
-                },
-                items: menuItems.map<DropdownMenuItem<T?>>((T? value) {
-                  return DropdownMenuItem<T?>(
-                    value: value,
-                    child: Text(
-                      value is StuntType
-                          ? (value as StuntType).toLabel()
-                          : (value != null ? value.toString() : 'нет'),
-                      overflow: TextOverflow.ellipsis,
-                      style: appTextStyles.text1(context),
-                    ),
-                  );
-                }).toList(),
-              ),
-            ),
-          ),
-        ],
-      ),
+      child: row,
     );
   }
 }

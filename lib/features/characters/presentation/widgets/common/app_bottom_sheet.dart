@@ -1,12 +1,10 @@
 import 'package:fate_app/core/utils/theme/app_padding.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../../core/utils/theme/app_boder_radius.dart';
-
 /// AppBottomSheet - это виджет, который отображает текст в виде нижнего листа (bottom sheet).
 ///
-/// Этот виджет используется для отображения информации или действий в виде
-/// всплывающего окна в нижней части экрана.
+/// Ручку перетаскивания задайте через [showModalBottomSheet] (`showDragHandle: true`).
+/// Нижний отступ учитывает safe area.
 
 class AppBottomSheet extends StatelessWidget {
   const AppBottomSheet({super.key, required this.text});
@@ -16,12 +14,26 @@ class AppBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(borderRadius: appBorderRadius.medium(context)),
-      width: double.infinity,
+    final scheme = Theme.of(context).colorScheme;
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.sizeOf(context).height * 0.65,
+      ),
       child: Padding(
-        padding: EdgeInsets.all(appPadding.mediumW(context)),
-        child: Center(child: Text(text)),
+        padding: EdgeInsets.fromLTRB(
+          appPadding.mediumW(context),
+          appPadding.smallW(context),
+          appPadding.mediumW(context),
+          appPadding.mediumW(context),
+        ),
+        child: SingleChildScrollView(
+          child: SelectableText(
+            text,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: scheme.onSurface,
+                ),
+          ),
+        ),
       ),
     );
   }

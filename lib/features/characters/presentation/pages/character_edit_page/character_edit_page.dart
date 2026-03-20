@@ -1,6 +1,11 @@
+import 'package:dartz/dartz.dart' hide State;
+import 'package:fate_app/core/error/failure.dart';
+import 'package:fate_app/core/error/failure_user_message.dart';
 import 'package:fate_app/core/utils/theme/app_padding.dart';
 import 'package:fate_app/core/utils/theme/app_text_styles.dart';
 import 'package:fate_app/core/router/router.dart';
+import 'package:fate_app/features/character_ai/domain/entities/character_regen_field.dart';
+import 'package:fate_app/features/characters/domain/character_field_limits.dart';
 import 'package:fate_app/features/characters/domain/entities/mapper/entities_mapper.dart';
 import 'package:fate_app/features/characters/presentation/pages/character_edit_page/character_edit_page_view_model.dart';
 import 'package:fate_app/core/utils/app_size.dart';
@@ -12,6 +17,7 @@ import 'package:fate_app/features/characters/presentation/widgets/common/app_tex
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:developer' as dev;
 import 'package:gap/gap.dart';
 import 'package:image_cropper/image_cropper.dart';
 
@@ -32,6 +38,10 @@ class _CharacterEditPageState extends ConsumerState<CharacterEditPage> {
   late final TextEditingController _descriptionController;
   late final List<TextEditingController> _aspectControllers;
   late final List<TextEditingController> _stuntControllers;
+
+  /// Список вызывает [initNewCharacter] до открытия маршрута; [ref.listen] при
+  /// первой подписке не вызывается — без однократной гидратации поля пустые.
+  bool _scheduledInitialControllerSync = false;
 
   @override
   void initState() {
@@ -76,9 +86,149 @@ class _CharacterEditPageState extends ConsumerState<CharacterEditPage> {
   }
 
   void _showBottomSheet(BuildContext context, String text) {
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
+      showDragHandle: true,
+      useSafeArea: true,
       builder: (context) => AppBottomSheet(text: text),
+    );
+  }
+
+  Future<void> _onGenerateWithAi(BuildContext context, WidgetRef ref) async {
+    // Контроллер только в State диалога — dispose после снятия маршрута.
+    // Раньше dispose() в finally сразу после pop ломал TextField на кадре анимации закрытия.
+    final hint = await showDialog<String?>(
+      context: context,
+      builder: (ctx) => const _AiCharacterHintDialog(),
+    );
+
+    if (!context.mounted) return;
+    if (hint == null) return;
+
+    if (hint.isEmpty) {
+      _showBottomSheet(context, 'Введите краткое описание идеи.');
+      return;
+    }
+
+    dev.log('[AI] открываем индикатор, hint length=${hint.length}');
+
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => const PopScope(
+        canPop: false,
+        child: Center(
+          child: Card(
+            child: Padding(
+              padding: EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16),
+                  Text('Генерация…'),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    late Either<Failure, void> outcome;
+    try {
+      dev.log('[AI] вызов generateCharacterWithAi…');
+      outcome = await ref
+          .read(characterEditPageViewModelProvider.notifier)
+          .generateCharacterWithAi(hint);
+      dev.log('[AI] generateCharacterWithAi завершён (fold дальше)');
+    } catch (e, st) {
+      dev.log('[AI] исключение в generateCharacterWithAi',
+          error: e, stackTrace: st);
+      outcome = Left(UnknownFailure(message: e.toString(), cause: e));
+    } finally {
+      if (context.mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
+        dev.log('[AI] индикатор закрыт (finally)');
+      }
+    }
+
+    if (!context.mounted) return;
+
+    outcome.fold(
+      (f) {
+        final userText = describeCharacterAiGenerationFailureForUser(f);
+        debugPrint('[AI] Ошибка генерации (UI): $userText');
+        dev.log('[AI] Ошибка генерации (UI): $userText');
+        dev.log('[AI] Ошибка генерации (детали): ${describeFailureForUser(f)}');
+        _showBottomSheet(context, userText);
+      },
+      (_) {
+        debugPrint('[AI] Черновик применён успешно');
+        dev.log('[AI] черновик применён успешно');
+      },
+    );
+  }
+
+  Future<void> _onRegenerateField(
+    BuildContext context,
+    WidgetRef ref,
+    CharacterRegenField field,
+  ) async {
+    final hint = await showDialog<String?>(
+      context: context,
+      builder: (ctx) => _FieldAiHintDialog(fieldLabel: field.uiLabel),
+    );
+
+    if (!context.mounted) return;
+    if (hint == null) return;
+
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => const PopScope(
+        canPop: false,
+        child: Center(
+          child: Card(
+            child: Padding(
+              padding: EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16),
+                  Text('Генерация…'),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    late Either<Failure, void> outcome;
+    try {
+      outcome = await ref
+          .read(characterEditPageViewModelProvider.notifier)
+          .regenerateCharacterFieldWithAi(field: field, hint: hint);
+    } catch (e, st) {
+      dev.log('[AI] исключение в regenerateField', error: e, stackTrace: st);
+      outcome = Left(UnknownFailure(message: e.toString(), cause: e));
+    } finally {
+      if (context.mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
+      }
+    }
+
+    if (!context.mounted) return;
+
+    outcome.fold(
+      (f) {
+        final userText = describeCharacterAiGenerationFailureForUser(f);
+        dev.log('[AI] Ошибка поля (детали): ${describeFailureForUser(f)}');
+        _showBottomSheet(context, userText);
+      },
+      (_) {},
     );
   }
 
@@ -92,6 +242,16 @@ class _CharacterEditPageState extends ConsumerState<CharacterEditPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (!_scheduledInitialControllerSync) {
+      _scheduledInitialControllerSync = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _syncControllers(
+          ref.read(characterEditPageViewModelProvider).character,
+        );
+      });
+    }
+
     ref.listen(characterEditPageViewModelProvider, (prev, next) {
       final prevId = prev?.character.localeId;
       final nextId = next.character.localeId;
@@ -119,6 +279,11 @@ class _CharacterEditPageState extends ConsumerState<CharacterEditPage> {
               child: Column(
                 children: [
                   AppButtonWidget(
+                    text: 'Сгенерировать с ИИ',
+                    onPressed: () => _onGenerateWithAi(context, ref),
+                  ),
+                  Gap(appPadding.bigH(context)),
+                  AppButtonWidget(
                     text: 'Загрузить аватар',
                     onPressed: () async {
                       final result = await FilePicker.platform.pickFiles(
@@ -144,12 +309,17 @@ class _CharacterEditPageState extends ConsumerState<CharacterEditPage> {
                     child: AppTextFieldWidget(
                       controller: _nameController,
                       hintText: 'Имя',
-                      maxLength: 100,
+                      maxLength: CharacterFieldLimits.name,
                       onTapHelp: () => _showBottomSheet(
                         context,
                         ref
                             .read(characterEditPageViewModelProvider.notifier)
                             .helpText(CharHelpType.name),
+                      ),
+                      onTapRegenerateAi: () => _onRegenerateField(
+                        context,
+                        ref,
+                        CharacterRegenField.name,
                       ),
                     ),
                   ),
@@ -158,12 +328,17 @@ class _CharacterEditPageState extends ConsumerState<CharacterEditPage> {
                     child: AppTextFieldWidget(
                       controller: _conceptController,
                       hintText: 'Концепт',
-                      maxLength: 100,
+                      maxLength: CharacterFieldLimits.concept,
                       onTapHelp: () => _showBottomSheet(
                         context,
                         ref
                             .read(characterEditPageViewModelProvider.notifier)
                             .helpText(CharHelpType.concept),
+                      ),
+                      onTapRegenerateAi: () => _onRegenerateField(
+                        context,
+                        ref,
+                        CharacterRegenField.concept,
                       ),
                     ),
                   ),
@@ -183,25 +358,32 @@ class _CharacterEditPageState extends ConsumerState<CharacterEditPage> {
                     child: AppTextFieldWidget(
                       controller: _problemController,
                       hintText: 'Проблема',
-                      maxLength: 100,
+                      maxLength: CharacterFieldLimits.problem,
                       onTapHelp: () => _showBottomSheet(
                         context,
                         ref
                             .read(characterEditPageViewModelProvider.notifier)
                             .helpText(CharHelpType.problem),
                       ),
+                      onTapRegenerateAi: () => _onRegenerateField(
+                        context,
+                        ref,
+                        CharacterRegenField.problem,
+                      ),
                     ),
                   ),
                   Gap(appPadding.bigH(context)),
                   _Aspects(
-                      aspectControllers: _aspectControllers,
-                      onTapHelp: () => _showBottomSheet(
-                            context,
-                            ref
-                                .read(
-                                    characterEditPageViewModelProvider.notifier)
-                                .helpText(CharHelpType.aspect),
-                          )),
+                    aspectControllers: _aspectControllers,
+                    onTapHelp: () => _showBottomSheet(
+                      context,
+                      ref
+                          .read(characterEditPageViewModelProvider.notifier)
+                          .helpText(CharHelpType.aspect),
+                    ),
+                    onRegenerateField: (field) =>
+                        _onRegenerateField(context, ref, field),
+                  ),
                   Gap(appPadding.bigH(context)),
                   _Stunts(
                     stuntControllers: _stuntControllers,
@@ -217,18 +399,25 @@ class _CharacterEditPageState extends ConsumerState<CharacterEditPage> {
                           .read(characterEditPageViewModelProvider.notifier)
                           .saveStuntType(index, value);
                     },
+                    onRegenerateField: (field) =>
+                        _onRegenerateField(context, ref, field),
                   ),
                   Gap(appPadding.bigH(context)),
                   AppFocusContainerWidget(
                     child: AppTextFieldWidget(
                       controller: _descriptionController,
                       hintText: 'Описание',
-                      maxLength: 500,
+                      maxLength: CharacterFieldLimits.description,
                       onTapHelp: () => _showBottomSheet(
                         context,
                         ref
                             .read(characterEditPageViewModelProvider.notifier)
                             .helpText(CharHelpType.description),
+                      ),
+                      onTapRegenerateAi: () => _onRegenerateField(
+                        context,
+                        ref,
+                        CharacterRegenField.description,
                       ),
                     ),
                   ),
@@ -328,16 +517,25 @@ class _CharacterEditPageState extends ConsumerState<CharacterEditPage> {
 }
 
 class _Stunts extends StatelessWidget {
-  const _Stunts(
-      {required this.onTapHelp,
-      required this.onSelectStuntType,
-      required this.stunts,
-      required this.stuntControllers});
+  const _Stunts({
+    required this.onTapHelp,
+    required this.onSelectStuntType,
+    required this.stunts,
+    required this.stuntControllers,
+    required this.onRegenerateField,
+  });
+
+  static const _stuntFields = [
+    CharacterRegenField.stunt0,
+    CharacterRegenField.stunt1,
+    CharacterRegenField.stunt2,
+  ];
 
   final VoidCallback onTapHelp;
   final Function(int index, StuntType?) onSelectStuntType;
   final List<StuntEntity> stunts;
   final List<TextEditingController> stuntControllers;
+  final void Function(CharacterRegenField field) onRegenerateField;
 
   @override
   Widget build(BuildContext context) {
@@ -356,7 +554,28 @@ class _Stunts extends StatelessWidget {
         ...List.generate(
           3,
           (index) => Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              Gap(appPadding.smallH(context)),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Трюк ${index + 1}',
+                      style: appTextStyles.text2(context),
+                    ),
+                  ),
+                  Tooltip(
+                    message: 'Перегенерировать этот трюк с ИИ',
+                    child: AppIconButton(
+                      onTap: () => onRegenerateField(_stuntFields[index]),
+                      icon: Icons.auto_awesome_outlined,
+                    ),
+                  ),
+                ],
+              ),
+              Gap(appPadding.smallH(context)),
               AppDropdownMenu<StuntType>(
                 width: 230.width(context),
                 label: 'тип:',
@@ -367,8 +586,8 @@ class _Stunts extends StatelessWidget {
               ),
               AppTextFieldWidget(
                 controller: stuntControllers[index],
-                hintText: 'Трюк',
-                maxLength: 100,
+                hintText: 'Описание трюка',
+                maxLength: CharacterFieldLimits.stuntDescription,
               ),
             ],
           ),
@@ -379,10 +598,21 @@ class _Stunts extends StatelessWidget {
 }
 
 class _Aspects extends StatelessWidget {
-  const _Aspects({required this.onTapHelp, required this.aspectControllers});
+  const _Aspects({
+    required this.onTapHelp,
+    required this.aspectControllers,
+    required this.onRegenerateField,
+  });
+
+  static const _aspectFields = [
+    CharacterRegenField.aspect0,
+    CharacterRegenField.aspect1,
+    CharacterRegenField.aspect2,
+  ];
 
   final VoidCallback onTapHelp;
   final List<TextEditingController> aspectControllers;
+  final void Function(CharacterRegenField field) onRegenerateField;
 
   @override
   Widget build(BuildContext context) {
@@ -400,10 +630,35 @@ class _Aspects extends StatelessWidget {
         ),
         ...List.generate(
           3,
-          (index) => AppTextFieldWidget(
-            controller: aspectControllers[index],
-            hintText: 'Аспект',
-            maxLength: 100,
+          (index) => Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Gap(appPadding.smallH(context)),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Аспект ${index + 1}',
+                      style: appTextStyles.text2(context),
+                    ),
+                  ),
+                  Tooltip(
+                    message: 'Перегенерировать этот аспект с ИИ',
+                    child: AppIconButton(
+                      onTap: () => onRegenerateField(_aspectFields[index]),
+                      icon: Icons.auto_awesome_outlined,
+                    ),
+                  ),
+                ],
+              ),
+              Gap(appPadding.smallH(context)),
+              AppTextFieldWidget(
+                controller: aspectControllers[index],
+                hintText: 'Аспект',
+                maxLength: CharacterFieldLimits.aspect,
+              ),
+            ],
           ),
         ),
       ]),
@@ -519,6 +774,107 @@ class _Skills extends ConsumerWidget {
           ],
         ),
       ]),
+    );
+  }
+}
+
+/// Уточнение для перегенерации одного поля (пустой текст допустим).
+class _FieldAiHintDialog extends StatefulWidget {
+  const _FieldAiHintDialog({required this.fieldLabel});
+
+  final String fieldLabel;
+
+  @override
+  State<_FieldAiHintDialog> createState() => _FieldAiHintDialogState();
+}
+
+class _FieldAiHintDialogState extends State<_FieldAiHintDialog> {
+  late final TextEditingController _hintController;
+
+  @override
+  void initState() {
+    super.initState();
+    _hintController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _hintController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('ИИ: ${widget.fieldLabel}'),
+      content: TextField(
+        controller: _hintController,
+        maxLines: 4,
+        decoration: const InputDecoration(
+          hintText:
+              'Пожелания (необязательно): тон, акцент, что оставить или изменить',
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, null),
+          child: const Text('Отмена'),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.pop(context, _hintController.text.trim()),
+          child: const Text('Перегенерировать'),
+        ),
+      ],
+    );
+  }
+}
+
+/// Диалог ввода идеи для ИИ: [TextEditingController] живёт до [dispose] State,
+/// а не до `finally` после [Navigator.pop] (иначе «used after being disposed»).
+class _AiCharacterHintDialog extends StatefulWidget {
+  const _AiCharacterHintDialog();
+
+  @override
+  State<_AiCharacterHintDialog> createState() => _AiCharacterHintDialogState();
+}
+
+class _AiCharacterHintDialogState extends State<_AiCharacterHintDialog> {
+  late final TextEditingController _hintController;
+
+  @override
+  void initState() {
+    super.initState();
+    _hintController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _hintController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Идея персонажа'),
+      content: TextField(
+        controller: _hintController,
+        maxLines: 4,
+        decoration: const InputDecoration(
+          hintText:
+              'Например: циничный пилот на окраине Марса, боится ответственности',
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, null),
+          child: const Text('Отмена'),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.pop(context, _hintController.text.trim()),
+          child: const Text('Сгенерировать'),
+        ),
+      ],
     );
   }
 }
