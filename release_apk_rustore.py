@@ -5,10 +5,40 @@ import os
 import requests
 import sys
 import re
+from pathlib import Path
 from Crypto.PublicKey import RSA
 from Crypto.Signature import pkcs1_15
 from Crypto.Hash import SHA512
-from dotenv import load_dotenv
+
+def load_env(dotenv_path: Path) -> None:
+    """
+    Гарантированно загружает `KEY=VALUE` из файла .env.
+    Нужно для GitHub Actions, где текущая директория и наличие "старого" .env
+    могут отличаться; при этом секреты должны иметь приоритет.
+    """
+    if not dotenv_path.exists():
+        return
+
+    # Читаем как текст с заменой проблемных символов, чтобы не падать.
+    content = dotenv_path.read_text(encoding="utf-8", errors="replace")
+    for raw_line in content.splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key = key.strip()
+        value = value.strip()
+        if not key:
+            continue
+
+        # Убираем обрамляющие кавычки, если они есть.
+        if (value.startswith('"') and value.endswith('"')) or (value.startswith("'") and value.endswith("'")):
+            value = value[1:-1]
+
+        # Важно: если ключ встречается несколько раз, последнее значение имеет приоритет.
+        os.environ[key] = value
 
 def generate_signature(key_id, private_key_content):
     # Декодируем и загружаем приватный ключ
@@ -103,19 +133,25 @@ def upload_apk(package_name, version_id, public_token, apk_file_path, is_main_ap
         'Public-Token': public_token
     }
 
-    files = {
-        'file': open(apk_file_path, 'rb')
-    }
-
     print("Starting upload APK to Rustore")
+    print(f"POST {url}")
+    print(f"APK path: {apk_file_path}")
 
-    response = requests.post(url, headers=headers, params=params, files=files)
+    with open(apk_file_path, "rb") as f:
+        files = {"file": f}
+        response = requests.post(url, headers=headers, params=params, files=files)
 
     if response.status_code == 200:
         print("APK file uploaded successfully.")
         return response.status_code
     else:
-        print("Failed to upload APK file. Status code:", response.status_code)
+        print("Failed to upload APK file.")
+        print("Status code:", response.status_code)
+        # Тело ответа часто содержит причину (например, валидация draft/version id).
+        try:
+            print("Response JSON:", response.json())
+        except Exception:
+            print("Response text:", response.text)
         return None
 
 def submit_draft_for_moderation(package_name, version_id, public_token, priority_update=0):
@@ -144,8 +180,10 @@ def main():
         return
     whatsNew = sys.argv[1]
 
-    # Загружаем переменные окружения из .env файла
-    load_dotenv()
+    # Загружаем переменные окружения из .env файла рядом со скриптом.
+    # Нам важно не зависеть от текущей рабочей директории и не использовать python-dotenv.
+    dotenv_path = (Path(__file__).resolve().parent / ".env")
+    load_env(dotenv_path)
 
     # Получаем переменные окружения
     key_id = os.getenv('RUSTORE_KEY_ID')
@@ -166,12 +204,27 @@ def main():
             # Создание черновика версии
             version_response = create_version_draft(package_name, public_token, whatsNew)
             if version_response:
-             version_id = version_response.get('body')
-             if version_id:
-               # Загрузка APK файла
-               upload_apk_status_code = upload_apk(package_name, version_id, public_token, 'build/app/outputs/flutter-apk/app-release.apk')
-               if upload_apk_status_code == 200:
-                 submit_draft_for_moderation(package_name, version_id, public_token)
+                body = version_response.get("body")
+                version_id = None
+                if isinstance(body, dict):
+                    # У разных версий API поле может называться по-разному.
+                    version_id = body.get("id") or body.get("versionId") or body.get("version_id")
+                else:
+                    version_id = body
+
+                print("Create version draft response body:", body)
+                print(f"Resolved version_id: {version_id} ({type(version_id).__name__})")
+
+                if version_id:
+                    apk_path = str(Path(__file__).resolve().parent / "build/app/outputs/flutter-apk/app-release.apk")
+                    upload_apk_status_code = upload_apk(
+                        package_name,
+                        version_id,
+                        public_token,
+                        apk_path,
+                    )
+                    if upload_apk_status_code == 200:
+                        submit_draft_for_moderation(package_name, version_id, public_token)
 
 if __name__ == "__main__":
     main()
