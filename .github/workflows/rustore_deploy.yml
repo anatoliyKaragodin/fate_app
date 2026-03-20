@@ -54,6 +54,7 @@ jobs:
           echo "RUSTORE_PRIVATE_KEY=${{ secrets.RUSTORE_PRIVATE_KEY }}" >> .env
           echo "GROQ_API_KEY=${{ secrets.GROQ_API_KEY }}" >> .env
           echo "OPENROUTER_API_KEY=${{ secrets.OPENROUTER_API_KEY }}" >> .env
+          echo "SILICONFLOW_API_KEY=${{ secrets.SILICONFLOW_API_KEY }}" >> .env
 
 
       - name: Create google-services.json
