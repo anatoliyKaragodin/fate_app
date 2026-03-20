@@ -1,6 +1,7 @@
 import 'dart:developer' as dev;
 
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 import 'package:fate_app/core/error/failure.dart';
 import 'package:fate_app/features/character_ai/data/datasources/openai_compatible_chat_datasource.dart';
 import 'package:fate_app/features/character_ai/data/llm/llm_provider_config.dart';
@@ -58,41 +59,83 @@ class CharacterAiGenerationRepositoryImpl
 }
 ''';
 
+  static const _draftValidationMaxAttempts = 3;
+
   @override
   Future<Either<Failure, CharacterAiDraft>> generateDraft({
     required String userHint,
     required AiProvider provider,
     required String apiKey,
+    CancelToken? cancelToken,
   }) async {
     final cfg = LlmProviderConfig.forProvider(provider);
-    try {
-      dev.log(
-          '[AI] HTTP: ${cfg.baseUrl} model=${cfg.defaultModel} hintLen=${userHint.length}');
-      final content = await _remote.completeChat(
-        baseUrl: cfg.baseUrl,
-        apiKey: apiKey,
-        model: cfg.defaultModel,
-        system: _systemPrompt,
-        user: 'Идея или пожелания игрока:\n$userHint',
-        extraHeaders: cfg.extraHeaders,
-      );
-      dev.log('[AI] HTTP: ответ, длина content=${content.length}');
-      final parsed = CharacterAiDraftParser.parseModelContent(content);
-      dev.log('[AI] парсинг: ${parsed.isRight() ? "ok" : "ошибка"}');
-      return parsed;
-    } on ServerFailure catch (e) {
-      dev.log('[AI] ServerFailure', error: e, stackTrace: StackTrace.current);
-      return Left(e);
-    } on FormatException catch (e) {
-      dev.log('[AI] FormatException', error: e, stackTrace: StackTrace.current);
-      return Left(UnknownFailure(
-        message: 'Не удалось разобрать ответ ИИ.',
-        cause: e,
-      ));
-    } catch (e, st) {
-      dev.log('[AI] прочая ошибка', error: e, stackTrace: st);
-      return Left(UnknownFailure(message: 'Ошибка при обращении к ИИ.', cause: e));
+    var validationHint = '';
+
+    Either<Failure, CharacterAiDraft> lastResult = const Left(
+      UnknownFailure(message: 'Не удалось получить валидный черновик.'),
+    );
+
+    for (var attempt = 0; attempt < _draftValidationMaxAttempts; attempt++) {
+      if (cancelToken != null && cancelToken.isCancelled) {
+        return Left(OperationCancelledFailure(cause: cancelToken));
+      }
+
+      try {
+        final user = validationHint.isEmpty
+            ? 'Идея или пожелания игрока:\n$userHint'
+            : 'Идея или пожелания игрока:\n$userHint\n\n'
+                'Предыдущий ответ не прошёл проверку: $validationHint\n'
+                'Сгенерируй заново один JSON-объект строго по схеме и лимитам длины из '
+                'системной инструкции. Только JSON, без markdown и без текста вокруг.';
+
+        dev.log(
+          '[AI] HTTP: ${cfg.baseUrl} model=${cfg.defaultModel} '
+          'hintLen=${userHint.length} · попытка ${attempt + 1}/$_draftValidationMaxAttempts',
+        );
+        final content = await _remote.completeChat(
+          baseUrl: cfg.baseUrl,
+          apiKey: apiKey,
+          model: cfg.defaultModel,
+          system: _systemPrompt,
+          user: user,
+          extraHeaders: cfg.extraHeaders,
+          cancelToken: cancelToken,
+        );
+        dev.log('[AI] HTTP: ответ, длина content=${content.length}');
+        lastResult = CharacterAiDraftParser.parseModelContent(content);
+        dev.log(
+          '[AI] парсинг+лимиты: ${lastResult.isRight() ? "ok" : "ошибка"}',
+        );
+        if (lastResult.isRight()) {
+          return lastResult;
+        }
+        validationHint = lastResult.fold(
+          (f) => f.message?.trim() ?? '',
+          (_) => '',
+        );
+        if (validationHint.isEmpty) {
+          validationHint = 'ответ не соответствует формату или лимитам.';
+        }
+      } on OperationCancelledFailure catch (e) {
+        dev.log('[AI] генерация отменена пользователем');
+        return Left(e);
+      } on ServerFailure catch (e) {
+        dev.log('[AI] ServerFailure', error: e, stackTrace: StackTrace.current);
+        return Left(e);
+      } on FormatException catch (e) {
+        dev.log('[AI] FormatException', error: e, stackTrace: StackTrace.current);
+        lastResult = Left(UnknownFailure(
+          message: 'Пустой или нечитаемый ответ модели.',
+          cause: e,
+        ));
+        validationHint = 'пустой или нечитаемый ответ (нет текста в choices).';
+      } catch (e, st) {
+        dev.log('[AI] прочая ошибка', error: e, stackTrace: st);
+        return Left(UnknownFailure(message: 'Ошибка при обращении к ИИ.', cause: e));
+      }
     }
+
+    return lastResult;
   }
 
   @override

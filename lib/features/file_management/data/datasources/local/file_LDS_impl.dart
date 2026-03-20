@@ -37,6 +37,31 @@ class FileLdsImpl implements FileLDS {
   }
 
   @override
+  Future<String> saveImageBytes(List<int> bytes,
+      {required String fileName}) async {
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      var newFilePath = '${directory.path}/$fileName';
+
+      int counter = 1;
+      while (await File(newFilePath).exists()) {
+        final base = fileName.split('.').first;
+        final ext = fileName.contains('.')
+            ? fileName.substring(fileName.lastIndexOf('.'))
+            : '';
+        newFilePath = '${directory.path}/$base ($counter)$ext';
+        counter++;
+      }
+
+      await File(newFilePath).writeAsBytes(bytes, flush: true);
+      return newFilePath;
+    } catch (e, st) {
+      throw CacheException(
+          message: 'Failed to save image', cause: e, stackTrace: st);
+    }
+  }
+
+  @override
   Future<void> savePdf(PdfParams params) async {
     try {
       String? folderPath = await FilePicker.platform.getDirectoryPath();

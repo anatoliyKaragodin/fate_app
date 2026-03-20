@@ -31,6 +31,10 @@ class AppDropdownMenu<T> extends StatelessWidget {
 
   final double? height;
 
+  /// Фиксированная ширина только у выпадающего списка; подпись идёт сразу слева от
+  /// него, свободное место в строке — в [Spacer] (удобно в [AppBar]).
+  final double? dropdownTrailingWidth;
+
   const AppDropdownMenu(
       {super.key,
       required this.label,
@@ -38,7 +42,8 @@ class AppDropdownMenu<T> extends StatelessWidget {
       required this.selectedItem,
       required this.onItemSelected,
       this.width,
-      this.height});
+      this.height,
+      this.dropdownTrailingWidth});
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +65,7 @@ class AppDropdownMenu<T> extends StatelessWidget {
       itemHeight: 48.0,
       // В Row без фиксированной ширины (напр. диалог броска кубов) maxWidth = ∞ —
       // isExpanded + Expanded даёт assert «unbounded constraints».
-      isExpanded: width != null,
+      isExpanded: width != null || dropdownTrailingWidth != null,
       underline: const SizedBox.shrink(),
       value: selectedItem,
       onChanged: (T? newValue) {
@@ -76,34 +81,52 @@ class AppDropdownMenu<T> extends StatelessWidget {
       style: appTextStyles.text1(context),
     );
 
-    final row = width != null
+    final row = dropdownTrailingWidth != null
         ? Row(
             children: [
-              Expanded(child: labelText),
-              const SizedBox(width: 8),
+              // flex по умолчанию у Flexible = 1, тогда подпись и Spacer делят строку
+              // пополам и текст режется раньше времени. flex: 0 — только intrinsic ширина.
               Flexible(
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: dropdown,
-                ),
-              ),
-            ],
-          )
-        : Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Flexible(
+                flex: 0,
                 fit: FlexFit.loose,
                 child: labelText,
               ),
-              const SizedBox(width: 8),
-              dropdown,
+              const SizedBox(width: 4),
+              SizedBox(
+                width: dropdownTrailingWidth,
+                child: dropdown,
+              ),
+              const Spacer(),
             ],
-          );
+          )
+        : width != null
+            ? Row(
+                children: [
+                  Expanded(child: labelText),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: dropdown,
+                    ),
+                  ),
+                ],
+              )
+            : Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(
+                    fit: FlexFit.loose,
+                    child: labelText,
+                  ),
+                  const SizedBox(width: 8),
+                  dropdown,
+                ],
+              );
 
     return SizedBox(
       height: height,
-      width: width,
+      width: dropdownTrailingWidth != null ? null : width,
       child: row,
     );
   }

@@ -1,5 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:fate_app/core/database/database_manager.dart';
+import 'package:fate_app/features/avatar_ai/data/datasources/siliconflow_image_generation_datasource.dart';
+import 'package:fate_app/features/avatar_ai/data/repositories/character_avatar_generation_repository_impl.dart';
+import 'package:fate_app/features/avatar_ai/domain/repositories/character_avatar_generation_repository.dart';
+import 'package:fate_app/features/avatar_ai/domain/usecases/generate_character_avatar.dart';
 import 'package:fate_app/features/character_ai/data/datasources/openai_compatible_chat_datasource.dart';
 import 'package:fate_app/features/character_ai/data/repositories/ai_settings_repository_impl.dart';
 import 'package:fate_app/features/character_ai/data/repositories/character_ai_generation_repository_impl.dart';
@@ -47,13 +51,19 @@ Future<void> setupDI() async {
   getIt.registerLazySingleton<OpenAiCompatibleChatDataSource>(
       () => OpenAiCompatibleChatDataSource(getIt()));
   getIt.registerLazySingleton<AiSettingsRepository>(
-      () => AiSettingsRepositoryImpl(getIt()));
+      () => AiSettingsRepositoryImpl());
   getIt.registerLazySingleton<CharacterAiGenerationRepository>(
       () => CharacterAiGenerationRepositoryImpl(getIt()));
   getIt.registerLazySingleton(
       () => GenerateCharacterDraft(getIt(), getIt()));
   getIt.registerLazySingleton(
       () => RegenerateCharacterField(getIt(), getIt()));
+
+  getIt.registerLazySingleton<SiliconFlowImageGenerationDataSource>(
+      () => SiliconFlowImageGenerationDataSource(getIt()));
+  getIt.registerLazySingleton<CharacterAvatarGenerationRepository>(
+      () => CharacterAvatarGenerationRepositoryImpl(getIt(), getIt()));
+  getIt.registerLazySingleton(() => GenerateCharacterAvatar(getIt()));
 
   // Регистрация источника данных
   getIt.registerLazySingleton<CharactersLDS>(() => CharactersLDSImpl(getIt()));

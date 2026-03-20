@@ -37,6 +37,13 @@ class _FakeFileRepository implements FileRepository {
       Right(filePath);
 
   @override
+  Future<Either<Failure, String>> saveImageBytes(
+    List<int> bytes, {
+    required String fileName,
+  }) async =>
+      Right('/fake/$fileName');
+
+  @override
   Future<Either<Failure, void>> delete(String path) async => const Right(null);
 
   @override

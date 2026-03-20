@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 import 'package:fate_app/core/error/failure.dart';
 import 'package:fate_app/features/character_ai/domain/entities/ai_provider.dart';
 import 'package:fate_app/features/character_ai/domain/entities/character_ai_draft.dart';
@@ -10,6 +11,7 @@ abstract class CharacterAiGenerationRepository {
     required String userHint,
     required AiProvider provider,
     required String apiKey,
+    CancelToken? cancelToken,
   });
 
   /// Перегенерация одного поля; [sheetContext] — краткий текст текущего листа (формирует UI/VM).

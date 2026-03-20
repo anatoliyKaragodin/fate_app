@@ -29,6 +29,7 @@ class OpenAiCompatibleChatDataSource {
     required String system,
     required String user,
     Map<String, String> extraHeaders = const {},
+    CancelToken? cancelToken,
   }) async {
     // Ровно как в curl из доки Groq: POST + JSON body (не GET).
     // Редиректы 30x иногда превращают POST в GET — отключаем.
@@ -54,6 +55,7 @@ class OpenAiCompatibleChatDataSource {
       final response = await _dio.postUri<Map<String, dynamic>>(
         uri,
         data: jsonEncode(payload),
+        cancelToken: cancelToken,
         options: Options(
           method: 'POST',
           followRedirects: false,
@@ -75,6 +77,10 @@ class OpenAiCompatibleChatDataSource {
       }
       return content;
     } on DioException catch (e) {
+      if (e.type == DioExceptionType.cancel) {
+        dev.log('[AI] запрос отменён (CancelToken)');
+        throw OperationCancelledFailure(cause: e);
+      }
       if (e.response?.data != null) {
         _logResponseBody('[AI] Ответ сервера при ошибке', e.response!.data);
       }

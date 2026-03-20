@@ -29,6 +29,21 @@ class FileRepositoryImpl implements FileRepository {
   }
 
   @override
+  Future<Either<Failure, String>> saveImageBytes(
+    List<int> bytes, {
+    required String fileName,
+  }) async {
+    try {
+      final path = await _lds.saveImageBytes(bytes, fileName: fileName);
+      return Right(path);
+    } on CacheException catch (e) {
+      return Left(CacheFailure(message: e.message, cause: e.cause));
+    } on Exception catch (e) {
+      return Left(UnknownFailure(message: 'Unknown error', cause: e));
+    }
+  }
+
+  @override
   Future<Either<Failure, void>> savePdf(PdfParams params) async {
     try {
       await _lds.savePdf(params);

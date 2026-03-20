@@ -21,6 +21,16 @@ class AiApiKeySource {
     return _normalizeSecret(raw);
   }
 
+  /// [SiliconFlow](https://siliconflow.com) — генерация картинок (например FLUX.1-schnell).
+  static String siliconFlowApiKey() {
+    const fromDefine =
+        String.fromEnvironment('SILICONFLOW_API_KEY', defaultValue: '');
+    final raw = fromDefine.isNotEmpty
+        ? fromDefine
+        : (dotenv.env['SILICONFLOW_API_KEY'] ?? '');
+    return _normalizeSecret(raw);
+  }
+
   /// Убираем пробелы, BOM, обрамляющие кавычки из .env — иначе API может ответить 403.
   static String _normalizeSecret(String raw) {
     var k = raw.trim();

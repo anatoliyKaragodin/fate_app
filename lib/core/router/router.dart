@@ -1,4 +1,3 @@
-import 'package:fate_app/features/character_ai/presentation/pages/ai_settings_page.dart';
 import 'package:fate_app/features/characters/presentation/pages/character_edit_page/character_edit_page.dart';
 import 'package:fate_app/features/characters/presentation/pages/characters_list_page/characters_list_page.dart';
 import 'package:fate_app/features/characters/presentation/pages/fullscreen_image_page/fullscreen_image_page.dart';
@@ -33,7 +32,6 @@ class RouterHelper {
   static const String characterEditPath = '/character_edit';
   static const String characterPlayPath = '/character_play';
   static const String fullscreenImagePath = '/fullscreen_image';
-  static const String aiSettingsPath = '/ai_settings';
 
   GoRouterDelegate get routerDelegate => router.routerDelegate;
 
@@ -55,12 +53,6 @@ class RouterHelper {
         path: characterEditPath,
         pageBuilder: (context, state) {
           return getPage(child: const CharacterEditPage(), state: state);
-        },
-      ),
-      GoRoute(
-        path: aiSettingsPath,
-        pageBuilder: (context, state) {
-          return getPage(child: const AiSettingsPage(), state: state);
         },
       ),
       GoRoute(

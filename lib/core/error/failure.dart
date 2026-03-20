@@ -21,3 +21,8 @@ class CacheFailure extends Failure {
 class UnknownFailure extends Failure {
   const UnknownFailure({super.message, super.cause});
 }
+
+/// Пользователь отменил длительную операцию (например закрыл запрос к API).
+class OperationCancelledFailure extends Failure {
+  const OperationCancelledFailure({super.message, super.cause});
+}

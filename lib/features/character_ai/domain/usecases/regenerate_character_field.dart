@@ -1,11 +1,11 @@
 import 'package:dartz/dartz.dart';
 import 'package:fate_app/core/error/failure.dart';
 import 'package:fate_app/core/usecases/usecase.dart';
-import 'package:fate_app/features/character_ai/domain/entities/ai_provider.dart';
 import 'package:fate_app/features/character_ai/domain/entities/character_field_regen_patch.dart';
 import 'package:fate_app/features/character_ai/domain/entities/character_regen_field.dart';
 import 'package:fate_app/features/character_ai/domain/repositories/ai_settings_repository.dart';
 import 'package:fate_app/features/character_ai/domain/repositories/character_ai_generation_repository.dart';
+import 'package:fate_app/features/character_ai/domain/usecases/run_llm_with_groq_then_openrouter.dart';
 
 class RegenerateCharacterFieldParams {
   const RegenerateCharacterFieldParams({
@@ -32,24 +32,16 @@ class RegenerateCharacterField
   Future<Either<Failure, CharacterFieldRegenPatch>> call(
     RegenerateCharacterFieldParams params,
   ) async {
-    final provider = await _settings.getSelectedProvider();
-    final key = await _settings.getApiKey(provider);
-    if (key == null || key.trim().isEmpty) {
-      final hint = switch (provider) {
-        AiProvider.openRouter =>
-          'Не задан OPENROUTER_API_KEY: --dart-define или .env (в CI — секрет).',
-        AiProvider.groq =>
-          'Не задан GROQ_API_KEY: --dart-define или .env (в CI — секрет).',
-      };
-      return Left(UnknownFailure(message: hint));
-    }
-    return _generation.generateFieldRegen(
-      field: params.field,
-      userHint: params.userHint,
-      sheetContext: params.sheetContext,
-      provider: provider,
-      apiKey: key.trim(),
-      stuntTypeLabel: params.stuntTypeLabel,
+    return runLlmWithGroqThenOpenRouter<CharacterFieldRegenPatch>(
+      settings: _settings,
+      invoke: (provider, apiKey) => _generation.generateFieldRegen(
+        field: params.field,
+        userHint: params.userHint,
+        sheetContext: params.sheetContext,
+        provider: provider,
+        apiKey: apiKey,
+        stuntTypeLabel: params.stuntTypeLabel,
+      ),
     );
   }
 }

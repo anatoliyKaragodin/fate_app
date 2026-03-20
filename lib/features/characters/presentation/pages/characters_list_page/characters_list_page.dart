@@ -49,8 +49,6 @@ class CharactersListPage extends ConsumerWidget {
             onTapSort: (value) =>
                 ref.read(charactersListPageViewProvider.notifier).sortBy(value),
             onTapNew: goToNewCharacter,
-            onTapSettings: () =>
-                RouterHelper.router.go(RouterHelper.aiSettingsPath),
             selectedSort: vmProvider.sortType.toLabel(),
           ),
           if (updaterProvider)
@@ -152,15 +150,13 @@ class CharactersListPage extends ConsumerWidget {
 }
 
 class _AppBar extends StatelessWidget {
-  const _AppBar(
-      {required this.onTapNew,
-      required this.onTapSort,
-      required this.onTapSettings,
-      required this.selectedSort});
+  const _AppBar({
+    required this.onTapNew,
+    required this.onTapSort,
+    required this.selectedSort,
+  });
 
   final VoidCallback onTapNew;
-
-  final VoidCallback onTapSettings;
 
   final Function(String? value) onTapSort;
 
@@ -212,10 +208,6 @@ class _AppBar extends StatelessWidget {
         ),
       ),
       actions: [
-        AppIconButton(
-          onTap: onTapSettings,
-          icon: Icons.settings,
-        ),
         AppIconButton(
           onTap: onTapNew,
           icon: Icons.add,

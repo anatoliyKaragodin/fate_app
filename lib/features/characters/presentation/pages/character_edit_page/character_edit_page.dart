@@ -14,6 +14,7 @@ import 'package:fate_app/features/characters/presentation/widgets/common/app_dro
 import 'package:fate_app/features/characters/presentation/widgets/common/app_focus_container_widget.dart';
 import 'package:fate_app/features/characters/presentation/widgets/common/app_icon_button.dart';
 import 'package:fate_app/features/characters/presentation/widgets/common/app_text_field_widget.dart';
+import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -112,27 +113,48 @@ class _CharacterEditPageState extends ConsumerState<CharacterEditPage> {
 
     dev.log('[AI] открываем индикатор, hint length=${hint.length}');
 
+    final cancelToken = CancelToken();
+    var loadingDismissed = false;
+    void dismissLoading() {
+      if (loadingDismissed || !context.mounted) return;
+      loadingDismissed = true;
+      Navigator.of(context, rootNavigator: true).pop();
+      dev.log('[AI] индикатор закрыт');
+    }
+
     showDialog<void>(
       context: context,
       barrierDismissible: false,
-      builder: (ctx) => const PopScope(
-        canPop: false,
-        child: Center(
-          child: Card(
-            child: Padding(
-              padding: EdgeInsets.all(24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16),
-                  Text('Генерация…'),
-                ],
+      useRootNavigator: true,
+      builder: (_) {
+        return PopScope(
+          canPop: false,
+          child: Center(
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const CircularProgressIndicator(),
+                    const SizedBox(height: 16),
+                    const Text('Генерация…'),
+                    const SizedBox(height: 12),
+                    TextButton(
+                      onPressed: () {
+                        cancelToken.cancel();
+                        dismissLoading();
+                        dev.log('[AI] отмена по кнопке');
+                      },
+                      child: const Text('Отменить'),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
 
     late Either<Failure, void> outcome;
@@ -140,23 +162,24 @@ class _CharacterEditPageState extends ConsumerState<CharacterEditPage> {
       dev.log('[AI] вызов generateCharacterWithAi…');
       outcome = await ref
           .read(characterEditPageViewModelProvider.notifier)
-          .generateCharacterWithAi(hint);
+          .generateCharacterWithAi(hint, cancelToken: cancelToken);
       dev.log('[AI] generateCharacterWithAi завершён (fold дальше)');
     } catch (e, st) {
       dev.log('[AI] исключение в generateCharacterWithAi',
           error: e, stackTrace: st);
       outcome = Left(UnknownFailure(message: e.toString(), cause: e));
     } finally {
-      if (context.mounted) {
-        Navigator.of(context, rootNavigator: true).pop();
-        dev.log('[AI] индикатор закрыт (finally)');
-      }
+      dismissLoading();
     }
 
     if (!context.mounted) return;
 
     outcome.fold(
       (f) {
+        if (f is OperationCancelledFailure) {
+          dev.log('[AI] генерация отменена, без сообщения об ошибке');
+          return;
+        }
         final userText = describeCharacterAiGenerationFailureForUser(f);
         debugPrint('[AI] Ошибка генерации (UI): $userText');
         dev.log('[AI] Ошибка генерации (UI): $userText');
@@ -167,6 +190,87 @@ class _CharacterEditPageState extends ConsumerState<CharacterEditPage> {
         debugPrint('[AI] Черновик применён успешно');
         dev.log('[AI] черновик применён успешно');
       },
+    );
+  }
+
+  Future<void> _onGenerateAvatar(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    final cancelToken = CancelToken();
+    var loadingDismissed = false;
+    void dismissLoading() {
+      if (loadingDismissed || !context.mounted) return;
+      loadingDismissed = true;
+      Navigator.of(context, rootNavigator: true).pop();
+    }
+
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      useRootNavigator: true,
+      builder: (_) {
+        return PopScope(
+          canPop: false,
+          child: Center(
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const CircularProgressIndicator(),
+                    const SizedBox(height: 16),
+                    const Text('Генерация аватара…'),
+                    const SizedBox(height: 12),
+                    TextButton(
+                      onPressed: () {
+                        cancelToken.cancel();
+                        dismissLoading();
+                        dev.log('[Avatar] отмена по кнопке');
+                      },
+                      child: const Text('Отменить'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    late Either<Failure, void> outcome;
+    try {
+      outcome = await ref
+          .read(characterEditPageViewModelProvider.notifier)
+          .generateAvatar(
+            name: _nameController.text,
+            concept: _conceptController.text,
+            problem: _problemController.text,
+            description: _descriptionController.text,
+            cancelToken: cancelToken,
+          );
+    } catch (e, st) {
+      dev.log('[Avatar] исключение', error: e, stackTrace: st);
+      outcome = Left(UnknownFailure(message: e.toString(), cause: e));
+    } finally {
+      dismissLoading();
+    }
+
+    if (!context.mounted) return;
+
+    outcome.fold(
+      (f) {
+        if (f is OperationCancelledFailure) {
+          dev.log('[Avatar] генерация отменена, без сообщения');
+          return;
+        }
+        final userText = describeAvatarGenerationFailureForUser(f);
+        dev.log('[Avatar] детали: ${describeFailureForUser(f)}');
+        _showBottomSheet(context, userText);
+      },
+      (_) {},
     );
   }
 
@@ -281,6 +385,11 @@ class _CharacterEditPageState extends ConsumerState<CharacterEditPage> {
                   AppButtonWidget(
                     text: 'Сгенерировать с ИИ',
                     onPressed: () => _onGenerateWithAi(context, ref),
+                  ),
+                  Gap(appPadding.bigH(context)),
+                  AppButtonWidget(
+                    text: 'Сгенерировать аватар',
+                    onPressed: () => _onGenerateAvatar(context, ref),
                   ),
                   Gap(appPadding.bigH(context)),
                   AppButtonWidget(

@@ -3,17 +3,20 @@ import 'package:fate_app/core/error/failure.dart';
 import 'package:fate_app/features/character_ai/domain/entities/character_ai_draft.dart';
 import 'package:fate_app/features/character_ai/domain/entities/character_field_regen_patch.dart';
 import 'package:fate_app/features/character_ai/domain/entities/character_regen_field.dart';
+import 'package:fate_app/features/avatar_ai/domain/usecases/generate_character_avatar.dart';
 import 'package:fate_app/features/characters/domain/character_field_limits.dart';
 import 'package:fate_app/features/character_ai/domain/usecases/generate_character_draft.dart';
 import 'package:fate_app/features/character_ai/domain/usecases/regenerate_character_field.dart';
 import 'package:fate_app/features/characters/domain/entities/mapper/entities_mapper.dart';
 import 'package:fate_app/features/characters/presentation/utils/character_help_text.dart';
+import 'package:fate_app/features/characters/presentation/utils/pollinations_avatar_prompt.dart';
 import 'package:fate_app/features/file_management/domain/usecases/delete_file.dart';
 import 'package:fate_app/features/file_management/domain/usecases/copy_file.dart';
 import 'package:fate_app/features/characters/domain/usecases/update_character.dart';
 import 'package:fate_app/features/characters/presentation/mapper/state_mapper.dart';
 import 'package:fate_app/features/characters/presentation/pages/characters_list_page/characters_list_page_view_model.dart';
 import 'package:fate_app/features/characters/presentation/utils/character_pdf_document_builder.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:developer' as dev;
 import 'package:fate_app/features/characters/domain/usecases/save_new_character.dart';
@@ -29,9 +32,11 @@ final characterEditPageViewModelProvider =
             getIt.get<UpdateCharacter>(),
             getIt.get<SavePdf>(),
             getIt.get<CopyFile>(),
-            getIt(),
+            getIt.get<DeleteFile>(),
             getIt.get<GenerateCharacterDraft>(),
-            getIt.get<RegenerateCharacterField>()));
+            getIt.get<RegenerateCharacterField>(),
+            getIt.get<GenerateCharacterAvatar>(),
+        ));
 
 class CharacterEditPageViewModel extends StateNotifier<CharacterEditPageState> {
   final SaveNewCharacter _saveNewCharacterUC;
@@ -41,6 +46,7 @@ class CharacterEditPageViewModel extends StateNotifier<CharacterEditPageState> {
   final DeleteFile _deleteFileUC;
   final GenerateCharacterDraft _generateCharacterDraft;
   final RegenerateCharacterField _regenerateCharacterField;
+  final GenerateCharacterAvatar _generateCharacterAvatar;
 
   CharacterEditPageViewModel(
       this._saveNewCharacterUC,
@@ -49,7 +55,8 @@ class CharacterEditPageViewModel extends StateNotifier<CharacterEditPageState> {
       this._copyFileUC,
       this._deleteFileUC,
       this._generateCharacterDraft,
-      this._regenerateCharacterField)
+      this._regenerateCharacterField,
+      this._generateCharacterAvatar)
       : super(CharacterEditPageState(
             character: CharacterEntity.empty(),
             skillAvailableList: _defaultAvailableSkillList));
@@ -135,14 +142,20 @@ class CharacterEditPageViewModel extends StateNotifier<CharacterEditPageState> {
   }
 
   /// Запрос к ИИ и применение черновика к текущему персонажу в стейте.
-  Future<Either<Failure, void>> generateCharacterWithAi(String userHint) async {
+  Future<Either<Failure, void>> generateCharacterWithAi(
+    String userHint, {
+    CancelToken? cancelToken,
+  }) async {
     final trimmed = userHint.trim();
     if (trimmed.isEmpty) {
       return const Left(UnknownFailure(message: 'Опишите идею персонажа.'));
     }
     dev.log('[AI] VM: вызов GenerateCharacterDraft…');
     final result = await _generateCharacterDraft(
-      GenerateCharacterDraftParams(userHint: trimmed),
+      GenerateCharacterDraftParams(
+        userHint: trimmed,
+        cancelToken: cancelToken,
+      ),
     );
     dev.log('[AI] VM: use case вернул ${result.isLeft() ? "ошибку" : "черновик"}');
     return result.fold<Either<Failure, void>>(
@@ -308,6 +321,46 @@ class CharacterEditPageViewModel extends StateNotifier<CharacterEditPageState> {
       }
       state = state.copyWith(character: state.character.copyWith(image: path));
     });
+  }
+
+  /// Портрет через SiliconFlow по текущим полям листа (передавайте текст из контроллеров).
+  Future<Either<Failure, void>> generateAvatar({
+    required String name,
+    required String concept,
+    required String problem,
+    required String description,
+    CancelToken? cancelToken,
+  }) async {
+    final synthetic = state.character.copyWith(
+      name: name,
+      concept: concept,
+      problem: problem,
+      description: description,
+    );
+    if (!hasPollinationsAvatarPromptMaterial(synthetic)) {
+      return const Left(UnknownFailure(
+        message:
+            'Укажите имя, концепт или описание — по ним соберётся промпт для аватара.',
+      ));
+    }
+    final prompt = buildPollinationsAvatarPrompt(synthetic);
+    final result = await _generateCharacterAvatar(
+      GenerateCharacterAvatarParams(
+        prompt: prompt,
+        cancelToken: cancelToken,
+      ),
+    );
+    return result.fold<Future<Either<Failure, void>>>(
+      (f) async => Left(f),
+      (path) async {
+        final old = state.character.image;
+        if (old != null) {
+          await _deleteFileUC(old);
+        }
+        state = state.copyWith(character: state.character.copyWith(image: path));
+        return const Right(null);
+      },
+    );
   }
 }
 

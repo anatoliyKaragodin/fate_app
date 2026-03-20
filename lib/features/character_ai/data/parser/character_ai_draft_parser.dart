@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dartz/dartz.dart';
 import 'package:fate_app/core/error/failure.dart';
 import 'package:fate_app/features/character_ai/domain/entities/character_ai_draft.dart';
+import 'package:fate_app/features/characters/domain/character_field_limits.dart';
 import 'package:fate_app/features/characters/domain/entities/mapper/entities_mapper.dart';
 
 class CharacterAiDraftParser {
@@ -44,7 +45,7 @@ class CharacterAiDraftParser {
         }
         return _parseStunts(map['stunts']).fold(
           (f) => Left(f),
-          (stunts) => Right(CharacterAiDraft(
+          (stunts) => validateDraftLimits(CharacterAiDraft(
             name: name,
             concept: concept,
             problem: problem,
@@ -57,6 +58,64 @@ class CharacterAiDraftParser {
         );
       },
     );
+  }
+
+  /// JSON уже разобран; проверка лимитов длины как в редакторе листа.
+  static Either<Failure, CharacterAiDraft> validateDraftLimits(
+    CharacterAiDraft draft,
+  ) {
+    String tooLong(String fieldRu, int max) =>
+        '$fieldRu длиннее допустимого ($max символов).';
+
+    if (draft.name.length > CharacterFieldLimits.name) {
+      return Left(UnknownFailure(message: tooLong('Имя', CharacterFieldLimits.name)));
+    }
+    if (draft.concept.length > CharacterFieldLimits.concept) {
+      return Left(
+        UnknownFailure(message: tooLong('Концепт', CharacterFieldLimits.concept)),
+      );
+    }
+    if (draft.problem.length > CharacterFieldLimits.problem) {
+      return Left(
+        UnknownFailure(message: tooLong('Проблема', CharacterFieldLimits.problem)),
+      );
+    }
+    final merged = mergeAppearanceIntoDescription(
+      appearance: draft.appearance,
+      descriptionBody: draft.description,
+    );
+    if (merged.length > CharacterFieldLimits.description) {
+      return Left(
+        UnknownFailure(
+          message:
+              'Склеенное поле «Описание» (внешность + текст) длиннее '
+              '${CharacterFieldLimits.description} символов.',
+        ),
+      );
+    }
+    for (var i = 0; i < draft.aspects.length; i++) {
+      if (draft.aspects[i].length > CharacterFieldLimits.aspect) {
+        return Left(
+          UnknownFailure(
+            message: tooLong('Аспект ${i + 1}', CharacterFieldLimits.aspect),
+          ),
+        );
+      }
+    }
+    for (var i = 0; i < draft.stunts.length; i++) {
+      if (draft.stunts[i].description.length >
+          CharacterFieldLimits.stuntDescription) {
+        return Left(
+          UnknownFailure(
+            message: tooLong(
+              'Описание трюка ${i + 1}',
+              CharacterFieldLimits.stuntDescription,
+            ),
+          ),
+        );
+      }
+    }
+    return Right(draft);
   }
 
   static String _stripCodeFence(String s) {

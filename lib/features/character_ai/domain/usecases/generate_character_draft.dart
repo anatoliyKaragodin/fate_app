@@ -1,17 +1,22 @@
 import 'dart:developer' as dev;
 
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 import 'package:fate_app/core/error/failure.dart';
 import 'package:fate_app/core/usecases/usecase.dart';
-import 'package:fate_app/features/character_ai/domain/entities/ai_provider.dart';
 import 'package:fate_app/features/character_ai/domain/entities/character_ai_draft.dart';
 import 'package:fate_app/features/character_ai/domain/repositories/ai_settings_repository.dart';
 import 'package:fate_app/features/character_ai/domain/repositories/character_ai_generation_repository.dart';
+import 'package:fate_app/features/character_ai/domain/usecases/run_llm_with_groq_then_openrouter.dart';
 
 class GenerateCharacterDraftParams {
   final String userHint;
+  final CancelToken? cancelToken;
 
-  const GenerateCharacterDraftParams({required this.userHint});
+  const GenerateCharacterDraftParams({
+    required this.userHint,
+    this.cancelToken,
+  });
 }
 
 class GenerateCharacterDraft
@@ -25,24 +30,15 @@ class GenerateCharacterDraft
   Future<Either<Failure, CharacterAiDraft>> call(
     GenerateCharacterDraftParams params,
   ) async {
-    dev.log('[AI] use case: провайдер и ключ…');
-    final provider = await _settings.getSelectedProvider();
-    final key = await _settings.getApiKey(provider);
-    if (key == null || key.trim().isEmpty) {
-      dev.log('[AI] use case: ключ пуст — отмена');
-      final hint = switch (provider) {
-        AiProvider.openRouter =>
-          'Не задан OPENROUTER_API_KEY: --dart-define или .env (в CI — секрет).',
-        _ =>
-          'Не задан GROQ_API_KEY: --dart-define или .env (в CI — секрет).',
-      };
-      return Left(UnknownFailure(message: hint));
-    }
-    dev.log('[AI] use case: запрос в репозиторий (${provider.name})…');
-    final out = await _generation.generateDraft(
-      userHint: params.userHint,
-      provider: provider,
-      apiKey: key.trim(),
+    dev.log('[AI] use case: Groq → OpenRouter при сбое…');
+    final out = await runLlmWithGroqThenOpenRouter<CharacterAiDraft>(
+      settings: _settings,
+      invoke: (provider, apiKey) => _generation.generateDraft(
+        userHint: params.userHint,
+        provider: provider,
+        apiKey: apiKey,
+        cancelToken: params.cancelToken,
+      ),
     );
     dev.log('[AI] use case: ответ репозитория получен');
     return out;

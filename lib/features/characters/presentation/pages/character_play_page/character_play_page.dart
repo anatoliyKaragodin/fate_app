@@ -351,6 +351,8 @@ class _AppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
+      centerTitle: false,
+      titleSpacing: 0,
       leading: AppIconButton(
         icon: Icons.arrow_back_ios_new,
         onTap: onTapBack,
@@ -371,19 +373,20 @@ class _AppBar extends StatelessWidget {
               onTap: onTapCompact),
         )
       ],
-      title: SizedBox(
-        child: Row(
-          children: [
-            AppDropdownMenu<int>(
-                width: 160.width(context),
-                label: 'Жетоны судьбы',
-                menuItems: const [0, 1, 2, 3],
-                selectedItem: fateTokens,
-                onItemSelected: (value) {
-                  onSelectFateTokens(value ?? 0);
-                })
-          ],
-        ),
+      title: Row(
+        children: [
+          Expanded(
+            child: AppDropdownMenu<int>(
+              dropdownTrailingWidth: 48.width(context),
+              label: 'Жетоны судьбы',
+              menuItems: const [0, 1, 2, 3],
+              selectedItem: fateTokens,
+              onItemSelected: (value) {
+                onSelectFateTokens(value ?? 0);
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
