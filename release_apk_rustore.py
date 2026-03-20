@@ -122,6 +122,14 @@ def create_version_draft(package_name, public_token, whatsNew):
             return None
     else:
         print(f"Failed to create version draft. Status code: {response.status_code}")
+        # Печатаем причину 400 для диагностики.
+        try:
+            print("Response JSON:", _safe_repr_ascii(response.json()))
+        except Exception:
+            print(
+                "Response text:",
+                response.content.decode("utf-8", errors="backslashreplace"),
+            )
         return None
 
 
@@ -197,7 +205,12 @@ def main():
     if len(sys.argv) < 2:
         print("Не передан аргумент whatsNew.")
         return
-    whatsNew = sys.argv[1]
+    whatsNew = (sys.argv[1] or "").strip()
+    if not whatsNew:
+        # В некоторых случаях RuStore ругается на пустой "What's new".
+        # Используем безопасный дефолт, чтобы падение не происходило из-за пустого release body.
+        whatsNew = "Update"
+        print("whatsNew was empty; using default:", _safe_repr_ascii(whatsNew))
 
     # Загружаем переменные окружения из .env файла рядом со скриптом.
     # Нам важно не зависеть от текущей рабочей директории и не использовать python-dotenv.
