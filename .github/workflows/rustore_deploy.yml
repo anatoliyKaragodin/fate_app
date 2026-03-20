@@ -73,5 +73,6 @@ jobs:
         run: flutter build apk --release
 
       - name: Release APK to RuStore
+        if: github.event_name == 'release' && github.event.action == 'published'
         run: |
             python release_apk_rustore.py "${{ github.event.release.body }}"

@@ -40,6 +40,19 @@ def load_env(dotenv_path: Path) -> None:
         # Важно: если ключ встречается несколько раз, последнее значение имеет приоритет.
         os.environ[key] = value
 
+
+def _safe_repr_ascii(obj) -> str:
+    """
+    Делает вывод безопасным для Windows-консоли (cp1252 и т.п.).
+    Возвращает только ASCII-символы (через JSON ensure_ascii или backslashreplace).
+    """
+    try:
+        if isinstance(obj, (dict, list)):
+            return json.dumps(obj, ensure_ascii=True, separators=(",", ":"))
+        return str(obj).encode("utf-8", errors="backslashreplace").decode("ascii")
+    except Exception:
+        return "<unprintable>"
+
 def generate_signature(key_id, private_key_content):
     # Декодируем и загружаем приватный ключ
     private_key = RSA.import_key(base64.b64decode(private_key_content))
@@ -127,6 +140,8 @@ def delete_version_draft(package_name, version_id, public_token):
 def upload_apk(package_name, version_id, public_token, apk_file_path, is_main_apk=True):
     url = f"https://public-api.rustore.ru/public/v1/application/{package_name}/version/{version_id}/apk"
     params = {
+        # Дефолтное значение, описанное в документации.
+        "servicesType": "Unknown",
         "isMainApk": str(is_main_apk).lower(),  # Значение должно быть в формате 'true' или 'false'
     }
     headers = {
@@ -149,9 +164,13 @@ def upload_apk(package_name, version_id, public_token, apk_file_path, is_main_ap
         print("Status code:", response.status_code)
         # Тело ответа часто содержит причину (например, валидация draft/version id).
         try:
-            print("Response JSON:", response.json())
+            print("Response JSON:", _safe_repr_ascii(response.json()))
         except Exception:
-            print("Response text:", response.text)
+            # response.text может зависеть от кодировки stdout/response, поэтому печатаем сырой контент.
+            print(
+                "Response text:",
+                response.content.decode("utf-8", errors="backslashreplace"),
+            )
         return None
 
 def submit_draft_for_moderation(package_name, version_id, public_token, priority_update=0):
@@ -212,7 +231,7 @@ def main():
                 else:
                     version_id = body
 
-                print("Create version draft response body:", body)
+                print("Create version draft response body:", _safe_repr_ascii(body))
                 print(f"Resolved version_id: {version_id} ({type(version_id).__name__})")
 
                 if version_id:
