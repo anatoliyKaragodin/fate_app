@@ -13,7 +13,7 @@ class AiSettingsRepositoryImpl implements AiSettingsRepository {
   @override
   Future<AiProvider> getSelectedProvider() async {
     final name = _prefs.getString(_keyProvider);
-    if (name == null) return AiProvider.groq;
+    if (name == null) return AiProvider.openRouter;
     // Старые сборки могли сохранить удалённый вариант `openai`.
     if (name == 'openai') return AiProvider.groq;
     for (final p in AiProvider.values) {
@@ -21,7 +21,7 @@ class AiSettingsRepositoryImpl implements AiSettingsRepository {
         return p;
       }
     }
-    return AiProvider.groq;
+    return AiProvider.openRouter;
   }
 
   @override

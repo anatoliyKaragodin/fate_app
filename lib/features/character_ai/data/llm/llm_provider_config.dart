@@ -25,15 +25,14 @@ class LlmProviderConfig {
     defaultModel: 'llama-3.3-70b-versatile',
   );
 
-  /// [OpenRouter](https://openrouter.ai/docs): бесплатные модели с суффиксом `:free`.
+  /// [OpenRouter](https://openrouter.ai/docs): бесплатный вывод через `openrouter/free`
+  /// — роутер подбирает доступную `:free` модель (у конкретных id вроде
+  /// `meta-llama/…:free` периодически бывает 404 «No endpoints found»).
   ///
-  /// По умолчанию — `meta-llama/llama-3.1-8b-instruct:free`: литературность и гибкость
-  /// по характеру персонажа (RPG), меньше ограничений по тону.
-  /// Альтернатива: `google/gemini-flash-1.5-8b:free` — больше контекста, сильный русский,
-  /// иногда осторожнее к мрачному контенту. Сменить — поле [defaultModel] ниже.
+  /// Явная модель при необходимости: id с суффиксом `:free` из [каталога](https://openrouter.ai/models).
   static const openRouter = LlmProviderConfig(
     baseUrl: 'https://openrouter.ai/api/v1',
-    defaultModel: 'meta-llama/llama-3.1-8b-instruct:free',
+    defaultModel: 'openrouter/free',
     extraHeaders: {
       'HTTP-Referer': 'https://github.com/fate-app',
       'X-Title': 'Fate App',

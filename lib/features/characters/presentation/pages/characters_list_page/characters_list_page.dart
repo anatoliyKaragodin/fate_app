@@ -88,7 +88,8 @@ class CharactersListPage extends ConsumerWidget {
                       style: appTextStyles.text2(context),
                     ),
                     Gap(appPadding.bigH(context)),
-                    AppButtonWidget(text: 'Создать персонажа', onPressed: goToNewCharacter),
+                    AppButtonWidget(
+                        text: 'Создать персонажа', onPressed: goToNewCharacter),
                   ],
                 ),
               ),
@@ -118,7 +119,8 @@ class CharactersListPage extends ConsumerWidget {
                               button2Text: 'Нет',
                               onTapButton1: () {
                                 ref
-                                    .read(charactersListPageViewProvider.notifier)
+                                    .read(
+                                        charactersListPageViewProvider.notifier)
                                     .deleteCharacter(character);
                                 Navigator.of(dialogContext).pop();
                               },
@@ -169,7 +171,7 @@ class _AppBar extends StatelessWidget {
     return SliverAppBar(
       pinned: true,
       centerTitle: true,
-      expandedHeight: 118.height(context),
+      expandedHeight: 100.height(context),
       collapsedHeight: 74.height(context),
       flexibleSpace: FlexibleSpaceBar(
         centerTitle: true,

@@ -13,7 +13,7 @@ class AiSettingsState {
   final bool loading;
 
   const AiSettingsState({
-    this.selectedProvider = AiProvider.groq,
+    this.selectedProvider = AiProvider.openRouter,
     this.loading = true,
   });
 
