@@ -60,20 +60,6 @@ jobs:
         run: |
           echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > android/app/google-services.json
 
-      - name: Check formatting
-        run: |
-          dart format --set-exit-if-changed .
-          $code = $LASTEXITCODE
-          # `dart format --set-exit-if-changed` возвращает exit code 1, если он внёс изменения в файлы.
-          # Для деплоя это не должно считаться ошибкой — падать только на реальных ошибках.
-          if ($code -eq 1) {
-            Write-Host "dart format: formatting changes detected (exit code 1). Continuing."
-            exit 0
-          }
-          if ($code -ne 0) {
-            exit $code
-          }
-
       - name: Analyze
         run: flutter analyze
 
